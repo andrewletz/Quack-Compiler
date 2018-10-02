@@ -1,0 +1,21 @@
+/**
+ * Inheriting instance variables --- must be
+ * consistently initialized.
+ */
+class Robot() {
+    this.name = "Bozotron";
+    this.age = 42;
+    this.strength = 100;
+
+    def destroy_city(fierceness: Int ) {
+    	/* TBD: how do we actually destroy things? */
+    }
+}
+
+
+class SmartRobot(iq: Int) extends Robot {
+    this.name = "Einsteinitron";  // OK, compatible
+    this.age = "forty-eight";     // ERROR, not an Int
+    this.iq = 2 * iq;            // Sure, why not
+    // ERROR, failed to define strength
+}

@@ -1,0 +1,34 @@
+/*
+ * A point has an x component and a y component
+ */
+ class Pt(x: Int, y: Int) {
+     this.x = x;
+     this.y = y;
+
+     /* Note type of this.x and this.y is
+      * fixed in the object --- methods cannot
+      * change it.  Essentially, the flow relation is
+      * from every method to every other method.
+      */
+
+     def _get_x(): Int {
+     	 return this.x; 
+     } 
+
+     def _get_y(): Int {
+     	 return this.y;
+     }
+
+     /* Mutator: Evaluate for effect */
+     def translate(dx: Int, dy: Int): Nothing {
+     	 this.x = this.x + dx;
+	 this.y = this.y + dy;
+     }
+
+     /* More functional style: Evaluate for value */
+     def PLUS(other: Pt): Pt {
+     	 return Pt(this.x + other.x, this.y + other.y); 
+     }
+}
+
+Pt(13,42).PRINT(); 

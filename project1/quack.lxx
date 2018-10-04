@@ -104,6 +104,9 @@ not  { return parser::token::NOT; }
 [a-zA-Z_][a-zA-Z_0-9]*         { yylval.str = strdup(text()); return parser::token::IDENT; }
 
   /* Strings literals*/
+\"  { string_buf.clear(); start(string); }
+<string>\"   { start(INITIAL); return parser::token::STRING_LIT; }
+<string>[^\0\b\t\n\r\f\"\\]+ { string_buf.append(text()); }
 
   /* You *can* write a one-line regular expression for matching a quoted string,
    * but you probably can't read it.  (I can't read mine.)  Scanner states and

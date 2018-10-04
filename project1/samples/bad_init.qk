@@ -1,0 +1,20 @@
+/**
+ * Failure to initialize a local variable on all
+ * syntactic paths, as distinguished from all
+ * feasible execution paths.
+ */
+
+class BadInit() {
+
+   def bad_init() {
+      rep = 0;
+      n_reps = 3;
+      while rep < n_reps {
+          if rep > 0 {
+	     x = y;     // Error here
+	   }
+	   rep = rep + 1;
+	   y = 42;
+      }
+   }
+}

@@ -1,0 +1,14 @@
+/**
+ * A few challenges for the lexical analyzer
+ */
+
+class Challenge() {
+   this.x = /*  Comments can be anywhere */ y
+           + z // line-ending comment
+	       // This doesn't end it. ;
+	       ;
+
+   /* comment before */ z = """
+You can put all kinds of 
+crazy \z\a\.\""" + "stuff in a triple-quoted string"; 
+}

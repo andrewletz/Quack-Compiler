@@ -1,0 +1,8 @@
+// Tests finding and recovering from strings missing closing quote
+class BadBreaks(x: Int) {
+    z = "I seem to have forgotten to close this quote; 
+    def foo(y: Int) {
+       w = "Oh dear, did it again ;
+    }
+}
+q = "I just keep doing it 

@@ -101,7 +101,7 @@ not  { return parser::token::NOT; }
 
   /* Strings literals*/
 \"  { string_buf.clear(); start(string); }
-<string>\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); std::cout << string_buf << std::endl; return parser::token::STRING_LIT; }
+<string>\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); return parser::token::STRING_LIT; }
 <string>\n    { start(INITIAL); 
     report::error("Possible unclosed string " +
     std::string(" at line ") + std::to_string(lineno()) +
@@ -109,11 +109,18 @@ not  { return parser::token::NOT; }
 <string>\\[^0btnrf\"\\]    { report::error(BAD_ESC_MSG +
     std::string(" at line ") + std::to_string(lineno()) +
     ", column " + std::to_string(columno())); }
-<string>\\.   { string_buf.append(text()); }
+<string>\\0    { string_buf.append("\0"); }
+<string>\\b    { string_buf.append("\b"); }
+<string>\\t    { string_buf.append("\t"); }
+<string>\\n    { string_buf.append("\n"); }
+<string>\\r    { string_buf.append("\r"); }
+<string>\\f    { string_buf.append("\f"); }
+<string>\\\"    { string_buf.append("\""); }
+<string>\\\\    { string_buf.append("\\"); }
 <string>.     { string_buf.append(text()); }
 
 \"\"\" { string_buf.clear(); start(multistring); }
-<multistring>\"\"\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); std::cout << string_buf << std::endl; return parser::token::STRING_LIT; }
+<multistring>\"\"\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); return parser::token::STRING_LIT; }
 <multistring>\n  { string_buf.append("\n"); }
 <multistring>\r  { string_buf.append("\r"); }
 <multistring>\t  { string_buf.append("\t"); }

@@ -20,4 +20,6 @@ to get rid of stuff
 
 the path's to RE/flex may not reflect their proper locations on your machine.
 if this is the case, it is easy to modify the make file.
-(for professor Young, I will need to figure out how to do this on ix-dev)
+
+on ix-dev:
+paths are updated in the makefile. it should compile properly.

@@ -25,12 +25,8 @@ void yyerror (const std::string &msg, yy::position* where) {
      std::cout << where << ": " << msg;
 }
 
-/* Some long messages that don't fit well in the code below */
-
 std::string BAD_ESC_MSG =
   "Illegal escape code; only \\\\, \\0, \\t, \\n, \\r, \\n are permitted";
-std::string BAD_NL_STR =
-  "Unclosed string?  Encountered newline in quoted string."; 
 
 %}
 
@@ -105,8 +101,17 @@ not  { return parser::token::NOT; }
 
   /* Strings literals*/
 \"  { string_buf.clear(); start(string); }
-<string>\"   { start(INITIAL); return parser::token::STRING_LIT; }
-<string>[^\0\b\t\n\r\f\"\\]+ { string_buf.append(text()); }
+<string>\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); std::cout << string_buf << std::endl; return parser::token::STRING_LIT; }
+<string>\n    { start(INITIAL); 
+    report::error("Possible unclosed string " +
+    std::string(" at line ") + std::to_string(lineno()) +
+    ", column " + std::to_string(columno())); }
+<string>\\[^0btnrf\"\\]    { report::error(BAD_ESC_MSG +
+    std::string(" at line ") + std::to_string(lineno()) +
+    ", column " + std::to_string(columno())); }
+<string>\\.   { string_buf.append(text()); }
+<string>.     { string_buf.append(text()); }
+
 
   /* You *can* write a one-line regular expression for matching a quoted string,
    * but you probably can't read it.  (I can't read mine.)  Scanner states and

@@ -112,6 +112,12 @@ not  { return parser::token::NOT; }
 <string>\\.   { string_buf.append(text()); }
 <string>.     { string_buf.append(text()); }
 
+\"\"\" { string_buf.clear(); start(multistring); }
+<multistring>\"\"\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); std::cout << string_buf << std::endl; return parser::token::STRING_LIT; }
+<multistring>\n  { string_buf.append("\n"); }
+<multistring>\r  { string_buf.append("\r"); }
+<multistring>\t  { string_buf.append("\t"); }
+<multistring>.     { string_buf.append(text()); }
 
   /* You *can* write a one-line regular expression for matching a quoted string,
    * but you probably can't read it.  (I can't read mine.)  Scanner states and

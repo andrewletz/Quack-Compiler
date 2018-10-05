@@ -2,7 +2,13 @@
 
 "this is the story"
 "\0\b\t\n\r\f\"\\"
-"	"
+""" test test
+test test test"""
+
+"""This starts a string literal
+that continues on for several lines
+even though it includes "'s and \'s and newline characters
+in a "wild" profu\sion\\ of normally i\\egal t"ings.\"""
 
 ==
 ==

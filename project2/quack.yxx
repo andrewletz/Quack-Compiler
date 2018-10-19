@@ -49,6 +49,7 @@
 %left EQUALS ATMOST ATLEAST '<' '>'
 %left '-' '+'
 %left '*' '/'
+%left '.'
 %left UMINUS
 
 /* -~-~-~-~-~-~-~-~-~-~-~- GRAMMAR -~-~-~-~-~-~-~-~-~-~-~- */

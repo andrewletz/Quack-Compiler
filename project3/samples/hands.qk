@@ -1,0 +1,23 @@
+class Hand() {
+      /* Nothing to see here */
+}
+
+
+class LeftHand(x: Int) extends Hand {
+      this.x = x;
+      def foo(): Int { return 42; }
+}
+
+class RightHand(x: Int) extends Hand {
+      this.x = x; 
+      def foo(): Int { return 42; }
+}
+
+class Bot(x: Int) {
+   if x > 0 {
+      this.hand = LeftHand(3);
+   } else {
+      this.hand = RightHand(7);
+   }
+   this.answer = this.hand.foo(); 
+}

@@ -8,7 +8,7 @@ CCOPTS = -L /usr/local/lib
 REFLEX_LIB = /usr/local/lib/libreflex.a
 REFLEX_INCLUDE = /usr/local/include/reflex
 REFLEX = reflex
-BISON = bison -v -Wconflicts-sr -Wconflicts-rr -Wother
+BISON = bison
 CC = g++ -std=c++11
 
 default: parser
@@ -22,7 +22,7 @@ quack.tab.cxx quack.tab.hxx location.hh position.hh stack.hh: quack.yxx
 lex.yy.cpp lex.yy.h: quack.lxx  quack.tab.hxx
 	$(REFLEX) --bison-cc --bison-locations --header-file quack.lxx
 
-parser: quack.tab.cxx lex.yy.cpp lex.yy.h parser.cpp Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h
+parser: quack.tab.cxx lex.yy.cpp lex.yy.h parser.cpp ASTNode.cpp ASTNode.h Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h
 	$(CC) -o parser $^ $(REFLEX_LIB)
 
 # There should be more dependencies for the header files, but I'm lazy.
@@ -34,5 +34,4 @@ clean:
 	rm -f lexer parser
 	rm -f quack.tab.hxx quack.tab.cxx
 	rm -f stack.hh position.hh location.hh
-	rm -f quack.output
 

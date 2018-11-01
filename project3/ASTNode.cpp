@@ -1,68 +1,12 @@
-//
-// Created by Michal Young on 9/12/18.
-//
+// Andrew Letz
+// Last Modified: 10/31/2018
+// Acknowledgements: Dr. Michal Young for starter code
 
 #include "ASTNode.h"
 
 namespace AST {
     // Abstract syntax tree.  ASTNode is abstract base class for all other nodes.
 
-    // Each node type needs a str method -- most are in .h file for inlining,
-    // a few require more code.
-
-
-    // Binary operators have an 'eval' method
-    int Plus::eval(EvalContext &ctx) { return left_.eval(ctx) + right_.eval(ctx); }
-
-    int Times::eval(EvalContext &ctx) { return left_.eval(ctx) * right_.eval(ctx); }
-
-    int Minus::eval(EvalContext &ctx) { return left_.eval(ctx) - right_.eval(ctx); }
-
-    int Div::eval(EvalContext &ctx) { return left_.eval(ctx) / right_.eval(ctx); }
-
-    // A block is evaluated just by evaluating each statement in the block.
-    // We'll return the value_ of the last statement, although it is useless.
-    // The value_ of an empty block is zero.
-    int Block::eval(EvalContext &ctx) {
-        int result = 0;
-        for (auto &s: stmts_) {
-            result = s->eval(ctx);
-        }
-        return result;
-    }
-
-
-    // Identifiers live in symtab and default to 0.
-    int Ident::eval(EvalContext &ctx) {
-        if (ctx.symtab.count(text_) == 1) {
-            return ctx.symtab[text_];
-        } else {
-            return 0;
-        }
-    }
-
-    // Assignment evaluates its right_ hand side and stores the
-    // result into its left_ hand side.  We'll have it return the
-    // value_ it produced just for simplicity and debugging, but the
-    // value_ is not otherwise used.
-    int Assign::eval(EvalContext &ctx) {
-        std::string loc = lexpr_.l_eval(ctx);
-        int rvalue = rexpr_.eval(ctx);
-        ctx.symtab[loc] = rvalue;
-        return rvalue;
-    }
-
-    // An 'if' statement, in this initial cut, evaluates its condition to an integer
-    // and chooses the true (then) part or the false (else) part depending on whether
-    // the integer is zero.
-    int If::eval(EvalContext &ctx) {
-        int cond = cond_.eval(ctx);
-        // Might as well use C's ill-considered interpretation of ints as booleans
-        if (cond) {
-            return truepart_.eval(ctx);
-        }
-        return falsepart_.eval(ctx);
-    }
 
     // JSON representation of all the concrete node types.
     // This might be particularly useful if I want to do some
@@ -103,54 +47,57 @@ namespace AST {
         out << sep;
     }
 
+    void ASTNode::json(std::ostream& out, AST_print_context& ctx) {
+        // json_head(kind_, out, ctx);
+        // out << "\"elements_\" : [";
+        // auto sep = "";
+        // for (ASTNode *el: elements_) {
+        //     out << sep;
+        //     el->json(out, ctx);
+        //     sep = ", ";
+        // }
+        // out << "]";
+        // json_close(out, ctx);
+    }
 
-    void Block::json(std::ostream& out, AST_print_context& ctx) {
-        json_head("Block", out, ctx);
-        // Special case for list of children, but we probably we need to generalize this
-        // for other "list of X" nodes, such as parameter lists in Quack.
-        out << "\"stmts_\" : [";
-        auto sep = "";
-        for (ASTNode *stmt: stmts_) {
-            out << sep;
-            stmt->json(out, ctx);
-            sep = ", ";
+    void ASTNode::insert(Type type, ASTNode *node) {
+        /* Docstring TBD */
+
+        /* If this type of node is not in the map yet, need a new vector for it to be inserted */
+        if (children.count(type) == 0) {
+            std::vector<ASTNode *> insertedNodeVector;
+            insertedNodeVector.push_back(node);
+
+            children.insert(std::pair<Type, std::vector<ASTNode *> >(type, insertedNodeVector));
         }
-        out << "]";
-        json_close(out, ctx);
+        /* Else, find that type in the map and push this new node into its vector */
+        else {
+            std::map<Type, std::vector<ASTNode *> >::iterator it = children.find(type);
+            if (it != children.end()) {
+                it->second.push_back(node);
+            }
+        }
+
+        /* If this type of node is being inserted for the first time,  it needs to go
+         * into the "order" vector to know when it was inserted, this is for the json
+         * printing
+         */
+        std::vector<Type>::iterator it = std::find(order.begin(), order.end(), type);
+        if (it == order.end()) {
+            order.push_back(type);
+        }
     }
 
-    void Assign::json(std::ostream& out, AST_print_context& ctx) {
-        json_head("Assign", out, ctx);
-        json_child("lexpr_", lexpr_, out, ctx);
-        json_child("rexpr_", rexpr_, out, ctx, ' ');
-        json_close(out, ctx);
-     }
+    // void Program::json(std::ostream &out, AST::AST_print_context &ctx) {
+    //     json_head("Program", out, ctx);
+    //     json_child("classes_", classes_, out, ctx);
+    //     json_child("statements_", statements_, out, ctx, ' ');
+    //     json_close(out, ctx);
+    // }
 
-    void If::json(std::ostream& out, AST_print_context& ctx) {
-        json_head("If", out, ctx);
-        json_child("cond_", cond_, out, ctx);
-        json_child("truepart_", truepart_, out, ctx);
-        json_child("falsepart_", falsepart_, out, ctx, ' ');
-        json_close(out, ctx);
-    }
-
-    void Ident::json(std::ostream& out, AST_print_context& ctx) {
-        json_head("Ident", out, ctx);
-        out << "\"text_\" : \"" << text_ << "\"";
-        json_close(out, ctx);
-    }
-
-    void IntConst::json(std::ostream& out, AST_print_context& ctx) {
-        json_head("IntConst", out, ctx);
-        out << "\"value_\" : " << value_ ;
-        json_close(out, ctx);
-    }
-
-    void BinOp::json(std::ostream& out, AST_print_context& ctx) {
-        json_head(opsym, out, ctx);
-        json_child("left_", left_, out, ctx);
-        json_child("right_", right_, out, ctx, ' ');
-        json_close(out, ctx);
-    }
-
+    // void Ident::json(std::ostream& out, AST_print_context& ctx) {
+    //     json_head("Ident", out, ctx);
+    //     out << "\"text_\" : \"" << text_ << "\"";
+    //     json_close(out, ctx);
+    // }
 }

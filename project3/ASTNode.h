@@ -11,20 +11,9 @@
 #include <map>
 #include <algorithm>
 #include <iostream>
-
-enum Type {   
-                // Nonterminal Node Types
-                PROGRAM, BLOCK,
-                CLASSES, CLASS,
-                METHODS, METHOD, CONSTRUCTOR, CALL,
-                FORMAL_ARG, FORMAL_ARGS, ACTUAL_ARGS,
-                ASSIGN, RETURN, BINOP, AND, OR, DOT, LOAD, IF,
-                L_EXPR, IDENT, INTCONST, STRCONST,
-                TYPECASE, TYPE_ALTERNATIVE,  TYPE_ALTERNATIVES,
-
-                // Identifier/named field Types
-                NAME
-            };
+#include <stdlib.h>
+#include <stdio.h>
+#include "ASTEnum.h"
 
 namespace AST {
 
@@ -36,7 +25,7 @@ namespace AST {
             AST_print_context() : indent_(0) {};
             void indent() { ++indent_; }
             void dedent() { --indent_; }
-        };
+    };
 
     class ASTNode {
         public:
@@ -49,14 +38,14 @@ namespace AST {
 
             // Constructor, Destructor
             ASTNode(Type type) : type(type) {};
-            ASTNode(Type type, std::string name) : name(name) {};
-            ASTNode(Type type, int value) : value(value) {};
+            ASTNode(Type type, std::string name) : type(type), name(name) {};
+            ASTNode(Type type, int value) : type(type), value(value) {};
             virtual ~ASTNode() {};
 
             // Member insertion and retrieval
             void insert(ASTNode* inputNode);
             ASTNode* get(Type type); // if you know there is only a single node of this type, use get
-            std::vector<ASTNode*> getSeq(Type type); // if there can be multiple, use getSeq
+            std::vector<ASTNode *> getSeq(Type type); // if there can be multiple, use getSeq
 
             // JSON Printing functions
             void json(std::ostream& out, AST_print_context& ctx);

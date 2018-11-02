@@ -3,34 +3,50 @@
 #include <iostream>
 #include <typeinfo>
 
-void printVec(std::vector<AST::ASTNode *> vec) {
-	for (std::vector<AST::ASTNode *>::const_iterator i = vec.begin(); i != vec.end(); ++i) {
-    	std::cout << *i << ' ';
+void printTest(std::vector<AST::ASTNode *> vec) {
+
+	std::vector<AST::ASTNode *>::iterator it;
+
+	for (it = vec.begin(); it != vec.end(); ++it) {
+		printf("type : %s\n", TypeString[(*it)->type]);
+		printf("name : %s\n", (*it)->name.c_str());
+		printf("value : %d\n", (*it)->value);
+		printf("\n");
 	}
 }
 
-void printMap(std::map<Type, std::vector<AST::ASTNode*> > myMap) {
-	for(std::map<Type, std::vector<AST::ASTNode*> >::const_iterator it = myMap.begin(); it != myMap.end(); ++it) {
-	    std::cout << it->first << std::endl;
-	    //printVec(it->second);
+void printOrder(std::vector<Type> vec) {
+
+	std::vector<Type>::iterator it;
+
+	for (it = vec.begin(); it != vec.end(); ++it) {
+		printf("type : %s\n", TypeString[*it]);
 	}
 }
 
 int main() {
-	AST::ASTNode* root = new AST::ASTNode(CLASSES);
-	root->name = "Root";
-	std::cout << root->name << std::endl;
-	AST::ASTNode* var = new AST::ASTNode(IDENT, "variable");
-	std::cout << var->type << " : " << var->name << std::endl;
-	root->insert(var);
-	std::cout << root->children.at(IDENT) << std::endl;
-	// std::cout << typeid(root->get(IDENT)).name() << std::endl;
-	// std::cout << root->get(IDENT)->name << std::endl;
-	// AST::ASTNode* getRoot = root->get(IDENT);
-	// std::cout << getRoot->name << std::endl;
-
-	//root->insert(new AST::ASTNode(IDENT, "variable2"));
+    AST::ASTNode* root = new AST::ASTNode(CLASSES);
+	root->insert(new AST::ASTNode(IDENT, "variable"));
+	root->insert(new AST::ASTNode(IDENT, "variable2"));
+	root->insert(new AST::ASTNode(INTCONST, 27));
 	std::vector<AST::ASTNode *> vec = root->getSeq(IDENT);
-	// std::cout << vec[0] << std::endl;
-	// printVec(vec);
+	std::vector<AST::ASTNode *> vec2 = root->getSeq(INTCONST);
+
+	AST::ASTNode* nested = new AST::ASTNode(BLOCK);
+	nested->insert(new AST::ASTNode(STRCONST, "nestedvariable"));
+	root->insert(nested);
+
+	AST::ASTNode* getBlock = root->get(BLOCK);
+	AST::ASTNode* getBlockVar = getBlock->get(STRCONST);
+
+	printTest(vec);
+	printTest(vec2);
+
+	AST::ASTNode* got = root->get(INTCONST);
+	std::cout << "INTCONST value from get is " << got->value << std::endl;
+
+	std::cout << "STRCONST name from nested block STRCONST is " << getBlockVar->name << std::endl;
+
+	std::cout << "\nOrder vector \n";
+	printOrder(root->order);
 }

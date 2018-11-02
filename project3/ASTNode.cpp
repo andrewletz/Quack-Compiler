@@ -30,7 +30,7 @@ namespace AST {
     void ASTNode::json_head(std::string node_kind, std::ostream& out, AST_print_context& ctx) {
         json_indent(out, ctx);
         out << "{ \"kind\" : \"" << node_kind << "\"," ;
-        ctx.indent();  // one level more for children
+        ctx.indent();  // one level more for this->children
         return;
     }
 
@@ -60,20 +60,23 @@ namespace AST {
         // json_close(out, ctx);
     }
 
-    void ASTNode::insert(Type type, ASTNode *node) {
+    void ASTNode::insert(ASTNode *node) {
         /* Docstring TBD */
 
+        std::cout << "-------- INSERT " << std::endl;
         /* If this type of node is not in the map yet, need a new vector for it to be inserted */
-        if (children.count(type) == 0) {
+        if (this->children.count(node->type) == 0) {
+            std::cout << "Insert: we don't have this type yet, create new vec and shove it in" << std::endl;
             std::vector<ASTNode *> insertedNodeVector;
             insertedNodeVector.push_back(node);
 
-            children.insert(std::pair<Type, std::vector<ASTNode *> >(type, insertedNodeVector));
+            this->children.insert(std::map<Type, std::vector<ASTNode *> >::value_type(node->type, insertedNodeVector));
         }
         /* Else, find that type in the map and push this new node into its vector */
         else {
-            std::map<Type, std::vector<ASTNode *> >::iterator it = children.find(type);
-            if (it != children.end()) {
+            std::cout << "Insert; we already have that type, shove it in the vec" << std::endl;
+            std::map<Type, std::vector<ASTNode *> >::iterator it = this->children.find(node->type);
+            if (it != this->children.end()) {
                 it->second.push_back(node);
             }
         }
@@ -82,11 +85,41 @@ namespace AST {
          * into the "order" vector to know when it was inserted, this is for the json
          * printing
          */
-        std::vector<Type>::iterator it = std::find(order.begin(), order.end(), type);
+        std::vector<Type>::iterator it = std::find(order.begin(), order.end(), node->type);
         if (it == order.end()) {
-            order.push_back(type);
+            std::cout << "Insert: not in order, shove it in the order vec" << std::endl;
+            order.push_back(node->type);
+        }
+        std::cout << std::endl;
+    }
+
+    ASTNode * ASTNode::get(Type type) {
+        /* Docstring TBD */
+
+        /* Finds a given type of node in the map, returns the first node in its vector.
+         * This is used when getting types of nodes that only have one identifier, such
+         * as a class name, etc.
+         */
+        std::map<Type, std::vector<ASTNode *> >::iterator it = this->children.find(type);
+        if (it != this->children.end()) {
+            return it->second.front();
         }
     }
+
+    std::vector<ASTNode *> ASTNode::getSeq(Type type) {
+        /* Docstring TBD */
+
+        /* Finds a given type of node in the map, returns its associated vector */
+        std::map<Type, std::vector<ASTNode *> >::iterator it = children.find(type);
+        if (it == children.end()) {
+            fprintf(stderr, "fucked up \n");
+        }
+        else {
+            fprintf(stderr, "found thing, returning \n");
+            return it->second;
+        }
+    }
+
 
     // void Program::json(std::ostream &out, AST::AST_print_context &ctx) {
     //     json_head("Program", out, ctx);

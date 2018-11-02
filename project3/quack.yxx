@@ -35,8 +35,6 @@
     int   num;
     char* str;
     AST::ASTNode* node;
-    // block needs a more explicit type to use the 'append' method
-    AST::Block* block;
 }
 
 /* -~-~-~ TOKENS -~-~-~ */

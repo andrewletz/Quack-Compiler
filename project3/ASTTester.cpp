@@ -49,4 +49,12 @@ int main() {
 
 	std::cout << "\nOrder vector \n";
 	printOrder(root->order);
+
+	std::cout << isHeadType(PROGRAM) << std::endl;
+	std::cout << isHeadType(OR) << std::endl;
+	std::cout << "------~~~~JSON TIME~~~~------\n";
+
+	AST::AST_print_context context;
+	root->json(std::cout, context);
+	std::cout << std::endl;
 }

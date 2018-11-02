@@ -5,6 +5,8 @@
 #ifndef ASTENUM_H
 #define ASTENUM_H
 
+#include <set>
+
 enum Type {   
                 // Nonterminal Node Types
                 PROGRAM, BLOCK,
@@ -32,5 +34,13 @@ static const char * TypeString[] = {
                 // Identifier/named field Types
                 "name_"
             };
+
+extern std::set<Type> HeadTypes;
+extern bool isHeadType(Type type);
+
+extern std::set<Type> SeqTypes;
+extern bool isSeqType(Type type);
+
+extern std::string typeString(Type type);
 
 #endif //ASTNODE_H

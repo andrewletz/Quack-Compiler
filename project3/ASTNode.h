@@ -5,14 +5,12 @@
 #ifndef ASTNODE_H
 #define ASTNODE_H
 
+#include <map>
+#include <vector>
 #include <string>
 #include <sstream>
-#include <vector>
-#include <map>
 #include <algorithm>
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
 #include "ASTEnum.h"
 
 namespace AST {
@@ -49,6 +47,7 @@ namespace AST {
 
             // JSON Printing functions
             void json(std::ostream& out, AST_print_context& ctx);
+            void jsonSeq(std::ostream& out, AST_print_context& ctx);
             void json_indent(std::ostream& out, AST_print_context& ctx);
             void json_head(std::string node_kind, std::ostream& out, AST_print_context& ctx);
             void json_close(std::ostream& out, AST_print_context& ctx);

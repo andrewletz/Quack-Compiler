@@ -4,6 +4,30 @@
 
 #include "ASTNode.h"
 
+std::set<Type> HeadTypes = {
+                PROGRAM, FORMAL_ARG, METHOD, ASSIGN, RETURN, IF, 
+                TYPECASE, TYPE_ALTERNATIVE, LOAD, IDENT, CLASS, 
+                CALL, CONSTRUCTOR, INTCONST, STRCONST, BINOP
+            };
+
+bool isHeadType(Type type) {
+    const bool is_in = HeadTypes.find(type) != HeadTypes.end();
+    return is_in;
+}
+
+std::set<Type> SeqTypes = {
+                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS
+            };
+
+bool isSeqType(Type type) {
+    const bool is_in = SeqTypes.find(type) != SeqTypes.end();
+    return is_in;
+}
+
+std::string typeString(Type type) {
+    return TypeString[type];
+}
+
 namespace AST {
     // Abstract syntax tree.  ASTNode is abstract base class for all other nodes.
 
@@ -74,7 +98,7 @@ namespace AST {
     /* The head element looks like { "kind" : "block", */
     void ASTNode::json_head(std::string node_kind, std::ostream& out, AST_print_context& ctx) {
         json_indent(out, ctx);
-        out << "{ \"kind\" : \"" << node_kind << "\"," ;
+        out << "{\"kind\" : \"" << node_kind << "\", " ;
         ctx.indent();  // one level more for this->children
         return;
     }
@@ -92,17 +116,51 @@ namespace AST {
         out << sep;
     }
 
+    void ASTNode::jsonSeq(std::ostream& out, AST_print_context& ctx) {
+        json_head(typeString(this->type), out, ctx);
+
+        out << "\"elements_\" : [";
+        auto sep = "";
+        for (Type t : this->order) {
+            std::vector<ASTNode*> subchildren = this->getSeq(t);
+            for (ASTNode* node : subchildren) {
+                node->json(out, ctx);
+            }
+        }
+        out << "]";
+        json_close(out, ctx);
+    }
+
     void ASTNode::json(std::ostream& out, AST_print_context& ctx) {
-        // json_head(kind_, out, ctx);
-        // out << "\"elements_\" : [";
-        // auto sep = "";
-        // for (ASTNode *el: elements_) {
-        //     out << sep;
-        //     el->json(out, ctx);
-        //     sep = ", ";
-        // }
-        // out << "]";
-        // json_close(out, ctx);
+
+        if (isSeqType(this->type)) {
+            jsonSeq(out, ctx);
+        } else {
+            json_head(typeString(this->type), out, ctx);
+            if (!this->name.empty()) {
+                out << "\"text_\" : \"" << this->name << "\"";
+            } else if (this->value) {
+                out << "\"value_\" : \"" << this->value << "\"";
+            }
+
+            auto sep = "";
+            for (Type t : this->order) {
+                std::vector<ASTNode*> subchildren = this->getSeq(t);
+                for (ASTNode* node : subchildren) {
+                    node->json(out, ctx);
+                    std::cout << "Here\n";
+                    if (!node->name.empty()) {
+                        std::cout << "Reached\n";
+                        out << "\"text_\" : \"" << node->name << "\"";
+                    } else if (node->value) {
+                        out << "\"value_\" : \"" << node->value << "\"";
+                    }
+                }
+            }
+            json_close(out, ctx);
+        }
+
+
     }
 
     // void Program::json(std::ostream &out, AST::AST_print_context &ctx) {

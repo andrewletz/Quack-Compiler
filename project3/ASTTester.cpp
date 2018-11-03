@@ -1,7 +1,7 @@
-#include "ASTNode.h"
 #include <iterator>
 #include <iostream>
 #include <typeinfo>
+#include "ASTNode.h"
 
 void printTest(std::vector<AST::ASTNode *> vec) {
 
@@ -55,6 +55,6 @@ int main() {
 	std::cout << "------~~~~JSON TIME~~~~------\n";
 
 	AST::AST_print_context context;
-	root->printSelf(std::cout, context);
+	root->json(std::cout, context);
 	std::cout << std::endl;
 }

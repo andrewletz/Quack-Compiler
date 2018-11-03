@@ -1,14 +1,10 @@
-// Andrew Letz
-// Last Modified: 10/31/2018
-// Acknowledgements: Dr. Michal Young for starter code
-
 #ifndef ASTENUM_H
 #define ASTENUM_H
 
 #include <set>
 
 enum Type {   
-                // Nonterminal Node Types
+                // Non-Terminal Node Types (And Some Extras)
                 PROGRAM, BLOCK,
                 CLASSES, CLASS,
                 METHODS, METHOD, CONSTRUCTOR, CALL,
@@ -19,7 +15,7 @@ enum Type {
             };
 
 static const char * TypeString[] = {   
-                // Nonterminal Node Types
+                // Nonterminal Node Types (And Some Extras)
                 "program_", "block_",
                 "classes_", "class_",
                 "methods_", "method_", "constructor_", "call_",
@@ -34,4 +30,4 @@ extern bool isSeqType(Type type);
 
 extern std::string typeString(Type type);
 
-#endif //ASTNODE_H
+#endif

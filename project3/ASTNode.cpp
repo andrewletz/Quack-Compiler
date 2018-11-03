@@ -1,8 +1,8 @@
-// Andrew Letz
-// Last Modified: 10/31/2018
-// Acknowledgements: Dr. Michal Young for starter code
-
 #include "ASTNode.h"
+
+/* ================================== */
+/* Classes & Functions from ASTEnum.h */
+/* ================================== */
 
 std::set<Type> SeqTypes = {
                 BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS_EXTRA
@@ -18,19 +18,24 @@ std::string typeString(Type type) {
 }
 
 namespace AST {
-    // Abstract syntax tree.  ASTNode is abstract base class for all other nodes.
+    // AST = Abstract Syntax Tree.  ASTNode is abstract base class for all other nodes in the tree.
+
+    /* ======================== */
+    /* Inserting & Getting Data */
+    /* ======================== */
 
     void ASTNode::insert(ASTNode *node) {
+        // Check for a NULL node before inserting to avoid an insane amount of problems
         if (node == NULL) { return; }
 
-        /* If this type of node is not in the map yet, need a new vector for it to be inserted */
+        // If this type of node is not in the map yet, need a new vector for it to be inserted
         if (this->children.count(node->type) == 0) {
             std::vector<ASTNode *> insertedNodeVector;
             insertedNodeVector.push_back(node);
 
             this->children.insert(std::map<Type, std::vector<ASTNode *> >::value_type(node->type, insertedNodeVector));
         }
-        /* Else, find that type in the map and push this new node into its vector */
+        // Else, find that type in the map and push this new node into its vector
         else {
             std::map<Type, std::vector<ASTNode *> >::iterator it = this->children.find(node->type);
             if (it != this->children.end()) {
@@ -38,10 +43,9 @@ namespace AST {
             }
         }
 
-        /* If this type of node is being inserted for the first time,  it needs to go
-         * into the "order" vector to know when it was inserted, this is for the json
-         * printing
-         */
+         // If this type of node is being inserted for the first time,  it needs to go
+         // into the "order" vector to know when it was inserted, this is for the json
+         // printing
         std::vector<Type>::iterator it = std::find(order.begin(), order.end(), node->type);
         if (it == order.end()) {
             order.push_back(node->type);
@@ -49,50 +53,31 @@ namespace AST {
     }
 
     ASTNode * ASTNode::get(Type type) {
-        /* Docstring TBD */
-
-        /* Finds a given type of node in the map, returns the first node in its vector.
-         * This is used when getting types of nodes that only have one identifier, such
-         * as a class name, etc.
-         */
+        // Finds a given type of node in the map, returns the first node in its vector.
+        // This is used when getting types of nodes that only have one identifier, such
+        // as a class name, etc.
+         
         std::map<Type, std::vector<ASTNode *> >::iterator it = this->children.find(type);
         if (it != this->children.end()) {
             return it->second.front();
-        }
+        } else { }
     }
 
     std::vector<ASTNode *> ASTNode::getSeq(Type type) {
-        /* Docstring TBD */
+        // Finds a given type of node in the map, returns its associated vector.
+        // This is used when getting types of nodes that are sequences, such as
+        // function arguments, etc.
 
-        /* Finds a given type of node in the map, returns its associated vector */
         std::map<Type, std::vector<ASTNode *> >::iterator it = children.find(type);
-        if (it == children.end()) {
-            /* not found */
-        }
-        else {
+        if (it != this->children.end()) {
             return it->second;
-        }
+        } else { }
     }
 
-    void ASTNode::printSelf(std::ostream& out) {
-        if (this->type > 28 || this->type < 0) { 
-            printf("TYPE NUMBER : %d\n", this->type);
-            exit(1);
-        }
-        printf("My type is: %s\n", typeString(this->type).c_str());
-        printf("My value is: %d\n", this->value);
-        printf("My name is: %s\n", this->name.c_str());
-        printf("My children are: \n");
-        for (Type t : this->order) {
-                std::vector<ASTNode*> subchildren = this->getSeq(t);
-                for (ASTNode* node : subchildren) {
-                    out << "    ";
-                    node->printSelf(out);
-                }
-        }
-    }
+    /* ===================== */
+    /* JSON Printing Methods */
+    /* ===================== */
 
-    /* Indent to a given level */
     void ASTNode::json_indent(std::ostream& out, AST_print_context& ctx) {
         if (ctx.indent_ > 0) {
             out << std::endl;
@@ -102,16 +87,14 @@ namespace AST {
         }
     }
 
-    /* The head element looks like { "kind" : "block", */
     void ASTNode::json_head(std::string node_kind, std::ostream& out, AST_print_context& ctx) {
         json_indent(out, ctx);
         out << "{\"kind\" : \"" << node_kind << "\", " ;
-        ctx.indent();  // one level more for this->children
+        ctx.indent();
         return;
     }
 
     void ASTNode::json_close(std::ostream& out, AST_print_context& ctx) {
-        // json_indent(out, ctx);
         out << "}";
         ctx.dedent();
     }
@@ -137,6 +120,10 @@ namespace AST {
         out << "]";
         json_close(out, ctx);
     }
+
+    /* ================ */
+    /* Main JSON Method */
+    /* ================ */
 
     void ASTNode::json(std::ostream& out, AST_print_context& ctx) {
 

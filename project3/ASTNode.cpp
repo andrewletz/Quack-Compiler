@@ -4,19 +4,8 @@
 
 #include "ASTNode.h"
 
-std::set<Type> HeadTypes = {
-                PROGRAM, FORMAL_ARG, METHOD, ASSIGN, RETURN, IF, 
-                TYPECASE, TYPE_ALTERNATIVE, LOAD, IDENT, CLASS, 
-                CALL, CONSTRUCTOR, INTCONST, STRCONST, BINOP
-            };
-
-bool isHeadType(Type type) {
-    const bool is_in = HeadTypes.find(type) != HeadTypes.end();
-    return is_in;
-}
-
 std::set<Type> SeqTypes = {
-                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS
+                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS_EXTRA
             };
 
 bool isSeqType(Type type) {
@@ -25,14 +14,14 @@ bool isSeqType(Type type) {
 }
 
 std::string typeString(Type type) {
-    return TypeString[type];
+   return TypeString[type];
 }
 
 namespace AST {
     // Abstract syntax tree.  ASTNode is abstract base class for all other nodes.
 
     void ASTNode::insert(ASTNode *node) {
-        /* Docstring TBD */
+        if (node == NULL) { return; }
 
         /* If this type of node is not in the map yet, need a new vector for it to be inserted */
         if (this->children.count(node->type) == 0) {
@@ -82,6 +71,24 @@ namespace AST {
         }
         else {
             return it->second;
+        }
+    }
+
+    void ASTNode::printSelf(std::ostream& out) {
+        if (this->type > 28 || this->type < 0) { 
+            printf("TYPE NUMBER : %d\n", this->type);
+            exit(1);
+        }
+        printf("My type is: %s\n", typeString(this->type).c_str());
+        printf("My value is: %d\n", this->value);
+        printf("My name is: %s\n", this->name.c_str());
+        printf("My children are: \n");
+        for (Type t : this->order) {
+                std::vector<ASTNode*> subchildren = this->getSeq(t);
+                for (ASTNode* node : subchildren) {
+                    out << "    ";
+                    node->printSelf(out);
+                }
         }
     }
 
@@ -137,9 +144,9 @@ namespace AST {
             jsonSeq(out, ctx);
         } else {
             json_head(typeString(this->type), out, ctx);
-            if (!this->name.empty()) {
+            if (this->nameinit) {
                 out << "\"text_\" : \"" << this->name << "\"";
-            } else if (this->value) {
+            } else if (this->valueinit) {
                 out << "\"value_\" : \"" << this->value << "\"";
             }
 
@@ -148,31 +155,14 @@ namespace AST {
                 std::vector<ASTNode*> subchildren = this->getSeq(t);
                 for (ASTNode* node : subchildren) {
                     node->json(out, ctx);
-                    std::cout << "Here\n";
-                    if (!node->name.empty()) {
-                        std::cout << "Reached\n";
+                    if (this->nameinit) {
                         out << "\"text_\" : \"" << node->name << "\"";
-                    } else if (node->value) {
+                    } else if (this->valueinit) {
                         out << "\"value_\" : \"" << node->value << "\"";
                     }
                 }
             }
             json_close(out, ctx);
         }
-
-
     }
-
-    // void Program::json(std::ostream &out, AST::AST_print_context &ctx) {
-    //     json_head("Program", out, ctx);
-    //     json_child("classes_", classes_, out, ctx);
-    //     json_child("statements_", statements_, out, ctx, ' ');
-    //     json_close(out, ctx);
-    // }
-
-    // void Ident::json(std::ostream& out, AST_print_context& ctx) {
-    //     json_head("Ident", out, ctx);
-    //     out << "\"text_\" : \"" << text_ << "\"";
-    //     json_close(out, ctx);
-    // }
 }

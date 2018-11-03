@@ -12,31 +12,22 @@ enum Type {
                 PROGRAM, BLOCK,
                 CLASSES, CLASS,
                 METHODS, METHOD, CONSTRUCTOR, CALL,
-                FORMAL_ARG, FORMAL_ARGS, ACTUAL_ARGS,
-                ASSIGN, RETURN, BINOP, AND, OR, DOT, LOAD, IF,
-                L_EXPR, IDENT, INTCONST, STRCONST,
+                FORMAL_ARGS, FORMAL_ARGS_EXTRA, ACTUAL_ARGS_EXTRA, ACTUAL_ARGS,
+                ASSIGN, RETURN, BINOP, AND, OR, NOT, DOT, LOAD, IF,
+                L_EXPR, IDENT, INTCONST, STRCONST, WHILE, 
                 TYPECASE, TYPE_ALTERNATIVE,  TYPE_ALTERNATIVES,
-
-                // Identifier/named field Types
-                NAME
             };
 
 static const char * TypeString[] = {   
                 // Nonterminal Node Types
-                "Program", "block_",
-                "classes_", "Class",
-                "methods_", "Method", "Constructor", "Call",
-                "Formal", "formal_args_", "actual_args_",
-                "Assign", "Return", "binop_", "and_", "or_", "dot_", "Load", "If",
-                "l_expr_", "Ident", "IntConst", "StrConst",
-                "Typecase", "Type_Alternative",  "type_alternatives_",
-
-                // Identifier/named field Types
-                "name_"
+                "program_", "block_",
+                "classes_", "class_",
+                "methods_", "method_", "constructor_", "call_",
+                "formal_arg_", "formal_args_", "actual_args_extra_", "actual_args_",
+                "assign_", "return_", "binop_", "and_", "or_", "not_", "dot_", "load_", "if_",
+                "l_expr_", "ident_", "intconst_", "strconst_", "while_", 
+                "typecase_", "type_alternative_",  "type_alternatives_",
             };
-
-extern std::set<Type> HeadTypes;
-extern bool isHeadType(Type type);
 
 extern std::set<Type> SeqTypes;
 extern bool isSeqType(Type type);

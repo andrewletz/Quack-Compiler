@@ -55,6 +55,6 @@ int main() {
 	std::cout << "------~~~~JSON TIME~~~~------\n";
 
 	AST::AST_print_context context;
-	root->json(std::cout, context);
+	root->printSelf(std::cout, context);
 	std::cout << std::endl;
 }

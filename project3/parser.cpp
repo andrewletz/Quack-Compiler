@@ -35,7 +35,7 @@ public:
             if (root == nullptr) {
                 std::cout << "AST Root is null.\n";
             }
-            return root; /* program was legal, but no AST was built properly */
+            return root; /* program was legal*/
         } else {
             std::cout << "Parse failed, no tree\n";
             return nullptr; /* if the parse fails, we don't want an AST */
@@ -57,14 +57,11 @@ int main()
     AST::ASTNode* root = driver.parse();
 
     if (root != nullptr) {
-        std::cout << "Parsed!\n";
         AST::AST_print_context context;
-        
-        // root->json(std::cout, context);
-        // std::cout << std::endl;
-        // std::cout << "Successfully parsed " << root->str() << std::endl;
-        auto ctx = EvalContext();
-        std::cout << "Evaluates to " << root->eval(ctx) << std::endl;
+
+        std::cout << std::endl;
+        root->json(std::cout, context);
+        std::cout << std::endl;
     } else {
         std::cout << "Extracted root was nullptr" << std::endl; /* either the parse failed, or no AST was built */
     }

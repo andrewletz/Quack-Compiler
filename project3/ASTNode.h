@@ -11,6 +11,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <stdio.h>
 #include "ASTEnum.h"
 
 namespace AST {
@@ -32,12 +33,15 @@ namespace AST {
             std::vector<Type> order; // tracks the order of input
             
             std::string name; // used for IDENT and STRCONST
+            bool nameinit = false;
+
             int value; // used for INTCONST
+            bool valueinit = false;
 
             // Constructor, Destructor
             ASTNode(Type type) : type(type) {};
-            ASTNode(Type type, std::string name) : type(type), name(name) {};
-            ASTNode(Type type, int value) : type(type), value(value) {};
+            ASTNode(Type type, std::string name) : type(type), name(name), nameinit(true) {};
+            ASTNode(Type type, int value) : type(type), value(value), valueinit(true) {};
             virtual ~ASTNode() {};
 
             // Member insertion and retrieval
@@ -46,6 +50,7 @@ namespace AST {
             std::vector<ASTNode *> getSeq(Type type); // if there can be multiple, use getSeq
 
             // JSON Printing functions
+            void printSelf(std::ostream& out);
             void json(std::ostream& out, AST_print_context& ctx);
             void jsonSeq(std::ostream& out, AST_print_context& ctx);
             void json_indent(std::ostream& out, AST_print_context& ctx);

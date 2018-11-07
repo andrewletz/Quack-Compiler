@@ -1,30 +1,40 @@
 ## Quack-Compiler
 from Quack (programming language) -> C
 
+| Component  | Status |
+| ---------- | ------ |
+| Lexer | Complete |
+| Parser | Complete |
+| AST | Complete-ish |
+| Type checker | In progress |
+| Code generator | Incomplete |
+
 ### Compilation Instructions
 
 ## Lexer (/project1)
-type
+Type
 ```
 make
 ```
-to get the *lexer* executable. usage: ./lexer [filename]
+to get the *lexer* executable. Usage: ./lexer [filename]
 
 
-type
+Type
 ```
 make clean
 ```
-to get rid of stuff
+to get rid of stuff.
+
+<hr>
 
 ## Parser (/project2)
-type
+Type
 ```
 make
 
 *(on ix-dev, use 'cmake .')
 ```
-to get the *parser* executable. usage: ./lexer < [filename]
+to get the *parser* executable. Usage: ./parser < [filename]
 
 
 type
@@ -35,5 +45,19 @@ to get rid of stuff
 
 <hr>
 
-the path's to RE/flex may not reflect their proper locations on your machine.
-if this is the case, it is easy to modify the make file.
+## AST (/project3)
+Type
+```
+./build.sh
+```
+to get the *parser* executable. usage: ./parser < [filename]
+
+This will print the program's abstract syntax tree in JSON format to stdout.
+
+Type
+```
+./clean.sh
+```
+to get rid of stuff.
+
+<hr>

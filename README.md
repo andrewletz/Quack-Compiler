@@ -30,18 +30,17 @@ to get rid of stuff.
 ## Parser (/project2)
 Type
 ```
-make
-
-*(on ix-dev, use 'cmake .')
+./build.sh
 ```
-to get the *parser* executable. Usage: ./parser < [filename]
+to get the *parser* executable. usage: ./parser < [filename]
 
+This will print whether the program was valid alongside any syntax errors found.
 
-type
+Type
 ```
-make clean
+./clean.sh
 ```
-to get rid of stuff
+to get rid of stuff.
 
 <hr>
 

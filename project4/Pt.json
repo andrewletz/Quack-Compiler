@@ -1,0 +1,123 @@
+
+{"kind" : "program_", 
+    {"kind" : "classes_", "elements_" : [
+        {"kind" : "class_", 
+            {"kind" : "ident_", "text_" : "Pt"}
+            {"kind" : "formal_arg_", "elements_" : [
+                {"kind" : "ident_", "text_" : "x"}
+                {"kind" : "ident_", "text_" : "Int"}
+                {"kind" : "formal_args_", 
+                    {"kind" : "ident_", "text_" : "y"}
+                    {"kind" : "ident_", "text_" : "Int"}}]}
+            {"kind" : "block_", "elements_" : [
+                {"kind" : "block_", "elements_" : [
+                    {"kind" : "assign_", 
+                        {"kind" : "l_expr_", 
+                            {"kind" : "l_expr_", 
+                                {"kind" : "ident_", "text_" : "this"}}
+                            {"kind" : "ident_", "text_" : "x"}}
+                        {"kind" : "l_expr_", 
+                            {"kind" : "ident_", "text_" : "x"}}}
+                    {"kind" : "assign_", 
+                        {"kind" : "l_expr_", 
+                            {"kind" : "l_expr_", 
+                                {"kind" : "ident_", "text_" : "this"}}
+                            {"kind" : "ident_", "text_" : "y"}}
+                        {"kind" : "l_expr_", 
+                            {"kind" : "ident_", "text_" : "y"}}}]}
+                {"kind" : "methods_", "elements_" : [
+                    {"kind" : "method_", 
+                        {"kind" : "ident_", "text_" : "_get_x"}
+                        {"kind" : "ident_", "text_" : "Int"}
+                        {"kind" : "block_", "elements_" : [
+                            {"kind" : "block_", "elements_" : [
+                                {"kind" : "return_", 
+                                    {"kind" : "l_expr_", 
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "this"}}
+                                        {"kind" : "ident_", "text_" : "x"}}}]}]}}
+                    {"kind" : "method_", 
+                        {"kind" : "ident_", "text_" : "_get_y"}
+                        {"kind" : "ident_", "text_" : "Int"}
+                        {"kind" : "block_", "elements_" : [
+                            {"kind" : "block_", "elements_" : [
+                                {"kind" : "return_", 
+                                    {"kind" : "l_expr_", 
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "this"}}
+                                        {"kind" : "ident_", "text_" : "y"}}}]}]}}
+                    {"kind" : "method_", 
+                        {"kind" : "ident_", "text_" : "translate"}
+                        {"kind" : "ident_", "text_" : "Nothing"}
+                        {"kind" : "formal_arg_", "elements_" : [
+                            {"kind" : "ident_", "text_" : "dx"}
+                            {"kind" : "ident_", "text_" : "Int"}
+                            {"kind" : "formal_args_", 
+                                {"kind" : "ident_", "text_" : "dy"}
+                                {"kind" : "ident_", "text_" : "Int"}}]}
+                        {"kind" : "block_", "elements_" : [
+                            {"kind" : "block_", "elements_" : [
+                                {"kind" : "assign_", 
+                                    {"kind" : "l_expr_", 
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "this"}}
+                                        {"kind" : "ident_", "text_" : "x"}}
+                                    {"kind" : "binop_", "text_" : "PLUS"
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "l_expr_", 
+                                                {"kind" : "ident_", "text_" : "this"}}
+                                            {"kind" : "ident_", "text_" : "x"}}"text_" : ""
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "dx"}}"text_" : ""}}
+                                {"kind" : "assign_", 
+                                    {"kind" : "l_expr_", 
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "this"}}
+                                        {"kind" : "ident_", "text_" : "y"}}
+                                    {"kind" : "binop_", "text_" : "PLUS"
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "l_expr_", 
+                                                {"kind" : "ident_", "text_" : "this"}}
+                                            {"kind" : "ident_", "text_" : "y"}}"text_" : ""
+                                        {"kind" : "l_expr_", 
+                                            {"kind" : "ident_", "text_" : "dy"}}"text_" : ""}}]}]}}
+                    {"kind" : "method_", 
+                        {"kind" : "ident_", "text_" : "PLUS"}
+                        {"kind" : "ident_", "text_" : "Pt"}
+                        {"kind" : "formal_arg_", "elements_" : [
+                            {"kind" : "ident_", "text_" : "other"}
+                            {"kind" : "ident_", "text_" : "Pt"}]}
+                        {"kind" : "block_", "elements_" : [
+                            {"kind" : "block_", "elements_" : [
+                                {"kind" : "return_", 
+                                    {"kind" : "call_", 
+                                        {"kind" : "ident_", "text_" : "Pt"}
+                                        {"kind" : "actual_args_", 
+                                            {"kind" : "binop_", "text_" : "PLUS"
+                                                {"kind" : "l_expr_", 
+                                                    {"kind" : "l_expr_", 
+                                                        {"kind" : "ident_", "text_" : "this"}}
+                                                    {"kind" : "ident_", "text_" : "x"}}"text_" : ""
+                                                {"kind" : "l_expr_", 
+                                                    {"kind" : "l_expr_", 
+                                                        {"kind" : "ident_", "text_" : "other"}}
+                                                    {"kind" : "ident_", "text_" : "x"}}"text_" : ""}
+                                            {"kind" : "actual_args_extra_", "elements_" : [
+                                                {"kind" : "binop_", "text_" : "PLUS"
+                                                    {"kind" : "l_expr_", 
+                                                        {"kind" : "l_expr_", 
+                                                            {"kind" : "ident_", "text_" : "this"}}
+                                                        {"kind" : "ident_", "text_" : "y"}}"text_" : ""
+                                                    {"kind" : "l_expr_", 
+                                                        {"kind" : "l_expr_", 
+                                                            {"kind" : "ident_", "text_" : "other"}}
+                                                        {"kind" : "ident_", "text_" : "y"}}"text_" : ""}]}}}}]}]}}]}]}}]}
+    {"kind" : "block_", "elements_" : [
+        {"kind" : "dot_", 
+            {"kind" : "call_", 
+                {"kind" : "ident_", "text_" : "Pt"}
+                {"kind" : "actual_args_", 
+                    {"kind" : "intconst_", "value_" : "13"}
+                    {"kind" : "actual_args_extra_", "elements_" : [
+                        {"kind" : "intconst_", "value_" : "42"}]}}}
+            {"kind" : "ident_", "text_" : "PRINT"}}]}}

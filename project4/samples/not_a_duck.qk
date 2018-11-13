@@ -1,0 +1,38 @@
+/**
+ * Demonstration of difference between (dynamic) duck typing
+ * and Quack's static type inference and checking.
+ * If we transliterated
+ * this program into Python, it would run without type errors,
+ * because both strings and integers have a __lt__ method, and
+ * 'a < b' is syntactic sugar for a.__lt__(b).
+ *
+ * In Quack, it is not enough that both Int and String
+ * have a LESS method. The LESS methods must also be "the 
+ * same" in the sense of being either inherited or overridden 
+ * from the same base class, which is the case iff their least
+ * common ancestor in the class hierarchy has a LESS method.
+ * In this example, although String and Int both have LESS
+ * methods, they may be completely unrelated, because the nearest
+ * common ancestor of Int and String is Obj, and Obj does not have a
+ * LESS method.
+ *
+ */
+
+class Waterfowl() {
+
+  def not_duck_typing(x: Int): Int {
+     if x < 7 {
+        a = 42;          // a: Int
+        b = 13;          // b: Int
+     } else {
+        a = "forty-two"; // a: String
+        b = "thirteen";  // b: String
+     }
+     // a,b:  Obj (least common ancestor of Int and String)
+     if a < b {   // ERROR:  cannot compare Obj < Obj 
+        return 1;
+     } else {
+        return 2; 
+     }
+  }
+}

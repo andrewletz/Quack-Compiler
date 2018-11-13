@@ -1,0 +1,57 @@
+/**
+ * How should one perform type inference 
+ * for variable x in this program? 
+ *
+ * Iterate to a fixed point (abstract interpretation)? 
+ * Somehow short-circuit the walk up the type system? 
+ * Impose some restriction that prevents this problem? 
+ */
+
+class C1()  extends Obj {
+   def foo():  C1{
+       return C1();    /* CHANGED */
+   }
+}
+
+class C2() extends C1 {
+   def foo():  C1 {
+        return C1();    /* Conforms to C1.foo() */
+   }
+}
+
+class C3() extends C2 { 
+   def foo(): C2 {
+        return C2();   /* Conforms to C2.foo() */
+   }
+}
+
+class C4() extends C3 {
+    def foo() : C3 {
+         return C3();  /* Conforms to C3.foo() */
+    }
+}
+
+/* Obviously you can extend this pattern indefintely.  
+ * Now type x below ... what should happen? 
+ */ 
+x = C4();
+while ( True ) {
+   x = x.foo();      /* OK, terminates at C1 */
+}
+
+/* 
+     Discussion: 
+     Unlike the the prior version, in which C1.foo() return 
+     Obj, necessitating a type error (no method x.foo), 
+     this version *could* be ok.  If we adopt the approach 
+     of rejecting any movement up the class hierarchy, we 
+     would reject it because C4.foo() returns a C3, and 
+     C3 does not conform to C4, the initial static type of 
+     x.  If we adopt abstract interpretation, we will 
+     reach a fixed point in which x has static type C1. 
+     
+*/ 
+
+
+
+                  

@@ -1,0 +1,30 @@
+// wicked comment bro ++++++++++++++++++
+
+"this is the \nstory"
+"\0"
+"test\b"
+"test\ttest"
+"testr\rtestr"
+"testf\ftestf"
+"test\"test"
+"test\\test"
+"testbroken\2"
+
+"""This starts a string literal
+that continues on for several lines
+even thought it includs "'s and \'s and newline characters
+in a "wild" prfu\sion\\ of normally i\\egal t"ings.\"""
+
+==
+<=
+- + * /
+
+/* test comment */
+===
+==
+<
+>
+<=<=
+Cool
+__cool
+___

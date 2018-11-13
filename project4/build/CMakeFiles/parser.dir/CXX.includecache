@@ -1,0 +1,176 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/lex.yy.cpp
+quack.tab.hxx
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/quack.tab.hxx
+Messages.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/Messages.h
+reflex/matcher.h
+-
+reflex/abslexer.h
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/lex.yy.h
+quack.tab.hxx
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/quack.tab.hxx
+Messages.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/Messages.h
+reflex/matcher.h
+-
+reflex/abslexer.h
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/location.hh
+position.hh
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/position.hh
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/position.hh
+algorithm
+-
+iostream
+-
+string
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/quack.tab.cxx
+quack.tab.hxx
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/quack.tab.hxx
+lex.yy.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/lex.yy.h
+libintl.h
+-
+Messages.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/Messages.h
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/quack.tab.hxx
+ASTNode.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/ASTNode.h
+cstdlib
+-
+iostream
+-
+stdexcept
+-
+string
+-
+vector
+-
+stack.hh
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/stack.hh
+location.hh
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/location.hh
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/stack.hh
+vector
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTEnum.h
+set
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTNode.cpp
+ASTNode.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTNode.h
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTNode.h
+map
+-
+vector
+-
+string
+-
+sstream
+-
+stdio.h
+-
+iostream
+-
+algorithm
+-
+ASTEnum.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTEnum.h
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/CodegenContext.cpp
+CodegenContext.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/CodegenContext.h
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/CodegenContext.h
+ostream
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/EvalContext.h
+unordered_map
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/Messages.cpp
+Messages.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/Messages.h
+location.hh
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/location.hh
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/Messages.h
+location.hh
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/location.hh
+string
+-
+
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/parser.cpp
+lex.yy.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/lex.yy.h
+ASTNode.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/ASTNode.h
+EvalContext.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/EvalContext.h
+Messages.h
+/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/src/Messages.h
+
+lex.yy.h
+quack.tab.hxx
+quack.tab.hxx
+Messages.h
+Messages.h
+reflex/matcher.h
+-
+reflex/abslexer.h
+-
+
+location.hh
+position.hh
+position.hh
+
+position.hh
+algorithm
+-
+iostream
+-
+string
+-
+
+quack.tab.hxx
+ASTNode.h
+ASTNode.h
+cstdlib
+-
+iostream
+-
+stdexcept
+-
+string
+-
+vector
+-
+stack.hh
+stack.hh
+location.hh
+location.hh
+
+stack.hh
+vector
+-
+

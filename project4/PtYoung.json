@@ -1,0 +1,255 @@
+{ "kind" : "Program",
+    "classes_" : 
+    { "kind" : "Classes","elements_" : [
+        { "kind" : "Class",
+            "name_" : 
+            { "kind" : "Ident","text_" : "Pt"},
+            "super_" : 
+            { "kind" : "Ident","text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "Method",
+                "name_" : 
+                { "kind" : "Ident","text_" : "Pt"},
+                "formals_" : 
+                { "kind" : "Formals","elements_" : [
+                    { "kind" : "Formal",
+                        "var_" : 
+                        { "kind" : "Ident","text_" : "x"},
+                        "type_" : 
+                        { "kind" : "Ident","text_" : "Int"} }, 
+                    { "kind" : "Formal",
+                        "var_" : 
+                        { "kind" : "Ident","text_" : "y"},
+                        "type_" : 
+                        { "kind" : "Ident","text_" : "Int"} }]},
+                "returns_" : 
+                { "kind" : "Ident","text_" : "Pt"},
+                "statements_" : 
+                { "kind" : "Block","elements_" : [
+                    { "kind" : "Assign",
+                        "lexpr_" : 
+                        { "kind" : "Dot",
+                            "left_" : 
+                            { "kind" : "Load",
+                                "loc_" : 
+                                { "kind" : "Ident","text_" : "this"} },
+                            "right_" : 
+                            { "kind" : "Ident","text_" : "x"} },
+                        "rexpr_" : 
+                        { "kind" : "Load",
+                            "loc_" : 
+                            { "kind" : "Ident","text_" : "x"} } }, 
+                    { "kind" : "Assign",
+                        "lexpr_" : 
+                        { "kind" : "Dot",
+                            "left_" : 
+                            { "kind" : "Load",
+                                "loc_" : 
+                                { "kind" : "Ident","text_" : "this"} },
+                            "right_" : 
+                            { "kind" : "Ident","text_" : "y"} },
+                        "rexpr_" : 
+                        { "kind" : "Load",
+                            "loc_" : 
+                            { "kind" : "Ident","text_" : "y"} } }]} },
+            "methods_" : 
+            { "kind" : "Methods","elements_" : [
+                { "kind" : "Method",
+                    "name_" : 
+                    { "kind" : "Ident","text_" : "_get_x"},
+                    "formals_" : 
+                    { "kind" : "Formals","elements_" : []},
+                    "returns_" : 
+                    { "kind" : "Ident","text_" : "Int"},
+                    "statements_" : 
+                    { "kind" : "Block","elements_" : [
+                        { "kind" : "Return",
+                            "expr_" : 
+                            { "kind" : "Load",
+                                "loc_" : 
+                                { "kind" : "Dot",
+                                    "left_" : 
+                                    { "kind" : "Load",
+                                        "loc_" : 
+                                        { "kind" : "Ident","text_" : "this"} },
+                                    "right_" : 
+                                    { "kind" : "Ident","text_" : "x"} } } }]} }, 
+                { "kind" : "Method",
+                    "name_" : 
+                    { "kind" : "Ident","text_" : "_get_y"},
+                    "formals_" : 
+                    { "kind" : "Formals","elements_" : []},
+                    "returns_" : 
+                    { "kind" : "Ident","text_" : "Int"},
+                    "statements_" : 
+                    { "kind" : "Block","elements_" : [
+                        { "kind" : "Return",
+                            "expr_" : 
+                            { "kind" : "Load",
+                                "loc_" : 
+                                { "kind" : "Dot",
+                                    "left_" : 
+                                    { "kind" : "Load",
+                                        "loc_" : 
+                                        { "kind" : "Ident","text_" : "this"} },
+                                    "right_" : 
+                                    { "kind" : "Ident","text_" : "y"} } } }]} }, 
+                { "kind" : "Method",
+                    "name_" : 
+                    { "kind" : "Ident","text_" : "translate"},
+                    "formals_" : 
+                    { "kind" : "Formals","elements_" : [
+                        { "kind" : "Formal",
+                            "var_" : 
+                            { "kind" : "Ident","text_" : "dx"},
+                            "type_" : 
+                            { "kind" : "Ident","text_" : "Int"} }, 
+                        { "kind" : "Formal",
+                            "var_" : 
+                            { "kind" : "Ident","text_" : "dy"},
+                            "type_" : 
+                            { "kind" : "Ident","text_" : "Int"} }]},
+                    "returns_" : 
+                    { "kind" : "Ident","text_" : "Nothing"},
+                    "statements_" : 
+                    { "kind" : "Block","elements_" : [
+                        { "kind" : "Assign",
+                            "lexpr_" : 
+                            { "kind" : "Dot",
+                                "left_" : 
+                                { "kind" : "Load",
+                                    "loc_" : 
+                                    { "kind" : "Ident","text_" : "this"} },
+                                "right_" : 
+                                { "kind" : "Ident","text_" : "x"} },
+                            "rexpr_" : 
+                            { "kind" : "Call",
+                                "obj_" : 
+                                { "kind" : "Load",
+                                    "loc_" : 
+                                    { "kind" : "Dot",
+                                        "left_" : 
+                                        { "kind" : "Load",
+                                            "loc_" : 
+                                            { "kind" : "Ident","text_" : "this"} },
+                                        "right_" : 
+                                        { "kind" : "Ident","text_" : "x"} } },
+                                "method_" : 
+                                { "kind" : "Ident","text_" : "PLUS"},
+                                "actuals_" : 
+                                { "kind" : "Actuals","elements_" : [
+                                    { "kind" : "Load",
+                                        "loc_" : 
+                                        { "kind" : "Ident","text_" : "dx"} }]} } }, 
+                        { "kind" : "Assign",
+                            "lexpr_" : 
+                            { "kind" : "Dot",
+                                "left_" : 
+                                { "kind" : "Load",
+                                    "loc_" : 
+                                    { "kind" : "Ident","text_" : "this"} },
+                                "right_" : 
+                                { "kind" : "Ident","text_" : "y"} },
+                            "rexpr_" : 
+                            { "kind" : "Call",
+                                "obj_" : 
+                                { "kind" : "Load",
+                                    "loc_" : 
+                                    { "kind" : "Dot",
+                                        "left_" : 
+                                        { "kind" : "Load",
+                                            "loc_" : 
+                                            { "kind" : "Ident","text_" : "this"} },
+                                        "right_" : 
+                                        { "kind" : "Ident","text_" : "y"} } },
+                                "method_" : 
+                                { "kind" : "Ident","text_" : "PLUS"},
+                                "actuals_" : 
+                                { "kind" : "Actuals","elements_" : [
+                                    { "kind" : "Load",
+                                        "loc_" : 
+                                        { "kind" : "Ident","text_" : "dy"} }]} } }]} }, 
+                { "kind" : "Method",
+                    "name_" : 
+                    { "kind" : "Ident","text_" : "PLUS"},
+                    "formals_" : 
+                    { "kind" : "Formals","elements_" : [
+                        { "kind" : "Formal",
+                            "var_" : 
+                            { "kind" : "Ident","text_" : "other"},
+                            "type_" : 
+                            { "kind" : "Ident","text_" : "Pt"} }]},
+                    "returns_" : 
+                    { "kind" : "Ident","text_" : "Pt"},
+                    "statements_" : 
+                    { "kind" : "Block","elements_" : [
+                        { "kind" : "Return",
+                            "expr_" : 
+                            { "kind" : "Construct",
+                                "method_" : 
+                                { "kind" : "Ident","text_" : "Pt"},
+                                "actuals_" : 
+                                { "kind" : "Actuals","elements_" : [
+                                    { "kind" : "Call",
+                                        "obj_" : 
+                                        { "kind" : "Load",
+                                            "loc_" : 
+                                            { "kind" : "Dot",
+                                                "left_" : 
+                                                { "kind" : "Load",
+                                                    "loc_" : 
+                                                    { "kind" : "Ident","text_" : "this"} },
+                                                "right_" : 
+                                                { "kind" : "Ident","text_" : "x"} } },
+                                        "method_" : 
+                                        { "kind" : "Ident","text_" : "PLUS"},
+                                        "actuals_" : 
+                                        { "kind" : "Actuals","elements_" : [
+                                            { "kind" : "Load",
+                                                "loc_" : 
+                                                { "kind" : "Dot",
+                                                    "left_" : 
+                                                    { "kind" : "Load",
+                                                        "loc_" : 
+                                                        { "kind" : "Ident","text_" : "other"} },
+                                                    "right_" : 
+                                                    { "kind" : "Ident","text_" : "x"} } }]} }, 
+                                    { "kind" : "Call",
+                                        "obj_" : 
+                                        { "kind" : "Load",
+                                            "loc_" : 
+                                            { "kind" : "Dot",
+                                                "left_" : 
+                                                { "kind" : "Load",
+                                                    "loc_" : 
+                                                    { "kind" : "Ident","text_" : "this"} },
+                                                "right_" : 
+                                                { "kind" : "Ident","text_" : "y"} } },
+                                        "method_" : 
+                                        { "kind" : "Ident","text_" : "PLUS"},
+                                        "actuals_" : 
+                                        { "kind" : "Actuals","elements_" : [
+                                            { "kind" : "Load",
+                                                "loc_" : 
+                                                { "kind" : "Dot",
+                                                    "left_" : 
+                                                    { "kind" : "Load",
+                                                        "loc_" : 
+                                                        { "kind" : "Ident","text_" : "other"} },
+                                                    "right_" : 
+                                                    { "kind" : "Ident","text_" : "y"} } }]} }]} } }]} }]} }]},
+    "statements_" : 
+    { "kind" : "Block","elements_" : [
+        { "kind" : "Call",
+            "obj_" : 
+            { "kind" : "Construct",
+                "method_" : 
+                { "kind" : "Ident","text_" : "Pt"},
+                "actuals_" : 
+                { "kind" : "Actuals","elements_" : [
+                    { "kind" : "IntConst","value_" : 13}, 
+                    { "kind" : "IntConst","value_" : 42}]} },
+            "method_" : 
+            { "kind" : "Ident","text_" : "PRINT"},
+            "actuals_" : 
+            { "kind" : "Actuals","elements_" : []} }]} }

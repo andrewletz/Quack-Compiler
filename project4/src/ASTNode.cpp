@@ -89,7 +89,8 @@ namespace AST {
 
     void ASTNode::json_head(std::string node_kind, std::ostream& out, AST_print_context& ctx) {
         json_indent(out, ctx);
-        out << "{ \"kind\" : \"" << node_kind << "\", " ;
+        out << "{ \"kind\" : \"" << node_kind << "\"" ;
+        /*if (node_kind != "ident_" && node_kind != "var_type_")*/ out << ", ";
         ctx.indent();
         return;
     }

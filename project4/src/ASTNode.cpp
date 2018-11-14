@@ -5,7 +5,7 @@
 /* ================================== */
 
 std::set<Type> SeqTypes = {
-                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS_EXTRA
+                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS,
             };
 
 bool isSeqType(Type type) {

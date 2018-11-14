@@ -21,6 +21,15 @@
     #undef yylex
     #define yylex lexer.yylex  // Within Bison's parse() we should invoke lexer.yylex(), not the global yylex()
     void dump(AST::ASTNode* n);
+    AST::ASTNode *getCallNode(Type callType, std::string callStr, AST::ASTNode *dollarOne, AST::ASTNode *dollarThree) {
+        AST::ASTNode *retVal = new AST::ASTNode(CALL); retVal->subType = callType; retVal->insert(dollarOne);
+        AST::ASTNode *method = new AST::ASTNode(IDENT, callStr); method->subType = METHOD; 
+        retVal->insert(method);
+        AST::ASTNode *actuals = new AST::ASTNode(ACTUAL_ARGS);
+        actuals->insert(dollarThree);
+        retVal->insert(actuals);
+        return retVal;
+    }
 }
 
 %union {
@@ -59,7 +68,7 @@
 %type <node> type_alt
 %type <node> r_expr
 %type <node> actual_args
-%type <node> actual_args_extra
+%type <node> actuals actual
 %type <node> l_expr
 %type <node> method
 %type <node> methods
@@ -125,7 +134,7 @@ arg
         ;
 
 stmt_block
-        : '{' stmts '}' { $$ = new AST::ASTNode(BLOCK); $$->insert($2); }
+        : '{' stmts '}' { $$ = $2; }
         ;
 
 stmts
@@ -137,10 +146,10 @@ stmt
         : IF r_expr stmt_block elif_nts { $$ = new AST::ASTNode(IF); $$->insert($2); $$->insert($3); $$->insert($4); }
         | IF r_expr stmt_block elif_nts ELSE stmt_block { $$ = new AST::ASTNode(IF); $$->insert($2); $$->insert($3); $$->insert($4); $$->insert($6); }
         | WHILE r_expr stmt_block { $$ = new AST::ASTNode(WHILE); $$->insert($3); }
-        | l_expr '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $$->insert($3); }
+        | l_expr '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
         | l_expr ':' ident '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $$->insert($3); $$->insert($5); }
         | r_expr ';' { $$ = $1; }
-        | RETURN r_expr ';' { $$ = new AST::ASTNode(RETURN); $$->insert($2); }
+        | RETURN r_expr ';' { $$ = new AST::ASTNode(RETURN); $2->subType = R_EXPR; $$->insert($2); }
         | RETURN ';' { $$ = new AST::ASTNode(RETURN); }
         | typecase { $$ = $1; }
         ;
@@ -170,43 +179,49 @@ type_alt
 r_expr
         : STRING_LIT { $$ = new AST::ASTNode(STRCONST, std::string($1)); }
         | INT_LIT { $$ = new AST::ASTNode(INTCONST, $1); }
-        | l_expr { $$ = $1; }
-        | '-' r_expr %prec UMINUS { $$ = new AST::ASTNode(BINOP, "UMINUS"); $$->insert($2); }
-        | r_expr '*' r_expr { $$ = new AST::ASTNode(BINOP, "MULT"); $$->insert($1); $$->insert($3); }
-        | r_expr '/' r_expr { $$ = new AST::ASTNode(BINOP, "DIV"); $$->insert($1); $$->insert($3); }
-        | r_expr '+' r_expr { $$ = new AST::ASTNode(BINOP, "PLUS"); $$->insert($1); $$->insert($3); }
-        | r_expr '-' r_expr { $$ = new AST::ASTNode(BINOP, "MINUS"); $$->insert($1); $$->insert($3); }
-        | r_expr EQUALS r_expr { $$ = new AST::ASTNode(BINOP, "EQ"); $$->insert($1); $$->insert($3); }
-        | r_expr ATMOST r_expr { $$ = new AST::ASTNode(BINOP, "ATMOST"); $$->insert($1); $$->insert($3); }
-        | r_expr '<' r_expr { $$ = new AST::ASTNode(BINOP, "LESSER"); $$->insert($1); $$->insert($3);}
-        | r_expr ATLEAST r_expr { $$ = new AST::ASTNode(BINOP, "ATLEAST"); $$->insert($1); $$->insert($3); }
-        | r_expr '>' r_expr { $$ = new AST::ASTNode(BINOP, "GREATER"); $$->insert($1); $$->insert($3); }
-        | r_expr AND r_expr { $$ = new AST::ASTNode(AND); $$->insert($1); $$->insert($3); }
-        | NOT r_expr { $$ = new AST::ASTNode(NOT); $$->insert($2); }
-        | r_expr OR r_expr { $$ = new AST::ASTNode(OR); $$->insert($1); $$->insert($3); }
+        | l_expr { $$ = new AST::ASTNode(LOAD); $$->insert($1); $$->subType = L_EXPR; }
+        | '-' r_expr %prec UMINUS { AST::ASTNode *zero = new AST::ASTNode(INTCONST, 0);
+                                    $$ = getCallNode(MINUS, "MINUS", zero, $2); }
+        | r_expr '*' r_expr { $$ = getCallNode(MULT, "MULT", $1, $3); }
+        | r_expr '/' r_expr { $$ = getCallNode(DIV, "DIV", $1, $3); }
+        | r_expr '+' r_expr { $$ = getCallNode(PLUS, "PLUS", $1, $3); }
+        | r_expr '-' r_expr { $$ = getCallNode(MINUS, "MINUS", $1, $3); }
+        | r_expr EQUALS r_expr { $$ = getCallNode(EQ, "EQ", $1, $3); }
+        | r_expr ATMOST r_expr { $$ = getCallNode(ATMOST, "ATMOST", $1, $3); }
+        | r_expr '<' r_expr { $$ = getCallNode(LESSER, "LESSER", $1, $3); }
+        | r_expr ATLEAST r_expr { $$ = getCallNode(ATLEAST, "ATLEAST", $1, $3); }
+        | r_expr '>' r_expr { $$ = getCallNode(GREATER, "GREATER", $1, $3); }
+        | r_expr AND r_expr { $$ = getCallNode(AND, "AND", $1, $3); }
+        | r_expr OR r_expr { $$ = getCallNode(OR, "OR", $1, $3); }
+        | NOT r_expr { $$ = new AST::ASTNode(NOT); $$->insert($2); } 
         | '(' r_expr ')' { $$ = $2; }
-        | r_expr '.' ident '(' actual_args ')' { $$ = new AST::ASTNode(DOT); $$->insert($1); $$->insert($3); $$->insert($5);}
-        | ident '(' actual_args ')' { $$ = new AST::ASTNode(CALL); $$->insert($1); $$->insert($3); }
+        | r_expr '.' ident '(' actual_args ')' { $$ = new AST::ASTNode(CALL); $$->insert($1); $3->subType = METHOD;
+                                                 $$->insert($3); $$->insert($5);}
+        | ident '(' actual_args ')' { $$ = new AST::ASTNode(CONSTRUCTOR); $$->insert($1); $$->insert($3); }
         ;
 
 actual_args
-        : r_expr actual_args_extra { $$ = new AST::ASTNode(ACTUAL_ARGS); $$->insert($1); $$->insert($2); }
-        | /* empty */ { $$ = NULL; }
+        : actuals { $$ = $1; }
+        | /* empty */ { $$ = new AST::ASTNode(ACTUAL_ARGS); }
         ;
 
-actual_args_extra
-        : actual_args_extra ',' r_expr { $$ = new AST::ASTNode(ACTUAL_ARGS_EXTRA); $$->insert($1); $$->insert($3); }
-        | /* empty */ { $$ = NULL; }
+actuals
+        : actual { $$ = new AST::ASTNode(ACTUAL_ARGS); $$->insert($1); }
+        | actuals ',' actual { $$ = $1; $1->insert($3); }
+        ;
+
+actual
+        : r_expr { $$ = new AST::ASTNode(METHOD_ARG); $$->insert($1); }
         ;
 
 l_expr
-        : ident { $$ = new AST::ASTNode(L_EXPR); $$->insert($1); }
-        | r_expr '.' ident { $$ = new AST::ASTNode(L_EXPR); $$->insert($1); $$->insert($3); }
+        : ident { $$ = $1; $$->subType = LOC; /* new AST::ASTNode(LOAD); $$->insert($1); */ }
+        | r_expr '.' ident { $$ = new AST::ASTNode(DOT); $$->subType = L_EXPR; $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
         ;
 
 method
-        : DEF ident '(' formal_args ')' stmt_block { $$ = new AST::ASTNode(METHOD); $$->insert($2); $$->insert($4); $$->insert($6); }
-        | DEF ident '(' formal_args ')' ':' ident stmt_block { $$ = new AST::ASTNode(METHOD); $$->insert($2); $$->insert($4); $$->insert($7); $$->insert($8); }
+        : DEF ident '(' formal_args ')' stmt_block { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; $$->insert($2); $$->insert($4); $6->subType = STATEMENTS; $$->insert($6); }
+        | DEF ident '(' formal_args ')' ':' ident stmt_block { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; $$->insert($2); $$->insert($4); $7->subType = RETURN; $$->insert($7); $8->subType = STATEMENTS; $$->insert($8); }
         ;
 
 methods

@@ -29,6 +29,7 @@ namespace AST {
             /* ============ */
 
             Type type; // represents the type of this node
+            Type subType = UNINITIALIZED;
             std::map<Type, std::vector<ASTNode*> > children; // contains all of the children
             std::vector<Type> order; // tracks the order of input
             
@@ -38,12 +39,15 @@ namespace AST {
             int value; // used for INTCONST
             bool valueinit = false;
 
+            bool isLastNode = false;
+
             /* ========================== */
             /* Constructors & Destructors */
             /* ========================== */
 
-            ASTNode(Type type) : type(type) {};
-            ASTNode(Type type, std::string name) : type(type), name(name), nameinit(true) {};
+            ASTNode(Type type) : type(type) {}; // used for most nodes
+            ASTNode(Type type, std::string name) : type(type), name(name), nameinit(true) {}; // used for strconst
+            ASTNode(Type type, Type subType, std::string name) : type(type), subType(subType), name(name), nameinit(true) {}; // used for strconst
             ASTNode(Type type, int value) : type(type), value(value), valueinit(true) {};
             virtual ~ASTNode() {};
 

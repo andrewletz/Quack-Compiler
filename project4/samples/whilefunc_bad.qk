@@ -1,0 +1,13 @@
+class Whocares() {
+	def foo(x: String) : String {
+		return x;
+	}
+	
+	def bar() : Int {
+		x = 1;
+	 	while ( foo("doesntMatter") ) {
+		   x = 10; // should never reach here
+		}
+		return x;
+	}
+}

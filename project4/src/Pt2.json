@@ -1,230 +1,236 @@
 
-{ "kind" : "program_", 
+{ "kind" : "program_",  
     "classes_" : 
     { "kind" : "classes_", "elements_" : [
-        { "kind" : "class_", 
+        { "kind" : "class_",  
             "class_name_" : 
-            { "kind" : "class_name_", "text_" : "Pt"},
-            "formal_args_" : 
-            { "kind" : "formal_args_", "elements_" : [
-                { "kind" : "class_arg_", 
-                    "var_name_" : 
-                    { "kind" : "var_name_", "text_" : "x"},
-                    "var_type_" : 
-                    { "kind" : "var_type_", "text_" : "Int"},}
-                { "kind" : "class_arg_", 
-                    "var_name_" : 
-                    { "kind" : "var_name_", "text_" : "y"},
-                    "var_type_" : 
-                    { "kind" : "var_type_", "text_" : "Int"},}]},
-            "block_" : 
-            { "kind" : "block_", "elements_" : [
-                { "kind" : "constructor_", 
-                    "assign_" : 
-                    { "kind" : "assign_", 
+            { "kind" : "ident_", "text_" : "Pt"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Pt"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Pt"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "x"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "y"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
                         "l_expr_" : 
-                        { "kind" : "l_expr_", 
+                        { "kind" : "l_expr_",  
                             "l_expr_" : 
-                            { "kind" : "l_expr_", 
+                            { "kind" : "l_expr_",  
                                 "ident_" : 
-                                { "kind" : "ident_", "text_" : "this"},},
+                                { "kind" : "ident_", "text_" : "this"}},
                             "ident_" : 
-                            { "kind" : "ident_", "text_" : "x"},},
+                            { "kind" : "ident_", "text_" : "x"}},
                         "l_expr_" : 
-                        { "kind" : "l_expr_", 
+                        { "kind" : "l_expr_",  
                             "ident_" : 
-                            { "kind" : "ident_", "text_" : "x"},},},
-                    "assign_" : 
-                    { "kind" : "assign_", 
+                            { "kind" : "ident_", "text_" : "x"}}}
+                    { "kind" : "assign_",  
                         "l_expr_" : 
-                        { "kind" : "l_expr_", 
+                        { "kind" : "l_expr_",  
                             "l_expr_" : 
-                            { "kind" : "l_expr_", 
+                            { "kind" : "l_expr_",  
                                 "ident_" : 
-                                { "kind" : "ident_", "text_" : "this"},},
+                                { "kind" : "ident_", "text_" : "this"}},
                             "ident_" : 
-                            { "kind" : "ident_", "text_" : "y"},},
+                            { "kind" : "ident_", "text_" : "y"}},
                         "l_expr_" : 
-                        { "kind" : "l_expr_", 
+                        { "kind" : "l_expr_",  
                             "ident_" : 
-                            { "kind" : "ident_", "text_" : "y"},},},}
-                { "kind" : "methods_", "elements_" : [
-                    { "kind" : "method_", 
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "_get_x"},
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "Int"},
-                        "formal_args_" : 
-                        { "kind" : "formal_args_", "elements_" : []},
-                        "block_" : 
+                            { "kind" : "ident_", "text_" : "y"}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "_get_x"},
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "Int"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "block_" : 
+                    { "kind" : "block_", "elements_" : [
                         { "kind" : "block_", "elements_" : [
-                            { "kind" : "block_", "elements_" : [
-                                { "kind" : "return_", 
+                            { "kind" : "return_",  
+                                "l_expr_" : 
+                                { "kind" : "l_expr_",  
                                     "l_expr_" : 
-                                    { "kind" : "l_expr_", 
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "this"},},
+                                    { "kind" : "l_expr_",  
                                         "ident_" : 
-                                        { "kind" : "ident_", "text_" : "x"},},}]}]},}
-                    { "kind" : "method_", 
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "_get_y"},
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "Int"},
-                        "formal_args_" : 
-                        { "kind" : "formal_args_", "elements_" : []},
-                        "block_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "ident_" : 
+                                    { "kind" : "ident_", "text_" : "x"}}}]}]}}
+                { "kind" : "method_",  
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "_get_y"},
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "Int"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "block_" : 
+                    { "kind" : "block_", "elements_" : [
                         { "kind" : "block_", "elements_" : [
-                            { "kind" : "block_", "elements_" : [
-                                { "kind" : "return_", 
+                            { "kind" : "return_",  
+                                "l_expr_" : 
+                                { "kind" : "l_expr_",  
                                     "l_expr_" : 
-                                    { "kind" : "l_expr_", 
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "this"},},
+                                    { "kind" : "l_expr_",  
                                         "ident_" : 
-                                        { "kind" : "ident_", "text_" : "y"},},}]}]},}
-                    { "kind" : "method_", 
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "translate"},
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "Nothing"},
-                        "formal_args_" : 
-                        { "kind" : "formal_args_", "elements_" : [
-                            { "kind" : "class_arg_", 
-                                "var_name_" : 
-                                { "kind" : "var_name_", "text_" : "dx"},
-                                "var_type_" : 
-                                { "kind" : "var_type_", "text_" : "Int"},}
-                            { "kind" : "class_arg_", 
-                                "var_name_" : 
-                                { "kind" : "var_name_", "text_" : "dy"},
-                                "var_type_" : 
-                                { "kind" : "var_type_", "text_" : "Int"},}]},
-                        "block_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "ident_" : 
+                                    { "kind" : "ident_", "text_" : "y"}}}]}]}}
+                { "kind" : "method_",  
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "translate"},
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "Nothing"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "dx"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}}
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "dy"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}}]},
+                    "block_" : 
+                    { "kind" : "block_", "elements_" : [
                         { "kind" : "block_", "elements_" : [
-                            { "kind" : "block_", "elements_" : [
-                                { "kind" : "assign_", 
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "l_expr_",  
                                     "l_expr_" : 
-                                    { "kind" : "l_expr_", 
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "this"},},
+                                    { "kind" : "l_expr_",  
                                         "ident_" : 
-                                        { "kind" : "ident_", "text_" : "x"},},
-                                    "binop_" : 
-                                    { "kind" : "binop_", "text_" : "PLUS"
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "ident_" : 
+                                    { "kind" : "ident_", "text_" : "x"}},
+                                "binop_" : 
+                                { "kind" : "binop_", "text_" : "PLUS" 
+                                    "l_expr_" : 
+                                    { "kind" : "l_expr_",  
                                         "l_expr_" : 
-                                        { "kind" : "l_expr_", 
+                                        { "kind" : "l_expr_",  
+                                            "ident_" : 
+                                            { "kind" : "ident_", "text_" : "this"}},
+                                        "ident_" : 
+                                        { "kind" : "ident_", "text_" : "x"}},
+                                    "l_expr_" : 
+                                    { "kind" : "l_expr_",  
+                                        "ident_" : 
+                                        { "kind" : "ident_", "text_" : "dx"}}}}
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "l_expr_",  
+                                    "l_expr_" : 
+                                    { "kind" : "l_expr_",  
+                                        "ident_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "ident_" : 
+                                    { "kind" : "ident_", "text_" : "y"}},
+                                "binop_" : 
+                                { "kind" : "binop_", "text_" : "PLUS" 
+                                    "l_expr_" : 
+                                    { "kind" : "l_expr_",  
+                                        "l_expr_" : 
+                                        { "kind" : "l_expr_",  
+                                            "ident_" : 
+                                            { "kind" : "ident_", "text_" : "this"}},
+                                        "ident_" : 
+                                        { "kind" : "ident_", "text_" : "y"}},
+                                    "l_expr_" : 
+                                    { "kind" : "l_expr_",  
+                                        "ident_" : 
+                                        { "kind" : "ident_", "text_" : "dy"}}}}]}]}}
+                { "kind" : "method_",  
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "PLUS"},
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "Pt"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "other"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Pt"}}]},
+                    "block_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "return_",  
+                                "call_" : 
+                                { "kind" : "call_",  
+                                    "ident_" : 
+                                    { "kind" : "ident_", "text_" : "Pt"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_",  
+                                        "binop_" : 
+                                        { "kind" : "binop_", "text_" : "PLUS" 
                                             "l_expr_" : 
-                                            { "kind" : "l_expr_", 
+                                            { "kind" : "l_expr_",  
+                                                "l_expr_" : 
+                                                { "kind" : "l_expr_",  
+                                                    "ident_" : 
+                                                    { "kind" : "ident_", "text_" : "this"}},
                                                 "ident_" : 
-                                                { "kind" : "ident_", "text_" : "this"},},
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "x"},},
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "dx"},},},}
-                                { "kind" : "assign_", 
-                                    "l_expr_" : 
-                                    { "kind" : "l_expr_", 
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "this"},},
-                                        "ident_" : 
-                                        { "kind" : "ident_", "text_" : "y"},},
-                                    "binop_" : 
-                                    { "kind" : "binop_", "text_" : "PLUS"
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
+                                                { "kind" : "ident_", "text_" : "x"}},
                                             "l_expr_" : 
-                                            { "kind" : "l_expr_", 
+                                            { "kind" : "l_expr_",  
+                                                "l_expr_" : 
+                                                { "kind" : "l_expr_",  
+                                                    "ident_" : 
+                                                    { "kind" : "ident_", "text_" : "other"}},
                                                 "ident_" : 
-                                                { "kind" : "ident_", "text_" : "this"},},
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "y"},},
-                                        "l_expr_" : 
-                                        { "kind" : "l_expr_", 
-                                            "ident_" : 
-                                            { "kind" : "ident_", "text_" : "dy"},},},}]}]},}
-                    { "kind" : "method_", 
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "PLUS"},
-                        "ident_" : 
-                        { "kind" : "ident_", "text_" : "Pt"},
-                        "formal_args_" : 
-                        { "kind" : "formal_args_", "elements_" : [
-                            { "kind" : "class_arg_", 
-                                "var_name_" : 
-                                { "kind" : "var_name_", "text_" : "other"},
-                                "var_type_" : 
-                                { "kind" : "var_type_", "text_" : "Pt"},}]},
-                        "block_" : 
-                        { "kind" : "block_", "elements_" : [
-                            { "kind" : "block_", "elements_" : [
-                                { "kind" : "return_", 
-                                    "call_" : 
-                                    { "kind" : "call_", 
-                                        "ident_" : 
-                                        { "kind" : "ident_", "text_" : "Pt"},
-                                        "actual_args_" : 
-                                        { "kind" : "actual_args_", 
-                                            "binop_" : 
-                                            { "kind" : "binop_", "text_" : "PLUS"
+                                                { "kind" : "ident_", "text_" : "x"}}},
+                                        "actual_args_extra_" : 
+                                        { "kind" : "actual_args_extra_", "elements_" : [
+                                            { "kind" : "binop_", "text_" : "PLUS" 
                                                 "l_expr_" : 
-                                                { "kind" : "l_expr_", 
+                                                { "kind" : "l_expr_",  
                                                     "l_expr_" : 
-                                                    { "kind" : "l_expr_", 
+                                                    { "kind" : "l_expr_",  
                                                         "ident_" : 
-                                                        { "kind" : "ident_", "text_" : "this"},},
+                                                        { "kind" : "ident_", "text_" : "this"}},
                                                     "ident_" : 
-                                                    { "kind" : "ident_", "text_" : "x"},},
+                                                    { "kind" : "ident_", "text_" : "y"}},
                                                 "l_expr_" : 
-                                                { "kind" : "l_expr_", 
+                                                { "kind" : "l_expr_",  
                                                     "l_expr_" : 
-                                                    { "kind" : "l_expr_", 
+                                                    { "kind" : "l_expr_",  
                                                         "ident_" : 
-                                                        { "kind" : "ident_", "text_" : "other"},},
+                                                        { "kind" : "ident_", "text_" : "other"}},
                                                     "ident_" : 
-                                                    { "kind" : "ident_", "text_" : "x"},},},
-                                            "actual_args_extra_" : 
-                                            { "kind" : "actual_args_extra_", "elements_" : [
-                                                { "kind" : "binop_", "text_" : "PLUS"
-                                                    "l_expr_" : 
-                                                    { "kind" : "l_expr_", 
-                                                        "l_expr_" : 
-                                                        { "kind" : "l_expr_", 
-                                                            "ident_" : 
-                                                            { "kind" : "ident_", "text_" : "this"},},
-                                                        "ident_" : 
-                                                        { "kind" : "ident_", "text_" : "y"},},
-                                                    "l_expr_" : 
-                                                    { "kind" : "l_expr_", 
-                                                        "l_expr_" : 
-                                                        { "kind" : "l_expr_", 
-                                                            "ident_" : 
-                                                            { "kind" : "ident_", "text_" : "other"},},
-                                                        "ident_" : 
-                                                        { "kind" : "ident_", "text_" : "y"},},}]},},},}]}]},}]}]},}]},
-    "block_" : 
+                                                    { "kind" : "ident_", "text_" : "y"}}}]}}}}]}]}}]}}]},
+    "statements_" : 
     { "kind" : "block_", "elements_" : [
-        { "kind" : "dot_", 
+        { "kind" : "dot_",  
             "call_" : 
-            { "kind" : "call_", 
+            { "kind" : "call_",  
                 "ident_" : 
                 { "kind" : "ident_", "text_" : "Pt"},
                 "actual_args_" : 
-                { "kind" : "actual_args_", 
+                { "kind" : "actual_args_",  
                     "intconst_" : 
                     { "kind" : "intconst_", "value_" : "13"},
                     "actual_args_extra_" : 
                     { "kind" : "actual_args_extra_", "elements_" : [
-                        { "kind" : "intconst_", "value_" : "42"}]},},},
+                        { "kind" : "intconst_", "value_" : "42"}]}}},
             "ident_" : 
-            { "kind" : "ident_", "text_" : "PRINT"},}]},}
+            { "kind" : "ident_", "text_" : "PRINT"}}]}}

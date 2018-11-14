@@ -1,0 +1,7 @@
+/* Try to pass a function as an argument to another def, shouldn't work
+ */
+
+class Whocares() {
+	def foo(): Int { return 42; }
+	def bar(fun: foo): Int { return 11; } // shouldn't be allowed
+}

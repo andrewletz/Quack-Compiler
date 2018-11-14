@@ -1,3 +1,0 @@
-/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/andre/Desktop/College/461 - Compiler Construction/Quack-Compiler/project4/build/CMakeFiles/parser.dir

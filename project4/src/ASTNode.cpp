@@ -5,7 +5,7 @@
 /* ================================== */
 
 std::set<Type> SeqTypes = {
-                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS,
+                BLOCK, CLASSES, FORMAL_ARGS, METHODS, TYPE_ALTERNATIVES, ACTUAL_ARGS, STATEMENTS,
             };
 
 bool isSeqType(Type type) {
@@ -114,12 +114,21 @@ namespace AST {
 
     void ASTNode::jsonSeq(std::ostream& out, AST_print_context& ctx) {
         json_head(typeString(this->type), out, ctx);
-
         out << "\"elements_\" : [";
         for (Type t : this->order) {
             std::vector<ASTNode*> subchildren = this->getSeq(t);
             for (ASTNode* node : subchildren) {
                 node->json(out, ctx);
+                if (!node->isLastNode) {
+                    out << ",";
+                } else if (this->type == BLOCK && 
+                           node->isLastNode &&
+                           (node->type != this->order[this->order.size() - 1])) {
+                    out << ",";
+                }
+                else {
+                    out << "";
+                }
             }
         }
         out << "]";

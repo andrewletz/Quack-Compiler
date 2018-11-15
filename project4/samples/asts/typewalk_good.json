@@ -1,0 +1,166 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "C1"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "C1"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "C1"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "foo"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "C1"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C1"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : []}}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "C2"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "C1"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "C2"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "C2"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "foo"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "C1"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C1"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : []}}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "C3"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "C2"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "C3"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "C3"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "foo"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "C2"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C2"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : []}}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "C4"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "C3"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "C4"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "C4"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "foo"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "C3"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C3"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : []}}}]}}]}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : [
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "x"},
+            "r_expr_" : 
+            { "kind" : "constructor_",  
+                "ident_" : 
+                { "kind" : "ident_", "text_" : "C4"},
+                "actual_args_" : 
+                { "kind" : "actual_args_", "elements_" : []}}},
+        { "kind" : "while_",  
+            "l_expr_" : 
+            { "kind" : "load_",  
+                "loc_" : 
+                { "kind" : "ident_", "text_" : "True"}},
+            "statements_" : 
+            { "kind" : "block_", "elements_" : [
+                { "kind" : "assign_",  
+                    "loc_" : 
+                    { "kind" : "ident_", "text_" : "x"},
+                    "r_expr_" : 
+                    { "kind" : "call_",  
+                        "l_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "x"}},
+                        "method_" : 
+                        { "kind" : "ident_", "text_" : "foo"},
+                        "actual_args_" : 
+                        { "kind" : "actual_args_", "elements_" : []}}}]}}]}}

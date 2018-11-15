@@ -1,0 +1,95 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "ControlflowExamples"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "ControlflowExamples"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "ControlflowExamples"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "x"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}},
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "y"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Bool"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "if_",  
+                        "greater_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "x"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "GREATER"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "intconst_", "value_" : "10"}]}},
+                        "statements_true_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "z"}},
+                                "r_expr_" : 
+                                { "kind" : "strconst_", "text_" : "first"}}]},
+                        "statements_false_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "z"}},
+                                "r_expr_" : 
+                                { "kind" : "strconst_", "text_" : "second"}}]}},
+                    { "kind" : "while_",  
+                        "l_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "y"}},
+                        "statements_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "z"}},
+                                "r_expr_" : 
+                                { "kind" : "strconst_", "text_" : "third"}},
+                            { "kind" : "assign_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "y"},
+                                "r_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "false"}}}]}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : []}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : []}}

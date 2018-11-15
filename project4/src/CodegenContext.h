@@ -18,9 +18,9 @@ class CodegenContext {
 public:
     // We're not hiding implementation here, just
     // passing it around.
-    std::ostream &stream;
+    //std::ostream &stream;
     // Todo: Other context, like virtual "registers"
-    explicit CodegenContext(std::ostream &out) : stream{out} {};
+    //explicit CodegenContext(std::ostream &out) : stream{out} {};
 };
 
 

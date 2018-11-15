@@ -40,6 +40,7 @@ namespace AST {
             bool valueinit = false;
 
             bool isLastNode = false;
+            bool isLastOrder = false;
 
             /* ========================== */
             /* Constructors & Destructors */

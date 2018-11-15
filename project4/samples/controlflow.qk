@@ -1,0 +1,12 @@
+class ControlflowExamples(x: Int, y: Bool) {
+      if (x > 10) {
+         this.z = "first";
+      } else {
+         this.z = "second";
+      }
+
+      while (y) {
+         this.z = "third";
+         y = false;
+      }
+}

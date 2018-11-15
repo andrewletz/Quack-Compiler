@@ -17,7 +17,7 @@ enum Type {
                 CLASS_NAME, CLASS_ARG, VAR_IDENT, TYPE_IDENT, SUPER_NAME,
                 METHOD_NAME, RETURN_TYPE, STATEMENTS, LOC, R_EXPR,
                 MULT, DIV, PLUS, MINUS, EQ, ATMOST, LESSER, ATLEAST,
-                GREATER, METHOD_ARG,
+                GREATER, METHOD_ARG, TRUE_STATEMENTS, FALSE_STATEMENTS,
             };
 
 static const char * TypeString[] = {   
@@ -34,7 +34,7 @@ static const char * TypeString[] = {
                 "class_name_", "class_arg_", "var_name_", "var_type_", "super_name_",
                 "method_name_", "return_type_", "statements_", "loc_", "r_expr_",
                 "mult_", "div_", "plus_", "minus_", "eq_", "atmost_", "lesser_", "atleast_",
-                "greater_", "method_arg_",
+                "greater_", "method_arg_", "statements_true_", "statements_false_",
             };
 
 extern std::set<Type> SeqTypes;

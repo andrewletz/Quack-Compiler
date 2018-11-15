@@ -54,7 +54,6 @@ int main(int argc, char *argv[]) {
     if (root != nullptr) {
         AST::AST_print_context context;
 
-        std::cout << std::endl;
         root->json(std::cout, context);
         std::cout << std::endl;
     } else {

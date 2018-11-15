@@ -1,0 +1,69 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Schroedinger"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Schroedinger"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Schroedinger"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "box"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "if_",  
+                        "greater_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "box"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "GREATER"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "intconst_", "value_" : "0"}]}},
+                        "statements_true_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "living"}},
+                                "r_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "true"}}}]},
+                        "statements_false_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "living"}},
+                                "r_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "false"}}}]}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : []}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : []}}

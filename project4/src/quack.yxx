@@ -13,17 +13,23 @@
 %locations
 %define parse.trace
 
-%parse-param { yy::Lexer& lexer }  /* Construct parser object with lexer */
-%parse-param { AST::ASTNode** root }  /* To pass AST root back to driver */
+%parse-param { yy::Lexer& lexer }  // Construct parser object with lexer
+%parse-param { AST::ASTNode** root }  // To pass AST root back to driver
 
 %code {
     #include "lex.yy.h"
     #undef yylex
     #define yylex lexer.yylex  // Within Bison's parse() we should invoke lexer.yylex(), not the global yylex()
-    void dump(AST::ASTNode* n);
-    AST::ASTNode *getCallNode(Type callType, std::string callStr, AST::ASTNode *dollarOne, AST::ASTNode *dollarThree) {
-        AST::ASTNode *retVal = new AST::ASTNode(CALL); retVal->subType = callType; retVal->insert(dollarOne);
-        AST::ASTNode *method = new AST::ASTNode(IDENT, callStr); method->subType = METHOD; 
+
+    // this is used to simplify the grammar, as many call nodes 
+    // use the same format to construct themselves for the AST
+    AST::ASTNode *getCallNode(Type callType, std::string callStr, 
+                            AST::ASTNode *dollarOne, AST::ASTNode *dollarThree) {
+        AST::ASTNode *retVal = new AST::ASTNode(CALL); 
+        retVal->subType = callType; 
+        retVal->insert(dollarOne);
+        AST::ASTNode *method = new AST::ASTNode(IDENT, callStr); 
+        method->subType = METHOD; 
         retVal->insert(method);
         AST::ASTNode *actuals = new AST::ASTNode(ACTUAL_ARGS);
         actuals->insert(dollarThree);
@@ -32,7 +38,7 @@
     }
 }
 
-%union {
+%union { // all the types a non-terminal or token can assume
     int   num;
     char* str;
     AST::ASTNode* node;
@@ -61,8 +67,7 @@
 %type <node> stmt_block
 %type <node> stmts
 %type <node> stmt
-%type <node> elif_nts
-%type <node> elif_nt
+%type <node> opt_elif
 %type <node> typecase
 %type <node> type_alts
 %type <node> type_alt
@@ -82,22 +87,30 @@
 %left '.'
 %left UMINUS
 
-// -~-~-~- GRAMMAR -~-~-~-
+// -~-~-~-~-~-~-~-~-~-~-~-~ GRAMMAR -~-~-~-~-~-~-~-~-~-~-~-~
 
 %%
 
+// Each program is any number of classes followed by any number of statements.
+// Note: statements may not contain method definitions, only classes can.
 program
         : classes stmts { *root = new AST::ASTNode(PROGRAM); $$ = *root; $$->insert($1); $$->insert($2); }
         ;
 
-classes
+// -~-~-~-~-~-~-~-~-~-~-~-~ Classes -~-~-~-~-~-~-~-~-~-~-~-~
+// The class rule creates a special structure in the AST.
+// This structure is inside a special node type called "constructor",
+// which is a type of method. Basically, it wraps the constructor
+// of a class in a method, with assumed information added (return type, name).
+
+classes // a sequence type that allows us to bundle classes together
         : classes class { $1->insert($2); $$ = $1; }
         | /* empty */   { $$ = new AST::ASTNode(CLASSES); }
         ;
 
 class
         : CLASS ident '(' formal_args ')' extends '{' stmts methods '}' 
-            { $$ = new AST::ASTNode(CLASS); 
+            { $$ = new AST::ASTNode(CLASS); /*'*/
               $2->subType = CLASS_NAME; $$->insert($2); 
               $$->insert($6); 
               AST::ASTNode *method = new AST::ASTNode(METHOD); 
@@ -118,7 +131,29 @@ extends
         | /* empty */ { $$ = new AST::ASTNode(IDENT, SUPER_NAME, "Obj"); }
         ;
 
-formal_args
+// -~-~-~-~-~-~-~-~-~-~-~-~ Methods -~-~-~-~-~-~-~-~-~-~-~-~
+// Note: methods may only be declared in classes
+methods
+        : methods method { $1->insert($2); $$ = $1; }
+        | /* empty */ { $$ = new AST::ASTNode(METHODS); }
+        ;
+
+method
+        : DEF ident '(' formal_args ')' stmt_block 
+                                                { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; 
+                                                  $$->insert($2); $$->insert($4); 
+                                                  $6->subType = STATEMENTS; $$->insert($6); }
+        | DEF ident '(' formal_args ')' ':' ident stmt_block 
+                                                { $$ = new AST::ASTNode(METHOD); 
+                                                  $2->subType = METHOD_NAME; $$->insert($2); 
+                                                  $$->insert($4); $7->subType = RETURN; $$->insert($7); 
+                                                  $8->subType = STATEMENTS; $$->insert($8); }
+        ;
+
+// -~-~-~-~-~-~-~-~-~-~-~-~ Formal Args -~-~-~-~-~-~-~-~-~-~-~-~
+// Formal args appear in both class definitions and method definitions.
+
+formal_args // a sequence type
         : args { $$ = $1; }
         | /* empty */ { $$ = new AST::ASTNode(FORMAL_ARGS); }
         ;
@@ -133,6 +168,8 @@ arg
                             $3->subType = TYPE_IDENT; $$->insert($3); }
         ;
 
+// -~-~-~-~-~-~-~-~-~-~-~-~ Statements -~-~-~-~-~-~-~-~-~-~-~-~
+
 stmt_block
         : '{' stmts '}' { $$ = $2; }
         ;
@@ -142,26 +179,38 @@ stmts
         | /* empty */ { $$ = new AST::ASTNode(BLOCK); $$->subType = STATEMENTS; }
         ;
 
+// -~-~-~- Statements : Control flow
+// -~-~-~- Control flow : if/else
 stmt
-        : IF r_expr stmt_block elif_nts { $$ = new AST::ASTNode(IF); $$->insert($2); $$->insert($3); $$->insert($4); }
-        | IF r_expr stmt_block elif_nts ELSE stmt_block { $$ = new AST::ASTNode(IF); $$->insert($2); $$->insert($3); $$->insert($4); $$->insert($6); }
-        | WHILE r_expr stmt_block { $$ = new AST::ASTNode(WHILE); $$->insert($3); }
-        | l_expr '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
-        | l_expr ':' ident '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $$->insert($3); $$->insert($5); }
+        : IF r_expr stmt_block opt_elif { $$ = new AST::ASTNode(IF); $$->insert($2); 
+                                          $3->subType = TRUE_STATEMENTS; $$->insert($3); $$->insert($4); }
+        ;
+
+opt_elif:  
+        ELIF r_expr stmt_block opt_elif { $$ = new AST::ASTNode(BLOCK);
+                                          AST::ASTNode *newif = new AST::ASTNode(IF); newif->insert($2); 
+                                          $3->subType = FALSE_STATEMENTS; newif->insert($3); 
+                                          newif->insert($4); $$->insert(newif); }
+        | ELSE stmt_block   { $2->subType = FALSE_STATEMENTS; $$ = $2; }
+        | /* empty */       { $$ = new AST::ASTNode(BLOCK); }
+        ;
+
+// -~-~-~- Control flow : while loop
+stmt
+        : WHILE r_expr stmt_block { $$ = new AST::ASTNode(WHILE); $$->insert($2); $$->insert($3); }
+        ;
+
+// -~-~-~- Statements : Other
+stmt
+        : l_expr '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
+        | l_expr ':' ident '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $$->insert($3); $5->subType = R_EXPR; $$->insert($5); }
         | r_expr ';' { $$ = $1; }
         | RETURN r_expr ';' { $$ = new AST::ASTNode(RETURN); $2->subType = R_EXPR; $$->insert($2); }
         | RETURN ';' { $$ = new AST::ASTNode(RETURN); }
         | typecase { $$ = $1; }
         ;
 
-elif_nts 
-        : elif_nts elif_nt { $1->insert($2); $$ = $1; }
-        | /* empty */ { $$ = new AST::ASTNode(IF); }
-        ;
-
-elif_nt 
-        : ELIF r_expr stmt_block { $$ = new AST::ASTNode(IF); $$->insert($2); $$->insert($3); }
-        ;
+// -~-~-~-~-~-~-~-~-~-~-~-~ Typecase -~-~-~-~-~-~-~-~-~-~-~-~
 
 typecase
         : TYPECASE r_expr '{' type_alts '}' { $$ = new AST::ASTNode(TYPECASE); $$->insert($2); $$->insert($4); }
@@ -175,6 +224,8 @@ type_alts
 type_alt 
         : ident ':' ident stmt_block { $$ = new AST::ASTNode(TYPE_ALTERNATIVE); $$->insert($1); $$->insert($3); $$->insert($4); }
         ;
+
+// -~-~-~-~-~-~-~-~-~-~-~-~ r_expr and l_expr -~-~-~-~-~-~-~-~-~-~-~-~
 
 r_expr
         : STRING_LIT { $$ = new AST::ASTNode(STRCONST, std::string($1)); }
@@ -200,6 +251,13 @@ r_expr
         | ident '(' actual_args ')' { $$ = new AST::ASTNode(CONSTRUCTOR); $$->insert($1); $$->insert($3); }
         ;
 
+l_expr
+        : ident { $$ = $1; $$->subType = LOC; /* new AST::ASTNode(LOAD); $$->insert($1); */ }
+        | r_expr '.' ident { $$ = new AST::ASTNode(DOT); $$->subType = L_EXPR; $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
+        ;
+
+// -~-~-~-~-~-~-~-~-~-~-~-~ Actual args -~-~-~-~-~-~-~-~-~-~-~-~
+
 actual_args
         : actuals { $$ = $1; }
         | /* empty */ { $$ = new AST::ASTNode(ACTUAL_ARGS); }
@@ -214,20 +272,7 @@ actual
         : r_expr { $$ = new AST::ASTNode(METHOD_ARG); $$->insert($1); }
         ;
 
-l_expr
-        : ident { $$ = $1; $$->subType = LOC; /* new AST::ASTNode(LOAD); $$->insert($1); */ }
-        | r_expr '.' ident { $$ = new AST::ASTNode(DOT); $$->subType = L_EXPR; $$->insert($1); $3->subType = R_EXPR; $$->insert($3); }
-        ;
-
-method
-        : DEF ident '(' formal_args ')' stmt_block { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; $$->insert($2); $$->insert($4); $6->subType = STATEMENTS; $$->insert($6); }
-        | DEF ident '(' formal_args ')' ':' ident stmt_block { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; $$->insert($2); $$->insert($4); $7->subType = RETURN; $$->insert($7); $8->subType = STATEMENTS; $$->insert($8); }
-        ;
-
-methods
-        : methods method { $1->insert($2); $$ = $1; }
-        | /* empty */ { $$ = new AST::ASTNode(METHODS); }
-        ;
+// -~-~-~-~-~-~-~-~-~-~-~-~ Ident NT -~-~-~-~-~-~-~-~-~-~-~-~
 
 ident
         : IDENT { $$ = new AST::ASTNode(IDENT, $1); }

@@ -1,0 +1,714 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Pt"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Pt"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Pt"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "x"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}},
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "y"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "x"}},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Int"},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "x"}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "y"}},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Int"},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "y"}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "STR"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "String"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "call_",  
+                                "plus_" : 
+                                { "kind" : "call_",  
+                                    "plus_" : 
+                                    { "kind" : "call_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "strconst_" : 
+                                            { "kind" : "strconst_", "text_" : "("},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "call_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "l_expr_" : 
+                                                        { "kind" : "dot_",  
+                                                            "l_expr_" : 
+                                                            { "kind" : "load_",  
+                                                                "loc_" : 
+                                                                { "kind" : "ident_", "text_" : "this"}},
+                                                            "r_expr_" : 
+                                                            { "kind" : "ident_", "text_" : "x"}}},
+                                                    "method_" : 
+                                                    { "kind" : "ident_", "text_" : "STR"},
+                                                    "actual_args_" : 
+                                                    { "kind" : "actual_args_", "elements_" : []}}]}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "PLUS"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "strconst_", "text_" : ","}]}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "PLUS"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "y"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "STR"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}]}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "PLUS"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "strconst_", "text_" : ")"}]}}}]}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "PLUS"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "Pt"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "other"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Pt"}}]},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "Pt"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "x"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "load_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "dot_",  
+                                                        "l_expr_" : 
+                                                        { "kind" : "load_",  
+                                                            "loc_" : 
+                                                            { "kind" : "ident_", "text_" : "other"}},
+                                                        "r_expr_" : 
+                                                        { "kind" : "ident_", "text_" : "x"}}}]}}},
+                                    { "kind" : "method_arg_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "y"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "load_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "dot_",  
+                                                        "l_expr_" : 
+                                                        { "kind" : "load_",  
+                                                            "loc_" : 
+                                                            { "kind" : "ident_", "text_" : "other"}},
+                                                        "r_expr_" : 
+                                                        { "kind" : "ident_", "text_" : "y"}}}]}}}]}}}]}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "_x"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "Int"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "load_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "x"}}}}]}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "_y"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "Int"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "load_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "y"}}}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Rect"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Rect"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Rect"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "ll"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Pt"}},
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "ur"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Pt"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "ll"}},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Pt"},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "ll"}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "ur"}},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Pt"},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "ur"}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "translate"},
+                    "return_" : 
+                    { "kind" : "ident_", "text_" : "Pt"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "delta"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Pt"}}]},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "Rect"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "loc_" : 
+                                                { "kind" : "ident_", "text_" : "ll"}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "Pt"}}]}}},
+                                    { "kind" : "method_arg_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "loc_" : 
+                                                { "kind" : "ident_", "text_" : "ur"}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "Pt"}}]}}}]}}}]}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "STR"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "assign_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "lr"},
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "Pt"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ur"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_y"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}},
+                                    { "kind" : "method_arg_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ll"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_x"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}}]}}},
+                        { "kind" : "assign_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "ul"},
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "Pt"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ll"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_x"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}},
+                                    { "kind" : "method_arg_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ur"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_y"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}}]}}},
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "call_",  
+                                "plus_" : 
+                                { "kind" : "call_",  
+                                    "plus_" : 
+                                    { "kind" : "call_",  
+                                        "plus_" : 
+                                        { "kind" : "call_",  
+                                            "plus_" : 
+                                            { "kind" : "call_",  
+                                                "plus_" : 
+                                                { "kind" : "call_",  
+                                                    "plus_" : 
+                                                    { "kind" : "call_",  
+                                                        "plus_" : 
+                                                        { "kind" : "call_",  
+                                                            "strconst_" : 
+                                                            { "kind" : "strconst_", "text_" : "("},
+                                                            "method_" : 
+                                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                                            "actual_args_" : 
+                                                            { "kind" : "actual_args_", "elements_" : [
+                                                                { "kind" : "call_",  
+                                                                    "l_expr_" : 
+                                                                    { "kind" : "load_",  
+                                                                        "l_expr_" : 
+                                                                        { "kind" : "dot_",  
+                                                                            "l_expr_" : 
+                                                                            { "kind" : "load_",  
+                                                                                "loc_" : 
+                                                                                { "kind" : "ident_", "text_" : "this"}},
+                                                                            "r_expr_" : 
+                                                                            { "kind" : "ident_", "text_" : "ll"}}},
+                                                                    "method_" : 
+                                                                    { "kind" : "ident_", "text_" : "STR"},
+                                                                    "actual_args_" : 
+                                                                    { "kind" : "actual_args_", "elements_" : []}}]}},
+                                                        "method_" : 
+                                                        { "kind" : "ident_", "text_" : "PLUS"},
+                                                        "actual_args_" : 
+                                                        { "kind" : "actual_args_", "elements_" : [
+                                                            { "kind" : "strconst_", "text_" : ", "}]}},
+                                                    "method_" : 
+                                                    { "kind" : "ident_", "text_" : "PLUS"},
+                                                    "actual_args_" : 
+                                                    { "kind" : "actual_args_", "elements_" : [
+                                                        { "kind" : "call_",  
+                                                            "l_expr_" : 
+                                                            { "kind" : "load_",  
+                                                                "loc_" : 
+                                                                { "kind" : "ident_", "text_" : "ul"}},
+                                                            "method_" : 
+                                                            { "kind" : "ident_", "text_" : "STR"},
+                                                            "actual_args_" : 
+                                                            { "kind" : "actual_args_", "elements_" : []}}]}},
+                                                "method_" : 
+                                                { "kind" : "ident_", "text_" : "PLUS"},
+                                                "actual_args_" : 
+                                                { "kind" : "actual_args_", "elements_" : [
+                                                    { "kind" : "strconst_", "text_" : ","}]}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "PLUS"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : [
+                                                { "kind" : "call_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "l_expr_" : 
+                                                        { "kind" : "dot_",  
+                                                            "l_expr_" : 
+                                                            { "kind" : "load_",  
+                                                                "loc_" : 
+                                                                { "kind" : "ident_", "text_" : "this"}},
+                                                            "r_expr_" : 
+                                                            { "kind" : "ident_", "text_" : "ur"}}},
+                                                    "method_" : 
+                                                    { "kind" : "ident_", "text_" : "STR"},
+                                                    "actual_args_" : 
+                                                    { "kind" : "actual_args_", "elements_" : []}}]}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "PLUS"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "strconst_", "text_" : ","}]}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "PLUS"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "loc_" : 
+                                                { "kind" : "ident_", "text_" : "lr"}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "STR"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}}]}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "PLUS"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "strconst_", "text_" : ")"}]}}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Square"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Rect"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Square"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Square"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "ll"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Pt"}},
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "side"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "ll"}},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "ll"}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "ur"}},
+                        "r_expr_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Pt"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "plus_" : 
+                                    { "kind" : "call_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ll"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_x"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "PLUS"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "load_",  
+                                                "loc_" : 
+                                                { "kind" : "ident_", "text_" : "side"}}]}}},
+                                { "kind" : "method_arg_",  
+                                    "plus_" : 
+                                    { "kind" : "call_",  
+                                        "call_" : 
+                                        { "kind" : "call_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "ll"}}},
+                                            "method_" : 
+                                            { "kind" : "ident_", "text_" : "_y"},
+                                            "actual_args_" : 
+                                            { "kind" : "actual_args_", "elements_" : []}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "PLUS"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "load_",  
+                                                "loc_" : 
+                                                { "kind" : "ident_", "text_" : "side"}}]}}}]}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : []}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : [
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "a_square"},
+            "ident_" : 
+            { "kind" : "ident_", "text_" : "Rect"},
+            "r_expr_" : 
+            { "kind" : "constructor_",  
+                "ident_" : 
+                { "kind" : "ident_", "text_" : "Square"},
+                "actual_args_" : 
+                { "kind" : "actual_args_", "elements_" : [
+                    { "kind" : "method_arg_",  
+                        "constructor_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Pt"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "intconst_" : 
+                                    { "kind" : "intconst_", "value_" : "3"}},
+                                { "kind" : "method_arg_",  
+                                    "intconst_" : 
+                                    { "kind" : "intconst_", "value_" : "3"}}]}}},
+                    { "kind" : "method_arg_",  
+                        "intconst_" : 
+                        { "kind" : "intconst_", "value_" : "5"}}]}}},
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "a_square"},
+            "r_expr_" : 
+            { "kind" : "call_",  
+                "l_expr_" : 
+                { "kind" : "load_",  
+                    "loc_" : 
+                    { "kind" : "ident_", "text_" : "a_square"}},
+                "method_" : 
+                { "kind" : "ident_", "text_" : "translate"},
+                "actual_args_" : 
+                { "kind" : "actual_args_", "elements_" : [
+                    { "kind" : "method_arg_",  
+                        "constructor_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Pt"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "intconst_" : 
+                                    { "kind" : "intconst_", "value_" : "2"}},
+                                { "kind" : "method_arg_",  
+                                    "intconst_" : 
+                                    { "kind" : "intconst_", "value_" : "2"}}]}}}]}}},
+        { "kind" : "call_",  
+            "l_expr_" : 
+            { "kind" : "load_",  
+                "loc_" : 
+                { "kind" : "ident_", "text_" : "a_square"}},
+            "method_" : 
+            { "kind" : "ident_", "text_" : "PRINT"},
+            "actual_args_" : 
+            { "kind" : "actual_args_", "elements_" : []}}]}}

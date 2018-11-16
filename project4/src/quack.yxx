@@ -118,7 +118,8 @@ class
               AST::ASTNode *methodname = new AST::ASTNode(IDENT, $2->name); 
               methodname->subType = METHOD_NAME;
               method->insert(methodname);
-              AST::ASTNode *ret = new AST::ASTNode(IDENT, RETURN_TYPE, $2->name);
+              AST::ASTNode *ret = new AST::ASTNode(RETURN); 
+              ret->insert(new AST::ASTNode(IDENT, "Nothing"));
               method->insert($4);
               method->insert(ret);
               method->insert($8);
@@ -142,6 +143,8 @@ method
         : DEF ident '(' formal_args ')' stmt_block 
                                                 { $$ = new AST::ASTNode(METHOD); $2->subType = METHOD_NAME; 
                                                   $$->insert($2); $$->insert($4); 
+                                                  AST::ASTNode *ret = new AST::ASTNode(RETURN); 
+                                                  ret->insert(new AST::ASTNode(IDENT, "Nothing")); $$->insert(ret); 
                                                   $6->subType = STATEMENTS; $$->insert($6); }
         | DEF ident '(' formal_args ')' ':' ident stmt_block 
                                                 { $$ = new AST::ASTNode(METHOD); 
@@ -206,7 +209,7 @@ stmt
         | l_expr ':' ident '=' r_expr ';' { $$ = new AST::ASTNode(ASSIGN); $$->insert($1); $$->insert($3); $5->subType = R_EXPR; $$->insert($5); }
         | r_expr ';' { $$ = $1; }
         | RETURN r_expr ';' { $$ = new AST::ASTNode(RETURN); $2->subType = R_EXPR; $$->insert($2); }
-        | RETURN ';' { $$ = new AST::ASTNode(RETURN); }
+        | RETURN ';' { $$ = new AST::ASTNode(RETURN); $$->insert(new AST::ASTNode(IDENT, "Nothing")); }
         | typecase { $$ = $1; }
         ;
 

@@ -24,6 +24,9 @@ namespace report {
     // Halt execution if there are too many errors
     void bail();
 
+    // enables / disables ynotes and gnotes
+    void setDebug(bool flag);
+
     /* An error that we can locate in the input */
     void error_at(const yy::location& loc, const std::string& msg);
 
@@ -32,6 +35,12 @@ namespace report {
 
     /* Additional diagnostic message, does not count against error limit */
     void note(const std::string& msg);
+
+    /* Same as note but has green output color */
+    void gnote(const std::string& msg);
+
+    /* Same as note but has yellow output color */
+    void ynote(const std::string& msg);
 
     /* Is everything ok, or have we encountered errors? */
     bool ok();

@@ -121,6 +121,8 @@ not  { return parser::token::NOT; }
 
 \"\"\" { string_buf.clear(); start(multistring); }
 <multistring>\"\"\"    { start(INITIAL); yylval.str = strdup(string_buf.c_str()); return parser::token::STRING_LIT; }
+<multistring><<EOF>>   { 
+            report::error("Possible unclosed multiline string: EOF encountered\nExiting with error code 1"); exit(1); }
 <multistring>\n  { string_buf.append("\n"); }
 <multistring>\r  { string_buf.append("\r"); }
 <multistring>\t  { string_buf.append("\t"); }
@@ -143,6 +145,7 @@ not  { return parser::token::NOT; }
 [/][*]  { start(comment); }
 <comment>[^*]*   { ; }
 <comment>[*][^/] { ; }
+<comment><<EOF>>   { report::error("Possible unclosed multiline comment: EOF encountered\nExiting with error code 1"); exit(1); }
 <comment>[*][/]  { start(INITIAL); }
 
 .  {   report::error("Unexpected character '" + std::string(text()) + "'" +

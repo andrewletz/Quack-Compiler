@@ -16,6 +16,7 @@ class Driver {
     //                    used to pass the ASTNode back here.
 
     explicit Driver(reflex::Input in) : lexer(in), parser(new yy::parser(lexer, &root)) {
+        report::ynote("Lexer starting...");
         root = nullptr;
     }
 
@@ -25,6 +26,7 @@ class Driver {
     // parse: attempts to parse the given program (tokenized by input lexer).
     //        root is an ASTNode ** in quack.yxx, used to pass the root back here.
     AST::ASTNode* parse() {
+        report::ynote("Parser starting...");
         parser->set_debug_level(0); // 0 = no debugging, 1 = full tracing
 
         // parse() is defined by Bison. 0 = parse success
@@ -67,6 +69,9 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "--json=true") == 0) {
             json = true;
+            report::setDebug(false);
+        } else if (std::strcmp(argv[i], "--no-output") == 0) {
+            report::setDebug(false);
         } else {
             filename = std::string(argv[i]);
         }
@@ -87,6 +92,8 @@ int main(int argc, char *argv[]) {
     // Parse and get AST into *root
     AST::ASTNode* root = driver.parse();
     if (root != nullptr) {
+        report::gnote("Lexer complete.");
+        report::gnote("Parser complete.");
         AST::AST_print_context context;
 
         if (json) {
@@ -94,7 +101,10 @@ int main(int argc, char *argv[]) {
             std::cout << std::endl;
         } 
 
+        report::ynote("Typechecker starting...");
         Typechecker typeChecker(root);
+
+        report::gnote("Typechecking complete.");
         
     } else {
         // either the parse has failed, or no AST was built.

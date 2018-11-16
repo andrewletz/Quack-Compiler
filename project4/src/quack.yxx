@@ -187,12 +187,12 @@ stmt
         ;
 
 opt_elif:  
-        ELIF r_expr stmt_block opt_elif { $$ = new AST::ASTNode(BLOCK);
+        ELIF r_expr stmt_block opt_elif { $$ = new AST::ASTNode(BLOCK); $$->subType = FALSE_STATEMENTS;
                                           AST::ASTNode *newif = new AST::ASTNode(IF); newif->insert($2); 
-                                          $3->subType = FALSE_STATEMENTS; newif->insert($3); 
+                                          $3->subType = TRUE_STATEMENTS; newif->insert($3); 
                                           newif->insert($4); $$->insert(newif); }
         | ELSE stmt_block   { $2->subType = FALSE_STATEMENTS; $$ = $2; }
-        | /* empty */       { $$ = new AST::ASTNode(BLOCK); }
+        | /* empty */       { $$ = new AST::ASTNode(BLOCK); $$->subType = FALSE_STATEMENTS; }
         ;
 
 // -~-~-~- Control flow : while loop

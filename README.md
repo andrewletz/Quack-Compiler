@@ -66,7 +66,7 @@ Type
 ```
 ./build.sh
 ```
-to get the *qcc* executable. usage: ./parser [filename] [--json=true]\*
+to get the *qcc* executable. usage: ./qcc [filename] [--json=true]\*
 
 The [--json=true] flag will print the program's abstract syntax tree in JSON format to stdout.
 

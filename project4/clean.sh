@@ -1,2 +1,2 @@
 rm -rf build
-rm parser
+rm qcc

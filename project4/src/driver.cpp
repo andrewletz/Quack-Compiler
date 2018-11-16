@@ -2,6 +2,8 @@
 #include "ASTNode.h"
 #include "EvalContext.h"
 #include "Messages.h"
+#include "typechecker.h"
+#include <fstream>
 
 class Driver {
   public:
@@ -29,11 +31,10 @@ class Driver {
         int result = parser->parse();
         if (result == 0 && report::ok()) {
             if (root == nullptr) {
-                std::cout << "AST Root is null.\n";
+                std::cout << "\033[1;35mRoot really shouldn't be null here.\033[0m\n";
             }
             return root; // program was legal
         } else {
-            std::cout << "Parse failed, no tree\n";
             return nullptr; // if the parse fails, we don't want an AST
         }
     }
@@ -47,17 +48,57 @@ class Driver {
 
 };
 
-int main(int argc, char *argv[]) {
-    Driver driver(std::cin);
-    AST::ASTNode* root = driver.parse();
+void printUsage() {
+    std::cout << "\033[1;31mUsage: ./qcc [filename].qk\n";
+    std::cout << "*use flag: --json=true for JSON output\033[0m\n";
+}
 
+int main(int argc, char *argv[]) {
+    if (argc > 3) {
+        std::cout << "\033[1;31mInvalid number of arguments.\033[0m\n";
+        printUsage();
+        exit(1);
+    }
+
+    std::string filename;
+    bool json = false;
+
+    // Get our filename arg and optional json flag
+    for (int i = 1; i < argc; i++) {
+        if (std::strcmp(argv[i], "--json=true") == 0) {
+            json = true;
+        } else {
+            filename = std::string(argv[i]);
+        }
+    }
+
+    // Open file to pass to Driver
+    std::ifstream file;
+    file.open(filename);
+
+    if (!file.is_open()) {
+        std::cout << "\033[1;31mInvalid file \"" << filename << "\"\033[0m\n";
+        printUsage();
+        exit(1);
+    }
+
+    Driver driver(file);
+    
+    // Parse and get AST into *root
+    AST::ASTNode* root = driver.parse();
     if (root != nullptr) {
         AST::AST_print_context context;
 
-        root->json(std::cout, context);
-        std::cout << std::endl;
+        if (json) {
+            root->json(std::cout, context);
+            std::cout << std::endl;
+        } 
+
+        Typechecker typeChecker(root);
+        
     } else {
         // either the parse has failed, or no AST was built.
-        std::cout << "Extracted root was nullptr" << std::endl; 
+        std::cout << "\n\033[1;31mCompilation failed: AST could not be generated\033[0m\n";
     }
+    file.close();
 }

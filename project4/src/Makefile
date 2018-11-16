@@ -11,7 +11,7 @@ REFLEX = reflex
 BISON = bison
 CC = g++ -std=c++11
 
-default: parser
+default: qcc
 
 ast: testast
 
@@ -30,8 +30,8 @@ lex.yy.cpp lex.yy.h: quack.lxx  quack.tab.hxx
 testast: ASTTester.cpp ASTNode.h ASTNode.o
 	$(CC) -o testast $^
 
-parser: quack.tab.cxx lex.yy.cpp lex.yy.h parser.cpp ASTNode.cpp ASTNode.h Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h
-	$(CC) -o parser $^ $(REFLEX_LIB)
+qcc: quack.tab.cxx lex.yy.cpp lex.yy.h driver.cpp ASTNode.cpp ASTNode.h typechecker.h typechecker.cpp Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h
+	$(CC) -o qcc $^ $(REFLEX_LIB)
 
 # There should be more dependencies for the header files, but I'm lazy.
 
@@ -39,7 +39,7 @@ clean:
 	rm -f *.o
 	rm -f lex.yy.cpp lex.yy.h
 	rm -f lex.yy.h.gch
-	rm -f lexer parser testast
+	rm -f lexer qcc testast
 	rm -f quack.tab.hxx quack.tab.cxx
 	rm -f stack.hh position.hh location.hh
 

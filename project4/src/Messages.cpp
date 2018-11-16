@@ -13,7 +13,7 @@ const int  error_limit = 5;           // Should be configurable
 
 void bail()
 {
-    std::cerr << "Too many errors, bailing" << std::endl;;
+    std::cerr << "\033[1;31mToo many errors, bailing\033[0m" << std::endl;;
     exit(99);
 }
 
@@ -24,7 +24,7 @@ void bail()
  */
 void error_at(const yy::location& loc, const std::string& msg)
 {
-    std::cerr << msg << " at " << loc << std::endl;
+    std::cerr << "\033[1;31m" << msg << " at " << loc << "\033[0m" << std::endl;
     if (++error_count > error_limit) {
         bail();
     }
@@ -33,7 +33,7 @@ void error_at(const yy::location& loc, const std::string& msg)
 /* An error that we can't locate in the input */
 void error(const std::string& msg)
 {
-    std::cerr << msg << std::endl;
+    std::cerr << "\033[1;31m" << msg << "\033[0m" << std::endl;
     if (++error_count > error_limit) {
         bail();
     }
@@ -41,7 +41,7 @@ void error(const std::string& msg)
 
 /* Additional diagnostic message, does not count against error limit */
 void note(const std::string& msg) {
-    std::cerr << msg << std::endl;
+    std::cerr << "\033[1;33m" << msg << "\033[0m" << std::endl;
 }
 
 /* Are we ok? */

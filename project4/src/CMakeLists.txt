@@ -40,8 +40,8 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(parser
-	quack.tab.cxx lex.yy.cpp lex.yy.h
-	ASTNode.cpp ASTNode.h parser.cpp Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h)
+add_executable(qcc
+	quack.tab.cxx lex.yy.cpp lex.yy.h typechecker.h typechecker.cpp
+	ASTNode.cpp ASTNode.h driver.cpp Messages.h Messages.cpp CodegenContext.cpp CodegenContext.h EvalContext.h)
 
-target_link_libraries(parser ${REFLEX_LIB})
+target_link_libraries(qcc ${REFLEX_LIB})

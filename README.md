@@ -60,3 +60,20 @@ Type
 to get rid of stuff.
 
 <hr>
+
+## Type checker (/project4)
+Type
+```
+./build.sh
+```
+to get the *qcc* executable. usage: ./parser [filename] [--json=true]\*
+
+The [--json=true] flag will print the program's abstract syntax tree in JSON format to stdout.
+
+Type
+```
+./clean.sh
+```
+to get rid of stuff.
+
+<hr>

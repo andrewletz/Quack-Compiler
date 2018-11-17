@@ -53,6 +53,10 @@ class Typechecker {
         bool isVarInit(Qmethod method, std::string ident);
         bool classHierarchyCheck();
 
+        Qclass createQclass(AST::Node *clazz);
+        Qmethod createQmethod(AST::Node *method);
+
+        void printQclass(Qclass clazz);
         void printQmethod(Qmethod method);
     };
 

@@ -1,0 +1,49 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Clazz"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Clazz"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "return_" : 
+                { "kind" : "return_",  
+                    "ident_" : 
+                    { "kind" : "ident_", "text_" : "Nothing"}},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "noRet"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "return_" : 
+                    { "kind" : "return_",  
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Nothing"}},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : []}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "noRet"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "return_" : 
+                    { "kind" : "return_",  
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Nothing"}},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Nothing"}}]}}]}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : []}}

@@ -1,0 +1,10 @@
+s = "cool beans";
+x = false;
+y = true;
+if (x and y) {
+  s = "and";
+} elif (x or y) {
+  s = "or";
+} elif (not x) {
+  s = "not";
+}

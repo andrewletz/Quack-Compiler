@@ -69,7 +69,18 @@ namespace AST {
         } else { }
     }
 
-    std::vector<Node *> Node::getSeq(Type type) {
+    Node * Node::get(Type type, Type subType) {
+        std::map<Type, std::vector<Node *> >::iterator it = this->children.find(type);
+        if (it != this->children.end()) {
+            for (Node* node : it->second) {
+                if (node->subType == subType) {
+                    return node;
+                }
+            }
+        } else { }
+    }
+
+    std::vector<Node *> Node::getAll(Type type) {
         // Finds a given type of node in the map, returns its associated vector.
         // This is used when getting types of nodes that are sequences, such as
         // function arguments, etc.
@@ -77,6 +88,19 @@ namespace AST {
         std::map<Type, std::vector<Node *> >::iterator it = children.find(type);
         if (it != this->children.end()) {
             return it->second;
+        } else { }
+    }
+
+    std::vector<Node *> Node::getAll(Type type, Type subType) {
+        std::map<Type, std::vector<Node *> >::iterator it = children.find(type);
+        if (it != this->children.end()) {
+            std::vector<Node *> retVec;
+            for (Node* node : it->second) {
+                if (node->subType == subType) {
+                    retVec.push_back(node);
+                }
+            }
+            return retVec;
         } else { }
     }
 
@@ -116,7 +140,7 @@ namespace AST {
         json_head(typeString(this->type), out, ctx);
         out << "\"elements_\" : [";
         for (Type t : this->order) {
-            std::vector<Node*> subchildren = this->getSeq(t);
+            std::vector<Node*> subchildren = this->getAll(t);
             for (Node* node : subchildren) {
                 node->json(out, ctx);
                 if (!node->isLastNode) {
@@ -154,7 +178,7 @@ namespace AST {
 
             auto sep = ' ';
             for (Type t : this->order) {
-                std::vector<Node*> subchildren = this->getSeq(t);
+                std::vector<Node*> subchildren = this->getAll(t);
                 for (Node* node : subchildren) {
                     if (node->subType != UNINITIALIZED) {
                         this->json_child(typeString(node->subType), node, out, ctx, sep);

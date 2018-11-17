@@ -58,7 +58,9 @@ namespace AST {
 
             void insert(Node* inputNode);
             Node* get(Type type); // if you know there is only a single node of this type, use get
-            std::vector<Node *> getSeq(Type type); // if there can be multiple, use getSeq
+            Node* get(Type type, Type subType); // second argument is for subtype
+            std::vector<Node *> getAll(Type type); // if there can be multiple, use getAll
+            std::vector<Node *> getAll(Type type, Type subType); // second argument is for subtype
 
             /* ===================== */
             /* JSON Printing Methods */

@@ -1,0 +1,86 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : []},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : [
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "s"},
+            "r_expr_" : 
+            { "kind" : "strconst_", "text_" : "cool beans"}},
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "x"},
+            "r_expr_" : 
+            { "kind" : "load_",  
+                "loc_" : 
+                { "kind" : "ident_", "text_" : "false"}}},
+        { "kind" : "assign_",  
+            "loc_" : 
+            { "kind" : "ident_", "text_" : "y"},
+            "r_expr_" : 
+            { "kind" : "load_",  
+                "loc_" : 
+                { "kind" : "ident_", "text_" : "true"}}},
+        { "kind" : "if_",  
+            "and_" : 
+            { "kind" : "call_",  
+                "l_expr_" : 
+                { "kind" : "load_",  
+                    "loc_" : 
+                    { "kind" : "ident_", "text_" : "x"}},
+                "method_" : 
+                { "kind" : "ident_", "text_" : "AND"},
+                "actual_args_" : 
+                { "kind" : "actual_args_", "elements_" : [
+                    { "kind" : "load_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "y"}}]}},
+            "statements_true_" : 
+            { "kind" : "block_", "elements_" : [
+                { "kind" : "assign_",  
+                    "loc_" : 
+                    { "kind" : "ident_", "text_" : "s"},
+                    "r_expr_" : 
+                    { "kind" : "strconst_", "text_" : "and"}}]},
+            "statements_false_" : 
+            { "kind" : "block_", "elements_" : [
+                { "kind" : "if_",  
+                    "or_" : 
+                    { "kind" : "call_",  
+                        "l_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "x"}},
+                        "method_" : 
+                        { "kind" : "ident_", "text_" : "OR"},
+                        "actual_args_" : 
+                        { "kind" : "actual_args_", "elements_" : [
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "y"}}]}},
+                    "statements_true_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "assign_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "s"},
+                            "r_expr_" : 
+                            { "kind" : "strconst_", "text_" : "or"}}]},
+                    "statements_false_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "if_",  
+                            "not_" : 
+                            { "kind" : "not_",  
+                                "l_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "x"}}},
+                            "statements_true_" : 
+                            { "kind" : "block_", "elements_" : [
+                                { "kind" : "assign_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "s"},
+                                    "r_expr_" : 
+                                    { "kind" : "strconst_", "text_" : "not"}}]},
+                            "statements_false_" : 
+                            { "kind" : "block_", "elements_" : []}}]}}]}}]}}

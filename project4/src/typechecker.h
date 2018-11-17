@@ -3,18 +3,22 @@
 
 #include "ASTNode.h"
 
+struct Qclass {
+    AST::Node a;
+};
+
 class Typechecker {
     public:
         /* ============ */
         /* Data Members */
         /* ============ */
-        AST::ASTNode *root;
+        AST::Node *root;
 
         /* ========================== */
         /* Constructors & Destructors */
         /* ========================== */
 
-        Typechecker(AST::ASTNode *root) : root(root) {};
+        Typechecker(AST::Node *root) : root(root) {};
         virtual ~Typechecker() {};
 
         /* ======= */

@@ -3,6 +3,12 @@
 
 #include "ASTNode.h"
 
+// Qmethod is a struct storing everything you need 
+// to know about a method for type checking. The info
+// is gathered from the ast. Formal arguments are automatically
+// put into the type and init vectors, and return is automatically
+// put into the type vector upon creation. This is because in Quack
+// we can assume arguments are initialized, and return type is static.
 struct Qmethod {
     AST::Node *node;
     std::string name;
@@ -13,6 +19,7 @@ struct Qmethod {
 
 struct Qclass {
     AST::Node *node;
+    std::string name;
     std::string super;
     Qmethod constructor;
     std::vector<Qmethod> methods;
@@ -43,7 +50,10 @@ class Typechecker {
         /* ======= */
 
         void initialize();
+        bool isVarInit(Qmethod method, std::string ident);
         bool classHierarchyCheck();
+
+        void printQmethod(Qmethod method);
     };
 
 #endif

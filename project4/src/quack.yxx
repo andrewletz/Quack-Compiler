@@ -118,8 +118,7 @@ class
               method->subType = CONSTRUCTOR;
               AST::Node *methodname = new AST::Node(IDENT, METHOD_NAME, $2->name);
               method->insert(methodname);
-              AST::Node *ret = new AST::Node(RETURN); 
-              ret->insert(new AST::Node(IDENT, "Nothing"));
+              AST::Node *ret = new AST::Node(IDENT, RETURN_TYPE, $2->name);
               method->insert($4);
               method->insert(ret);
               method->insert($8);
@@ -143,13 +142,13 @@ method
         : DEF ident '(' formal_args ')' stmt_block 
                             { $$ = new AST::Node(METHOD); $2->subType = METHOD_NAME; 
                               $$->insert($2); $$->insert($4); 
-                              AST::Node *ret = new AST::Node(RETURN); 
-                              ret->insert(new AST::Node(IDENT, "Nothing")); $$->insert(ret); 
+                              AST::Node *ret = new AST::Node(IDENT, RETURN_TYPE, "Nothing");
+                              $$->insert(ret); 
                               $6->subType = STATEMENTS; $$->insert($6); }
         | DEF ident '(' formal_args ')' ':' ident stmt_block 
                             { $$ = new AST::Node(METHOD); 
                               $2->subType = METHOD_NAME; $$->insert($2); 
-                              $$->insert($4); $7->subType = RETURN; $$->insert($7); 
+                              $$->insert($4); $7->subType = RETURN_TYPE; $$->insert($7); 
                               $8->subType = STATEMENTS; $$->insert($8); }
         ;
 

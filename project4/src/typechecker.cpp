@@ -76,7 +76,60 @@ void Typechecker::initialize() {
 	}
 }
 
-bool Typechecker::classHierarchyCheck() { return true; }
+bool Typechecker::classHierarchyCheck() {
+	std::string class_name;
+	std::string super_name;
+	std::map<std::string, std::vector<std::string>>::iterator it;
+
+	for (auto clss : this->classes) {
+		class_name = clss.second.name;
+		super_name = clss.second.super;
+
+		it = this->class_hierarchy.find(super_name);
+		if (it == this->class_hierarchy.end()) {
+			std::vector<std::string> subs;
+			this->class_hierarchy.insert(std::pair<std::string, std::vector<std::string>>(super_name, subs));
+		}
+		this->class_hierarchy[super_name].push_back(class_name);
+	}
+
+	std::stack<std::string> class_stack; // stack for the classes we've come across
+	std::vector<std::string> seen_classes; // vector for the classes we've seen to check for cycles
+	std::string current_super; // the current class we're working with / checking against
+
+	// we have to check every super class and its dependencies in its class hierarchy. if we simply
+	// start at a static class like "Obj", then we won't be able to get to classes that *don't* inherit
+	// from Obj, such as the example found in circular_dependency.qk
+	for (auto qclss : class_hierarchy) {
+		class_stack.push(qclss.first);
+
+		while (!class_stack.empty()) {
+			current_super = class_stack.top();
+			class_stack.pop();
+
+			// check the super class we're working with to see if it's in the vector of seen super classes,
+			// if it is then we have found a circular dependency, if not then just mark that we've seen it
+			std::vector<std::string>::iterator findCycle = std::find(seen_classes.begin(), seen_classes.end(), current_super);
+			if (findCycle != seen_classes.end()) {
+				return false;
+			}
+			seen_classes.push_back(current_super);
+
+			// push all the dependencies of this super onto the stack so we can continue down this
+			// hierarchy
+			for (auto spr : class_hierarchy[current_super]) {
+				class_stack.push(spr);
+			}
+		}
+
+		// clean up the stack & the seen classes, check the next hierarchy
+		while (!class_stack.empty()) {
+			class_stack.pop();
+		}
+		seen_classes.clear();
+	}
+	return true;
+}
 
 void Typechecker::printQclass(Qclass clazz) {
 	std::cout << "******************| class " << clazz.name << " |******************" << std::endl;

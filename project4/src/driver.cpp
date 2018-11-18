@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         if (std::strcmp(argv[i], "--json=true") == 0) {
             json = true;
             report::setDebug(false);
-        } else if (std::strcmp(argv[i], "--no-output") == 0) {
+        } else if (std::strcmp(argv[i], "--no-debug") == 0) {
             report::setDebug(false);
         } else {
             filename = std::string(argv[i]);
@@ -103,6 +103,14 @@ int main(int argc, char *argv[]) {
 
         report::ynote("Typechecker starting...");
         Typechecker typeChecker(root);
+
+        bool classHierarchyValid = typeChecker.classHierarchyCheck();
+        if (!classHierarchyValid) {
+            report::error("Type checker failed: circular class dependency detected.");
+            exit(1);
+        } else {
+            report::gnote("Class hierarcy check passed.");
+        }
 
         report::gnote("Typechecking complete.");
         

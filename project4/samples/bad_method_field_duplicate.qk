@@ -1,0 +1,10 @@
+/*
+ * Method and field names are duplicates
+ */
+
+class C1() {
+    this.X = 5;
+
+    def X() : Int {} 
+}
+

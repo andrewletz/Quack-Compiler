@@ -74,9 +74,8 @@ void Typechecker::initialize() {
 			printQclass(clazz);
 		}
 	}
-}
 
-bool Typechecker::classHierarchyCheck() {
+	// Initialize the class hierarchy table
 	std::string class_name;
 	std::string super_name;
 	std::map<std::string, std::vector<std::string>>::iterator it;
@@ -92,7 +91,9 @@ bool Typechecker::classHierarchyCheck() {
 		}
 		this->class_hierarchy[super_name].push_back(class_name);
 	}
+}
 
+bool Typechecker::classHierarchyCheck() {
 	std::stack<std::string> class_stack; // stack for the classes we've come across
 	std::vector<std::string> seen_classes; // vector for the classes we've seen to check for cycles
 	std::string current_super; // the current class we're working with / checking against
@@ -129,6 +130,10 @@ bool Typechecker::classHierarchyCheck() {
 		seen_classes.clear();
 	}
 	return true;
+}
+
+bool Typechecker::initializeBeforeUseCheck() {
+	return false;
 }
 
 void Typechecker::printQclass(Qclass clazz) {

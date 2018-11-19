@@ -6,3 +6,4 @@ class C2() extends C3 {
 
 class C3() extends C1 {
 }
+

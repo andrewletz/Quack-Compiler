@@ -61,7 +61,7 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "STR"},
-                    "return_" : 
+                    "return_type_" : 
                     { "kind" : "ident_", "text_" : "String"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : []},
@@ -129,7 +129,7 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "PLUS"},
-                    "return_" : 
+                    "return_type_" : 
                     { "kind" : "ident_", "text_" : "Pt"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : [
@@ -202,7 +202,7 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "_x"},
-                    "return_" : 
+                    "return_type_" : 
                     { "kind" : "ident_", "text_" : "Int"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : []},
@@ -222,7 +222,7 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "_y"},
-                    "return_" : 
+                    "return_type_" : 
                     { "kind" : "ident_", "text_" : "Int"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : []},
@@ -299,7 +299,7 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "translate"},
-                    "return_" : 
+                    "return_type_" : 
                     { "kind" : "ident_", "text_" : "Pt"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : [
@@ -348,6 +348,8 @@
                 { "kind" : "method_",  
                     "method_name_" : 
                     { "kind" : "ident_", "text_" : "STR"},
+                    "return_type_" : 
+                    { "kind" : "ident_", "text_" : "Nothing"},
                     "formal_args_" : 
                     { "kind" : "formal_args_", "elements_" : []},
                     "statements_" : 

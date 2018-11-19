@@ -1,0 +1,21 @@
+/*
+ * This program shows how we can't use a variable before we've initialized it.
+ * However, if we pass that variable into a function, it's ok. It's implied that
+ * it's been initialized.
+ */
+class C1() {
+    def count(x: Int) {
+      count = 0;
+      round = 50;
+
+      while x < round {
+        if count == 0 {
+          x = 0;
+        }
+
+        count = count + 1; 
+        x = x + 1;
+      }
+    } 
+}
+

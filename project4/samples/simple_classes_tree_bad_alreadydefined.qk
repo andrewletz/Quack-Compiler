@@ -1,0 +1,6 @@
+// Class A already defined
+//test should fail beacuse class A has already been defined
+class A() { }
+class B() { }
+class A() extends B { } 
+

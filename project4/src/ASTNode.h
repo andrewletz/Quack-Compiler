@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include "ASTEnum.h"
+#include "Messages.h"
 
 namespace AST {
 

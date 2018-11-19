@@ -35,7 +35,7 @@ class C4() extends C3 {
  * Now type x below ... what should happen? 
  */ 
 x = C4();
-while ( True ) {
+while ( true ) {
    x = x.foo();      /* OK, terminates at C1 */
 }
 

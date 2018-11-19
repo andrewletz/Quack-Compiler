@@ -1,0 +1,5 @@
+// Two classes with same name
+class C1() { }
+
+class C1() { }
+

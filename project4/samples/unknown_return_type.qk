@@ -1,0 +1,5 @@
+class C1() {
+
+    def PLUS(other : C1): Garbage {
+    }
+}

@@ -1,0 +1,4 @@
+//Return is of incorrect type. Foo is supposed to return a String not an int
+class A() {
+def foo(): String { return 42; }
+}

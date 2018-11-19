@@ -1,0 +1,8 @@
+//inheriting instance variables. variable x consistently defined
+class C1(){
+   this.x = 5;
+}
+
+class C2() extends C1 {
+   this.x = 8;
+}

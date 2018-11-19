@@ -1,0 +1,19 @@
+/**
+ * Recasts variable x as a type something other than the specified type.
+ */
+
+class Point(x : Int, y:Int) {
+    this.x = x;
+    this.y = y;
+
+    def EQUALS(other : Obj) : Boolean {
+        typecase other {
+            pt: Point { 
+                return this.x == pt.x and this.y == pt.y; 
+                pt : Obj = Obj();
+            }
+            thing: Obj { return false; }
+        }
+    }
+}
+

@@ -1,0 +1,3 @@
+// No such super A class
+// test will fail. Class B will not be added to the table because the class A does not exist
+class B() extends A { } 

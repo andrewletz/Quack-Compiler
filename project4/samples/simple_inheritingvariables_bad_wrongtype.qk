@@ -1,0 +1,9 @@
+//inheriting instance variables. class C2 fails to define x of correct type
+//test fails
+class C1(){
+   this.x = 5;
+}
+
+class C2() extends C1 {
+	this.x = "5";
+}

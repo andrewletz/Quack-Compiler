@@ -1,0 +1,16 @@
+//The number of formal arguments of the overriding method must be the same as the number of arguments in the method it overrides
+//test should fail. The number of arguments do not match
+
+class P() {
+
+def s() : String {
+	return "a";
+}
+}
+
+class X() extends P{
+
+def s(x: String) : String {
+	return x;
+}
+}

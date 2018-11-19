@@ -1,0 +1,7 @@
+//the convention is to capitalize class names and use lowercase for variables and methods
+//but we still need to check to find duplicates. Test should fail
+class R(){
+	def R(){
+
+	}
+}

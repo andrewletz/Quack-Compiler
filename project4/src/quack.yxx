@@ -252,7 +252,7 @@ r_expr
         | NOT r_expr { $$ = new AST::Node(NOT); $$->insert($2); } 
         | '(' r_expr ')' { $$ = $2; }
         | r_expr '.' ident '(' actual_args ')' { $$ = new AST::Node(CALL); $$->insert($1); $3->subType = METHOD;
-                                                 $$->insert($3); $$->insert($5);}
+                                                 $$->insert($3); $$->insert($5); }
         | ident '(' actual_args ')' { $$ = new AST::Node(CONSTRUCTOR); $$->insert($1); $$->insert($3); }
         ;
 
@@ -290,7 +290,6 @@ ident
 
 #include "Messages.h"
 
-void yy::parser::error(const location_type& loc, const std::string& msg)
-{
-    report::error_at(loc, msg);
+void yy::parser::error(const location_type& loc, const std::string& msg) {
+    report::error_at(loc, msg, PARSER);
 }

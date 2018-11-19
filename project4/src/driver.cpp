@@ -16,7 +16,7 @@ class Driver {
     //                    used to pass the Node back here.
 
     explicit Driver(reflex::Input in) : lexer(in), parser(new yy::parser(lexer, &root)) {
-        report::ynote("Lexer starting...");
+        report::ynote("starting...", LEXER);
         root = nullptr;
     }
 
@@ -26,14 +26,15 @@ class Driver {
     // parse: attempts to parse the given program (tokenized by input lexer).
     //        root is an Node ** in quack.yxx, used to pass the root back here.
     AST::Node* parse() {
-        report::ynote("Parser starting...");
+        report::ynote("starting...", PARSER);
         parser->set_debug_level(0); // 0 = no debugging, 1 = full tracing
 
         // parse() is defined by Bison. 0 = parse success
         int result = parser->parse();
         if (result == 0 && report::ok()) {
             if (root == nullptr) {
-                std::cout << "\033[1;35mRoot really shouldn't be null here.\033[0m\n";
+                report::error("Root really shouldn't be null here.", PARSER);
+                report::bail(PARSER);
             }
             return root; // program was legal
         } else {
@@ -51,15 +52,15 @@ class Driver {
 };
 
 void printUsage() {
-    std::cout << "\033[1;31mUsage: ./qcc [filename].qk\n";
-    std::cout << "*use flag: --json=true for JSON output\033[0m\n";
+    report::rnote("Usage: ./qcc [filename].qk", PROMPT);
+    report::rnote("\t*use flag: --json=true for JSON output", PROMPT);
 }
 
 int main(int argc, char *argv[]) {
-    if (argc > 3) {
-        std::cout << "\033[1;31mInvalid number of arguments.\033[0m\n";
+    if (argc > 4) {
+        report::rnote("Invalid number of arguments.", PROMPT);
         printUsage();
-        exit(1);
+        report::bail(PROMPT);
     }
 
     std::string filename;
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
     file.open(filename);
 
     if (!file.is_open()) {
-        std::cout << "\033[1;31mInvalid file \"" << filename << "\"\033[0m\n";
+        std::cerr << "\033[1;91m" << "Invalid file \"" << filename << "\"\033[0m" << std::endl;
         printUsage();
         exit(1);
     }
@@ -92,8 +93,8 @@ int main(int argc, char *argv[]) {
     // Parse and get AST into *root
     AST::Node* root = driver.parse();
     if (root != nullptr) {
-        report::gnote("Lexer complete.");
-        report::gnote("Parser complete.");
+        report::gnote("complete.", LEXER);
+        report::gnote("complete.", PARSER);
         AST::AST_print_context context;
 
         if (json) {
@@ -101,22 +102,31 @@ int main(int argc, char *argv[]) {
             std::cout << std::endl;
         } 
 
-        report::ynote("Typechecker starting...");
+        report::ynote("starting...", TYPECHECKER);
         Typechecker typeChecker(root);
 
         bool classHierarchyValid = typeChecker.classHierarchyCheck();
         if (!classHierarchyValid) {
-            report::error("Type checker failed: circular class dependency detected.");
-            exit(1);
+            report::error("class hierarchy check failed: circular dependency detected!", TYPECHECKER);
+            report::bail(CLASSHIERARCHY);
         } else {
-            report::gnote("Class hierarcy check passed.");
+            report::gnote("class hierarchy check passed.", TYPECHECKER);
         }
 
-        report::gnote("Typechecking complete.");
+        // bool initBeforeUseCheckValid = typeChecker.initializeBeforeUseCheck();
+        // if (!initBeforeUseCheckValid ) {
+        //     report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
+        //     report::bail(INITBEFOREUSE);
+        // } else {
+        //     report::gnote("initialization before use check passed.", TYPECHECKER);
+        // }
+
+        report::gnote("complete.", TYPECHECKER);
         
     } else {
         // either the parse has failed, or no AST was built.
-        std::cout << "\n\033[1;31mCompilation failed: AST could not be generated\033[0m\n";
+        report::rnote("Compilation failed: Abstract Syntax Tree could not be generated!", PARSER);
+        report::bail(PARSER);
     }
     file.close();
 }

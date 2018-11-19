@@ -1,0 +1,7 @@
+class C1() {
+    this.X : Int = 4;
+}
+
+class C2() extends C1 {
+    this.X : Obj = 4;
+}

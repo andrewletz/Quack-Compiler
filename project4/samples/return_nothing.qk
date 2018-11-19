@@ -1,6 +1,0 @@
-class Clazz() {
-	def noRet() { }
-	def noRet() {
-		return;
-	}
-}

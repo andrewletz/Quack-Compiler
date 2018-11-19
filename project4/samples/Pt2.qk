@@ -4,9 +4,8 @@
  class Pt(x: Int, y: Int) {
      this.x = x;
      this.y = y;
-     if (this.x > 4) {
-         z = 5;
-     }
+     w = 5 * 2 + 7 / 2;
+     z = this.x + this.y;
 
      /* Note type of this.x and this.y is
       * fixed in the object --- methods cannot
@@ -25,7 +24,7 @@
      /* Mutator: Evaluate for effect */
      def translate(dx: Int, dy: Int): Nothing {
      	 this.x = this.x + dx;
-	 this.y = this.y + dy;
+	     this.y = this.y + dy;
      }
 
      /* More functional style: Evaluate for value */

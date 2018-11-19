@@ -1,0 +1,6 @@
+class C1() {
+    if True {
+        this.X = 5;
+    } else {
+    }
+}

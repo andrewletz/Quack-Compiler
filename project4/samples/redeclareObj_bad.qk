@@ -1,3 +1,0 @@
-class Obj() { } // this is bad
-
-class Sub(x: int) extends Obj { }

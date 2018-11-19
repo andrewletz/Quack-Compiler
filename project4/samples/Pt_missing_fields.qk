@@ -1,12 +1,14 @@
 /*
  * A point has an x component and a y component
  */
- class Pt(x: Int, y: Int) {
+ class Dummy() {
+     this.x = 5;
+     this.y = 344;
+     this.z = "sdf";
+ }
+ class Pt(x: Int, y: Int) extends Dummy {
      this.x = x;
      this.y = y;
-     if (this.x > 4) {
-         z = 5;
-     }
 
      /* Note type of this.x and this.y is
       * fixed in the object --- methods cannot

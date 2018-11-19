@@ -1,0 +1,5 @@
+// circular A extends B and B extends A
+//test should fail 
+class A() extends B { }
+class B() extends A { } 
+

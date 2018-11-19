@@ -1,0 +1,16 @@
+/**
+ * Type "ObjNotExist" does not exist.  Should return a type error.
+ */
+
+class Point(x : Int, y:Int) {
+    this.x = x;
+    this.y = y;
+
+    def EQUALS(other : Obj) : Boolean {
+        typecase other {
+            pt: Point { return this.x == pt.x and this.y == pt.y; }
+            thing: ObjNotExist { return false; }
+        }
+    }
+}
+

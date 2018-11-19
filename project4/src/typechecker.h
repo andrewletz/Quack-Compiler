@@ -1,8 +1,9 @@
 #ifndef TYPECHECKER_H
 #define TYPECHECKER_H
 
-#include "ASTNode.h"
 #include <stack>
+#include "ASTNode.h"
+#include "Messages.h"
 
 // Qmethod is a struct storing everything you need 
 // to know about a method for type checking. The info
@@ -54,6 +55,7 @@ class Typechecker {
         void initialize();
         bool isVarInit(Qmethod method, std::string ident);
         bool classHierarchyCheck();
+        bool initializeBeforeUseCheck();
 
         Qclass createQclass(AST::Node *clazz);
         Qmethod createQmethod(AST::Node *method);

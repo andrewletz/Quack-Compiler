@@ -32,6 +32,7 @@ namespace AST {
             Type type; // represents the type of this node
             Type subType = UNINITIALIZED;
             std::map<Type, std::vector<Node*> > children; // contains all of the children
+            std::vector<Node*> rawChildren;
             std::vector<Type> order; // tracks the order of input
             
             std::string name; // used for IDENT and STRCONST

@@ -1,0 +1,13 @@
+class C1() { }
+
+class C2() extends C1 { }
+
+class C3() extends C2 { }
+
+class C4() extends C3 { }
+
+class D1() { }
+
+class D2() extends D1 { }
+
+class D3() extends D2 { }

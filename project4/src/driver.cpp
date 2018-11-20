@@ -113,16 +113,25 @@ int main(int argc, char *argv[]) {
             report::gnote("class hierarchy check passed.", TYPECHECKER);
         }
 
-        // bool initBeforeUseCheckValid = typeChecker.initializeBeforeUseCheck();
-        // if (!initBeforeUseCheckValid ) {
-        //     report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
-        //     report::bail(INITBEFOREUSE);
-        // } else {
-        //     report::gnote("initialization before use check passed.", TYPECHECKER);
-        // }
+        bool initBeforeUseCheckValid = typeChecker.initializeBeforeUseCheck();
+        if (!initBeforeUseCheckValid) {
+            report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
+            report::bail(INITBEFOREUSE);
+        } else {
+            report::gnote("initialization before use check passed.", TYPECHECKER);
+        }
+
+        bool typeInferenceCheckValid = typeChecker.typeInferenceCheck();
+        if (!typeInferenceCheckValid) {
+            report::error("type inference check failed: idk what to put here yet!", TYPECHECKER);
+            report::bail(TYPEINFERENCE);
+        } else {
+            report::gnote("type inference check passed.", TYPECHECKER);
+        }
 
         report::gnote("complete.", TYPECHECKER);
-        
+
+        exit(0);
     } else {
         // either the parse has failed, or no AST was built.
         report::rnote("Compilation failed: Abstract Syntax Tree could not be generated!", PARSER);

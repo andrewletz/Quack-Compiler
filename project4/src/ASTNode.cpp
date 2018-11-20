@@ -56,6 +56,8 @@ namespace AST {
         if (it == order.end()) {
             order.push_back(node->type);
         }
+
+        this->rawChildren.push_back(node);
     }
 
     Node * Node::get(Type type) {

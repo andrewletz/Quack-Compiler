@@ -56,6 +56,10 @@ class Typechecker {
         bool isVarInit(Qmethod method, std::string ident);
         bool classHierarchyCheck();
         bool initializeBeforeUseCheck();
+        bool typeInferenceCheck();
+        bool isSubclassOrEqual(std::string class1, std::string class2);
+        std::string leastCommonAncestor(std::string class1, std::string class2);
+        std::string getSuperClass(std::string class1);
 
         Qclass createQclass(AST::Node *clazz);
         Qmethod createQmethod(AST::Node *method);

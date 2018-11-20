@@ -24,11 +24,8 @@ Qmethod Typechecker::createQmethod(AST::Node *method) {
 
 	AST::Node *stmts = method->get(BLOCK, STATEMENTS); // from the newMethod, grab all statements
 	if (!stmts->order.empty()) { // empty newMethod check before iterating over it
-		for (Type t : stmts->order) { // for each statement type
-			std::vector<AST::Node *> stmtvec = stmts->getAll(t); // get all statements of that type
-			for (AST::Node *s : stmtvec) { 
-				newMethod.stmts.push_back(s); // add each of these to the Qmethod in order
-			}
+		for (AST::Node * stmt : method->get(BLOCK, STATEMENTS)->rawChildren) {
+			newMethod.stmts.push_back(stmt); // add each of these to the Qmethod in order
 		}
 	}
 
@@ -71,7 +68,7 @@ void Typechecker::initialize() {
 		for (AST::Node *n : classes) {
 			Qclass clazz = createQclass(n);
 			this->classes[clazz.name] = clazz;
-			printQclass(clazz);
+			//printQclass(clazz);
 		}
 	}
 
@@ -83,6 +80,15 @@ void Typechecker::initialize() {
 	for (auto clss : this->classes) {
 		class_name = clss.second.name;
 		super_name = clss.second.super;
+
+		if (this->classes.find(super_name) == this->classes.end()) {
+			if (super_name == "Obj") {
+				continue;
+			} else {
+				report::error("class hierarchy check failed: no such super class!", TYPECHECKER);
+            	report::bail(CLASSHIERARCHY);
+			}
+		}
 
 		it = this->class_hierarchy.find(super_name);
 		if (it == this->class_hierarchy.end()) {
@@ -101,7 +107,7 @@ bool Typechecker::classHierarchyCheck() {
 	// we have to check every super class and its dependencies in its class hierarchy. if we simply
 	// start at a static class like "Obj", then we won't be able to get to classes that *don't* inherit
 	// from Obj, such as the example found in circular_dependency.qk
-	for (auto qclss : class_hierarchy) {
+	for (auto qclss : this->class_hierarchy) {
 		class_stack.push(qclss.first);
 
 		while (!class_stack.empty()) {
@@ -118,7 +124,7 @@ bool Typechecker::classHierarchyCheck() {
 
 			// push all the dependencies of this super onto the stack so we can continue down this
 			// hierarchy
-			for (auto spr : class_hierarchy[current_super]) {
+			for (auto spr : this->class_hierarchy[current_super]) {
 				class_stack.push(spr);
 			}
 		}
@@ -132,8 +138,104 @@ bool Typechecker::classHierarchyCheck() {
 	return true;
 }
 
-bool Typechecker::initializeBeforeUseCheck() {
+bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
+	if (class1 == class2) {
+		return true;
+	}
+
+	if (class1 == "Obj") {
+		return false;
+	}
+
+	if (classes[class1].super == "Obj" && class2 == "Obj") {
+		return true;
+	}
+
+	std::string tempSuper = class1;
+
+	while (tempSuper != class2 || tempSuper != "Obj") {
+		if (tempSuper == "Obj") {
+			break;
+		}
+		if (tempSuper == class2) {
+			return true;
+		}
+		for (auto clss : classes) {
+			Qclass second = clss.second;
+			if (second.name == tempSuper) {
+				tempSuper = second.super;
+			}
+		}
+	}
 	return false;
+}
+
+std::string Typechecker::leastCommonAncestor(std::string class1, std::string class2) {
+	if (class1 == class2) {
+		return class1;
+	}
+
+	std::vector<std::string> class1Supers;
+
+	if (class1 == "Obj") {
+		class1Supers.push_back(class1);
+	} else {
+		class1Supers.push_back(class1);
+		std::string tempSuper1 = class1;
+
+		while (tempSuper1 != "Obj") {
+			if (tempSuper1 == "Obj") {
+				break;
+			}
+			class1Supers.push_back(classes[tempSuper1].super);
+			tempSuper1 = classes[tempSuper1].super;
+		}
+		class1Supers.push_back("Obj");
+	}
+
+	std::vector<std::string> class2Supers;
+
+	if (class2 == "Obj") {
+		class2Supers.push_back(class2);
+	} else {
+		class2Supers.push_back(class2);
+		std::string tempSuper2 = class2;
+
+		while (tempSuper2 != "Obj") {
+			if (tempSuper2 == "Obj") {
+				break;
+			}
+			class2Supers.push_back(classes[tempSuper2].super);
+			tempSuper2 = classes[tempSuper2].super;
+		}
+		class2Supers.push_back("Obj");
+	}
+
+	std::string retVal;
+
+	for (auto super : class2Supers) {
+		auto it = std::find(class1Supers.begin(), class1Supers.end(), super);
+		if (it != class1Supers.end()) {
+			retVal = *(it);
+			break;
+		} else {
+			retVal = "Obj";
+		}
+	}
+
+	return retVal;
+}
+
+std::string Typechecker::getSuperClass(std::string class1) {
+	return classes[class1].super;
+}
+
+bool Typechecker::initializeBeforeUseCheck() {
+	return true;
+}
+
+bool Typechecker::typeInferenceCheck() {
+	return true;
 }
 
 void Typechecker::printQclass(Qclass clazz) {

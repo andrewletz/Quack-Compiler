@@ -1,0 +1,14 @@
+class C1() extends Obj { }
+
+class X1() extends C1 { }
+class X2() extends C1 { }
+class X3() extends C1 { }
+class X4() extends C1 { }
+
+class X5() extends X4 { }
+class X6() extends X4 { }
+class X7() extends X4 { }
+
+class D1() extends X6 { }
+class D2() extends X6 { }
+class D3() extends X6 { }

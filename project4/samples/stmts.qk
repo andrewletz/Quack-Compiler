@@ -1,0 +1,32 @@
+class Stmts() {
+      this.ples = Ples(100);
+   
+      if (x == 10) { 
+         t = "hello";
+      }
+
+      if (z == 100) {
+         n = 10;
+      } elif (w == 20) {
+         u = "test";
+      } else {
+         p = "yes";
+      }
+
+      while (y == 20 and z == 100 or t == "t") {
+         c = "self";
+      }
+
+      plem;
+      clor = "esto";
+      clem = 10;
+      smut : name = foo(x, y, z);
+      schmeech : Int = 10 * 10 * 20 * 50 / 100;
+
+      clormo = smut.bar(q, w, e, r, t);
+      smut(y, u, "50", 105);
+
+      plumb : clest = clest(this.ples.far(y, z), "pleembee"); 
+
+      return plumb.far(t, b);
+}

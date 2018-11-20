@@ -18,8 +18,8 @@ enum CompStage {
 };
 
 static const char * StageString[] = {
-        "Lexer: ", "Parser: ", "Type Checking: ", "Type Checking: ", "Type Checking: ", "Code Generation: ", 
-        "Type Checking: ", "",
+        "Lexer: ", "Parser: ", "Type Checker: ", "Type Checker: ", "Type Checker: ", "Code Generation: ", 
+        "Type Checker: ", "",
 };
 
 extern std::string stageString(CompStage stage);

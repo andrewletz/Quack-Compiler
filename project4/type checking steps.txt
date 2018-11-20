@@ -1,0 +1,107 @@
+class hierarchy check (phase 1):
+	- check if there is a circular dependency 
+			-> Circular dependency detected
+	- check if class extends no such super 
+			-> Class "__" extends non-existant class "__"
+	- check if class method definitions are compatible with parent's 
+			-> Class "__"'s method "__" incompatible with super class "__"'s definition
+	- check if class method definitions are in same order as parent's
+			-> Method "__" found where "__" was expected in class "__"
+
+init before use on constructors (phase 2):
+	for each class constructor,
+	- check that each variable is initialized on all paths before use
+		for each stmt in constructor,
+		- add it to the type vector with type NONE (or something)
+		- if an assignment 
+			- if of form this.x = ..., add this.x to Qclass' vector<std::string> instanceVars; 
+			- if right hand side is a load, check if that variable is in init
+			- if right hand side is an expression, check if each variable passed into expression is in init
+			- if right hand side is an intconst or strconst or bool, add variable to init
+		- if 
+				-> Class "__": variable "__" used before initialized on all paths
+
+	for each class again,
+	- compare constructors instanceVars to parent's instanceVars (just by name, no type yet).
+			-> Variable "__" found where "__" was expected in class "__"
+
+init before use on methods (phase 3):
+	for each method in a class,
+	- check that each variable is initialized on all paths before use
+		- if a variable is of form this.x
+			- check that this.x exists in Qclass' instanceVars
+			- if not,
+				-> Unknown instance variable "__" used in method "__"
+		- if an assignment 
+			- if of form this.x = ..., add this.x to Qclass' vector<std::string> instanceVars; 
+			- if right hand side is a load, check if that variable is in init
+			- if right hand side is an expression, check if each variable passed into expression is in init
+			- if right hand side is an intconst or strconst or bool, add variable to init
+				-> Variable "__" in method "__" used before initialized on all paths
+
+
+type inference on constructors (phase 3):
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###########################
+-~-~-~-~-~-~-~-~ stmt -~-~-~-~-~-~-~-~
+
+IF r_expr stmt_block opt_elif
+					 ELIF r_expr stmt_block opt_elif
+					 ELSE stmt_block
+					 /* empty */  
+
+WHILE r_expr stmt_block
+
+l_expr '=' r_expr ';'
+l_expr ':' ident '=' r_expr ';'
+r_expr ';' { $$ = $1; }
+RETURN r_expr ';'
+RETURN ';'
+typecase
+
+	-~-~-~-~-~-~-~-~ l_expr -~-~-~-~-~-~-~-~
+	ident				-> IDENT, LOC
+	r_expr '.' ident	-> DOT, L_EXPR
+
+	-~-~-~-~-~-~-~-~ r_expr -~-~-~-~-~-~-~-~
+	l_expr
+	STRING_LIT
+	INT_LIT
+	'-' r_expr
+	r_expr '*' r_expr
+	r_expr '/' r_expr
+	r_expr '+' r_expr
+	r_expr '-' r_expr
+	r_expr EQUALS r_expr
+    r_expr ATMOST r_expr
+    r_expr '<' r_expr
+    r_expr ATLEAST r_expr
+    r_expr '>' r_expr
+    r_expr AND r_expr
+    r_expr OR r_expr
+    NOT r_expr
+    '(' r_expr ')'
+    r_expr '.' ident '(' actual_args ')'
+    ident '(' actual_args ')'

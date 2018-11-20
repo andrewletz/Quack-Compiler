@@ -5,9 +5,10 @@ bool Typechecker::isVarInit(Qmethod method, std::string ident) {
 		method.init.end(), ident) != method.init.end();
 }
 
-Qmethod Typechecker::createQmethod(AST::Node *method) {
+Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass) {
 	Qmethod newMethod;
 	newMethod.node = method;
+	newMethod.clazz = containerClass;
 	newMethod.name = method->get(IDENT, METHOD_NAME)->name;
 	newMethod.type["return"] = method->get(IDENT, RETURN_TYPE)->name;
 
@@ -40,14 +41,14 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	newClass.super = clazz->get(IDENT, SUPER_NAME)->name;
 	
 	AST::Node *astConstructor = clazz->get(METHOD, CONSTRUCTOR);
-	Qmethod classConstructor = createQmethod(astConstructor);
+	Qmethod classConstructor = createQmethod(astConstructor, &newClass);
 	newClass.constructor = classConstructor;
 
 	AST::Node *methodsContainer = clazz->get(METHODS);
 	if(!methodsContainer->order.empty()) { // empty methods check before iterating over it
 		std::vector<AST::Node *> methods = methodsContainer->getAll(METHOD);
 		for (AST::Node *method : methods) {
-			newClass.methods.push_back(createQmethod(method));
+			newClass.methods.push_back(createQmethod(method, &newClass));
 		}
 	}
 
@@ -249,6 +250,7 @@ void Typechecker::printQclass(Qclass clazz) {
 
 void Typechecker::printQmethod(Qmethod method) {
 	std::cout << "	~~--~~| method " << method.name << " |~~--~~ " << std::endl;
+	std::cout << "	Inside class: " << method.clazz->name << std::endl;
 	std::cout << "	Return type: " << method.type["return"] << std::endl;
 	std::cout << "	Initialized vars: " << std::endl;
 	for (std::string s : method.init) {

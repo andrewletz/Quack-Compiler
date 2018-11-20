@@ -11,8 +11,17 @@
 // put into the type and init vectors, and return is automatically
 // put into the type vector upon creation. This is because in Quack
 // we can assume arguments are initialized, and return type is static.
+
+struct Qclass; // needs to forward declared as each struct holds the other in some form
+
 struct Qmethod {
-    AST::Node *node;
+    AST::Node *node; // pointer to the node in the tree
+
+    // The reference to the containing class of a method is a pointer because
+    // it may not be fully initialized when passed into any given Qmethod.
+    // This is okay because we don't use *clazz until after all initialization is complete.
+    Qclass *clazz;
+    
     std::string name;
     std::vector<std::string> init;
     std::map<std::string, std::string> type;
@@ -20,11 +29,14 @@ struct Qmethod {
 };
 
 struct Qclass {
-    AST::Node *node;
+    AST::Node *node; // pointer to the node in the tree
     std::string name;
     std::string super;
     Qmethod constructor;
     std::vector<Qmethod> methods;
+
+    // for use in init before use checking in non constructor methods
+    std::set<std::string> instanceVars; 
 };
 
 class Typechecker {
@@ -62,7 +74,7 @@ class Typechecker {
         std::string getSuperClass(std::string class1);
 
         Qclass createQclass(AST::Node *clazz);
-        Qmethod createQmethod(AST::Node *method);
+        Qmethod createQmethod(AST::Node *method, Qclass *containerClass);
 
         void printQclass(Qclass clazz);
         void printQmethod(Qmethod method);

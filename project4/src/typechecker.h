@@ -71,7 +71,6 @@ class Typechecker {
         // Type checking: phase one
         // - check for circular dependency
         // - check if class method definitions are compatible with parent's
-        // (check if class extends no such super is done in initialize())
         bool classHierarchyCheck();
         bool methodsCompatibleCheck();
 
@@ -97,7 +96,7 @@ class Typechecker {
         std::string getSuperClass(std::string class1);
 
         Qclass createQclass(AST::Node *clazz);
-        Qmethod createQmethod(AST::Node *method, Qclass *containerClass);
+        Qmethod createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor);
 
         void printQclass(Qclass clazz);
         void printQmethod(Qmethod method);

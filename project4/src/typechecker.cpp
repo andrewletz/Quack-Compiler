@@ -1,10 +1,20 @@
 #include "typechecker.h"
 
-Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass) {
+Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
 	Qmethod newMethod;
 	newMethod.node = method;
 	newMethod.clazz = containerClass;
 	newMethod.name = method->get(IDENT, METHOD_NAME)->name;
+
+	// check for methods sharing a name with their class
+	if (!isConstructor) { // the name of a constructor is stored as the name of a class in the AST
+		if (newMethod.name == containerClass->name) {
+			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
+						"\" shares same name as containing class!" << END;
+	            	report::bail(CLASSHIERARCHY);
+		}
+	}
+
 	newMethod.type["return"] = method->get(IDENT, RETURN_TYPE)->name;
 
 	AST::Node *formalsContainer = method->get(FORMAL_ARGS);
@@ -36,14 +46,14 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	newClass.super = clazz->get(IDENT, SUPER_NAME)->name;
 	
 	AST::Node *astConstructor = clazz->get(METHOD, CONSTRUCTOR);
-	Qmethod classConstructor = createQmethod(astConstructor, &newClass);
+	Qmethod classConstructor = createQmethod(astConstructor, &newClass, true);
 	newClass.constructor = classConstructor;
 
 	AST::Node *methodsContainer = clazz->get(METHODS);
 	if(!methodsContainer->order.empty()) { // empty methods check before iterating over it
 		std::vector<AST::Node *> methods = methodsContainer->getAll(METHOD);
 		for (AST::Node *method : methods) {
-			newClass.methods.push_back(createQmethod(method, &newClass));
+			newClass.methods.push_back(createQmethod(method, &newClass, false));
 		}
 	}
 
@@ -63,6 +73,14 @@ void Typechecker::initialize() {
 		std::vector<AST::Node *> classes = root->get(CLASSES)->getAll(CLASS);
 		for (AST::Node *n : classes) {
 			Qclass clazz = createQclass(n);
+
+			// check for class redeclaration here
+			if (this->classes.find(clazz.name) != this->classes.end()) {
+				RED << "Type Checker: class \"" << clazz.name << 
+					"\" has already been defined!" << END;
+            	report::bail(CLASSHIERARCHY);
+			}
+
 			this->classes[clazz.name] = clazz;
 			//printQclass(clazz);
 		}
@@ -137,13 +155,11 @@ bool Typechecker::classHierarchyCheck() {
 }
 
 bool Typechecker::methodsCompatibleCheck() {
-	for (auto qclss : this->class_hierarchy) {
-
+	for (auto qclss : this->classes) {
+		printQclass(qclss.second);
 	}
 	return true;
 }
-
-
 
 bool Typechecker::initializeBeforeUseCheck() {
 	return true;
@@ -157,7 +173,9 @@ bool Typechecker::checkProgram() {
 	// Type checking: phase one
 	// - check for circular dependency
 	// - check if class method definitions are compatible with parent's
-	// (check if class extends no such super is done in initialize())
+	// (check if class has already been declared is done in initialize())
+    // (check if class extends no such super is done in initialize())
+    // (check if method shares same name as calss is done in createQmethod())
 
 	bool classHierarchyValid = this->classHierarchyCheck();
     if (!classHierarchyValid) {
@@ -165,6 +183,13 @@ bool Typechecker::checkProgram() {
         report::bail(CLASSHIERARCHY);
     } else {
         report::gnote("class hierarchy check passed.", TYPECHECKER);
+    }
+
+    bool methodsCompatible = this->methodsCompatibleCheck();
+    if (!methodsCompatible) {
+        report::bail(CLASSHIERARCHY);
+    } else {
+        report::gnote("method compatibility check passed.", TYPECHECKER);
     }
 
     bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();

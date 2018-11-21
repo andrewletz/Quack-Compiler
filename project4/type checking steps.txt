@@ -1,8 +1,16 @@
 class hierarchy check (phase 1):
+	done in type checker initialization (but still a part of phase 1):
+		- check if class extends no such super 
+			-> Class "__" extends non-existant class "__"
+		- check if a method name is the same as the class name it resides in
+			->
+		- check if a class has already been defined (no class redefinition allowed)
+			-> Class "__" has already been defined!
+
+
 	- check if there is a circular dependency 
 			-> Circular dependency detected
-	- check if class extends no such super 
-			-> Class "__" extends non-existant class "__"
+	
 	- check if class method definitions are compatible with parent's 
 			-> Class "__"'s method "__" incompatible with super class "__"'s definition
 

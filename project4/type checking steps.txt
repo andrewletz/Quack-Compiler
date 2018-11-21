@@ -5,25 +5,20 @@ class hierarchy check (phase 1):
 			-> Class "__" extends non-existant class "__"
 	- check if class method definitions are compatible with parent's 
 			-> Class "__"'s method "__" incompatible with super class "__"'s definition
-	- check if class method definitions are in same order as parent's
-			-> Method "__" found where "__" was expected in class "__"
 
 init before use on constructors (phase 2):
 	for each class constructor,
 	- check that each variable is initialized on all paths before use
 		for each stmt in constructor,
 		- add it to the type vector with type NONE (or something)
-		- if an assignment 
-			- if of form this.x = ..., add this.x to Qclass' vector<std::string> instanceVars; 
-			- if right hand side is a load, check if that variable is in init
-			- if right hand side is an expression, check if each variable passed into expression is in init
-			- if right hand side is an intconst or strconst or bool, add variable to init
-		- if 
+		- if a leaf boils down to a literal (string, int, bool or none) then it is initialized
+		- if not, check if its init already
 				-> Class "__": variable "__" used before initialized on all paths
 
 	for each class again,
 	- compare constructors instanceVars to parent's instanceVars (just by name, no type yet).
-			-> Variable "__" found where "__" was expected in class "__"
+		(the child must define all the instance vars of the parent!)
+			-> Child class "__" of parent "__" does not define instance variable "__"
 
 init before use on methods (phase 3):
 	for each method in a class,
@@ -32,12 +27,11 @@ init before use on methods (phase 3):
 			- check that this.x exists in Qclass' instanceVars
 			- if not,
 				-> Unknown instance variable "__" used in method "__"
-		- if an assignment 
-			- if of form this.x = ..., add this.x to Qclass' vector<std::string> instanceVars; 
-			- if right hand side is a load, check if that variable is in init
-			- if right hand side is an expression, check if each variable passed into expression is in init
-			- if right hand side is an intconst or strconst or bool, add variable to init
-				-> Variable "__" in method "__" used before initialized on all paths
+			- if it is, it is initialized (we can assume this because we do all constructors first)
+		- add it to the type vector with type NONE (or something)
+		- if a leaf boils down to a literal (string, int, bool or none) then it is initialized
+		- if not, check if its init already
+				-> Class "__": variable "__" used before initialized on all paths
 
 
 type inference on constructors (phase 3):

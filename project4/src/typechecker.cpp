@@ -1,10 +1,5 @@
 #include "typechecker.h"
 
-bool Typechecker::isVarInit(Qmethod method, std::string ident) {
-	return std::find(method.init.begin(), 
-		method.init.end(), ident) != method.init.end();
-}
-
 Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass) {
 	Qmethod newMethod;
 	newMethod.node = method;
@@ -18,8 +13,8 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass) {
 		for (AST::Node *arg : formals) {
 			newMethod.init.push_back(arg->get(IDENT, VAR_IDENT)->name);
 			newMethod.type[arg->get(IDENT, VAR_IDENT)->name] = arg->get(IDENT, TYPE_IDENT)->name;
-			// std::cout << "	Formal: " << arg->get(IDENT, VAR_IDENT)->name
-			// 		<< ", " << arg->get(IDENT, TYPE_IDENT)->name << std::endl;
+			// OUT << "	Formal: " << arg->get(IDENT, VAR_IDENT)->name
+			// 		<< ", " << arg->get(IDENT, TYPE_IDENT)->name << END;
 		}
 	}
 
@@ -55,7 +50,7 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	return newClass;
 }
 
-// initializes our map classes and Qclass statements so that
+// initializes map "classes" and Qclass statements so that
 // we can use them later for the actual type checking.
 // all information is gathered from the AST passed in with root.
 void Typechecker::initialize() { 
@@ -82,11 +77,13 @@ void Typechecker::initialize() {
 		class_name = clss.second.name;
 		super_name = clss.second.super;
 
+		// we can easily check for no such super errors here, might aswell
 		if (this->classes.find(super_name) == this->classes.end()) {
 			if (super_name == "Obj") {
 				continue;
 			} else {
-				report::error("class hierarchy check failed: no such super class!", TYPECHECKER);
+				RED << "Type Checker: class \"" << class_name << 
+					"\" extends undeclared super \"" << super_name << "\"!" << END;
             	report::bail(CLASSHIERARCHY);
 			}
 		}
@@ -137,6 +134,66 @@ bool Typechecker::classHierarchyCheck() {
 		seen_classes.clear();
 	}
 	return true;
+}
+
+bool Typechecker::methodsCompatibleCheck() {
+	for (auto qclss : this->class_hierarchy) {
+
+	}
+	return true;
+}
+
+
+
+bool Typechecker::initializeBeforeUseCheck() {
+	return true;
+}
+
+bool Typechecker::typeInferenceCheck() {
+	return true;
+}
+
+bool Typechecker::checkProgram() {
+	// Type checking: phase one
+	// - check for circular dependency
+	// - check if class method definitions are compatible with parent's
+	// (check if class extends no such super is done in initialize())
+
+	bool classHierarchyValid = this->classHierarchyCheck();
+    if (!classHierarchyValid) {
+        report::error("class hierarchy check failed: circular dependency detected!", TYPECHECKER);
+        report::bail(CLASSHIERARCHY);
+    } else {
+        report::gnote("class hierarchy check passed.", TYPECHECKER);
+    }
+
+    bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();
+    if (!initBeforeUseCheckValid) {
+        report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
+        report::bail(INITBEFOREUSE);
+    } else {
+        report::gnote("initialization before use check passed.", TYPECHECKER);
+    }
+
+    bool typeInferenceCheckValid = this->typeInferenceCheck();
+    if (!typeInferenceCheckValid) {
+        report::error("type inference check failed: idk what to put here yet!", TYPECHECKER);
+        report::bail(TYPEINFERENCE);
+    } else {
+        report::gnote("type inference check passed.", TYPECHECKER);
+    }
+
+    // if we reach the end we know nothing has failed, return true to the driver
+    return true;
+}
+
+bool Typechecker::isVarInit(Qmethod method, std::string ident) {
+	return std::find(method.init.begin(), 
+		method.init.end(), ident) != method.init.end();
+}
+
+std::string Typechecker::getSuperClass(std::string class1) {
+	return classes[class1].super;
 }
 
 bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
@@ -227,21 +284,9 @@ std::string Typechecker::leastCommonAncestor(std::string class1, std::string cla
 	return retVal;
 }
 
-std::string Typechecker::getSuperClass(std::string class1) {
-	return classes[class1].super;
-}
-
-bool Typechecker::initializeBeforeUseCheck() {
-	return true;
-}
-
-bool Typechecker::typeInferenceCheck() {
-	return true;
-}
-
 void Typechecker::printQclass(Qclass clazz) {
-	std::cout << "******************| class " << clazz.name << " |******************" << std::endl;
-	std::cout << "Super: " << clazz.super << std::endl << std::endl;
+	OUT << "******************| class " << clazz.name << " |******************" << END;
+	OUT << "Super: " << clazz.super << END << END;
 	printQmethod(clazz.constructor);
 	for (Qmethod m : clazz.methods) {
 		printQmethod(m);
@@ -249,20 +294,20 @@ void Typechecker::printQclass(Qclass clazz) {
 }
 
 void Typechecker::printQmethod(Qmethod method) {
-	std::cout << "	~~--~~| method " << method.name << " |~~--~~ " << std::endl;
-	std::cout << "	Inside class: " << method.clazz->name << std::endl;
-	std::cout << "	Return type: " << method.type["return"] << std::endl;
-	std::cout << "	Initialized vars: " << std::endl;
+	OUT << "	~~--~~| method " << method.name << " |~~--~~ " << END;
+	OUT << "	Inside class: " << method.clazz->name << END;
+	OUT << "	Return type: " << method.type["return"] << END;
+	OUT << "	Initialized vars: " << END;
 	for (std::string s : method.init) {
-		std::cout << "		" << s << std::endl;
+		OUT << "		" << s << END;
 	}
-	std::cout << "	Known types: " << std::endl;
+	OUT << "	Known types: " << END;
 	for (std::map<std::string, std::string>::iterator it = method.type.begin(); it != method.type.end(); ++it) {
-	 	std::cout << "		" << it->first << ", " << it->second << std::endl;
+	 	OUT << "		" << it->first << ", " << it->second << END;
 	}
-	std::cout << "	Stmts: " << std::endl;
+	OUT << "	Stmts: " << END;
 	for (AST::Node *stmt : method.stmts) { // print each stmt type inside Qmethod's stmts vector
-			std::cout << "		" << typeString(stmt->type) << std::endl;
+			OUT << "		" << typeString(stmt->type) << END;
 	}
-	std::cout << std::endl;
+	OUT << END;
 }

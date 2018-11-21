@@ -46,6 +46,7 @@ class Typechecker {
         /* ============ */
         // passed in from the parser, is the root of our AST
         AST::Node *root;
+
         // map from class name -> struct
         std::map<std::string, Qclass> classes;
         std::map<std::string, std::vector<std::string>> class_hierarchy;
@@ -64,11 +65,33 @@ class Typechecker {
         /* Methods */
         /* ======= */
 
+        // grabs everything we need from the AST for type checking
         void initialize();
-        bool isVarInit(Qmethod method, std::string ident);
+
+        // Type checking: phase one
+        // - check for circular dependency
+        // - check if class method definitions are compatible with parent's
+        // (check if class extends no such super is done in initialize())
         bool classHierarchyCheck();
+        bool methodsCompatibleCheck();
+
+        // Type checking: phase two
+        // - init before use on constructors
+        // - check instance vars of children match parents
+        // - init before use on methods
         bool initializeBeforeUseCheck();
+
+        // Type checking: phase three
+        // - type inference on constructors
+        // - type inference on methods
         bool typeInferenceCheck();
+
+        // Type check our entire program and report errors/bail appropriately
+        // this returns true back to driver.cpp if we passed all checks
+        bool checkProgram();
+
+        // "helper" methods used throughout type checking
+        bool isVarInit(Qmethod method, std::string ident);
         bool isSubclassOrEqual(std::string class1, std::string class2);
         std::string leastCommonAncestor(std::string class1, std::string class2);
         std::string getSuperClass(std::string class1);

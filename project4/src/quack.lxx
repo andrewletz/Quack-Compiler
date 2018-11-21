@@ -22,24 +22,24 @@ void yyerror (const std::string &msg, yy::position* where) {
 }
 
 std::string unclosedStringMsg(int lineno, int columno) {
-    return "Possible unclosed string at line " + std::to_string(lineno) + ", column " + std::to_string(columno);
+    return "possible unclosed string at line " + std::to_string(lineno) + ", column " + std::to_string(columno);
 }
 
 std::string BAD_ESC_MSG =
-    "Illegal escape code; only \\\\, \\0, \\t, \\n, \\r, and \\n are permitted";
+    "illegal escape code; only \\\\, \\0, \\t, \\n, \\r, and \\n are permitted";
 
 std::string badEscMsg(int lineno, int columno) {
     return BAD_ESC_MSG + "... found at line " + std::to_string(lineno) + ", column " + std::to_string(columno);
 }
 
 std::string UNCLOSED_COMMENT_MSG =
-    "Possible unclosed multiline comment, reason: EOF encountered; exiting with error code 4";
+    "possible unclosed multiline comment, reason: EOF encountered; exiting with error code 4";
 
 std::string UNCLOSED_STRING_MSG =
-    "Possible unclosed multiline string, reason: EOF encountered; exiting with error code 4";
+    "possible unclosed multiline string, reason: EOF encountered; exiting with error code 4";
 
 std::string unexpectedCharMsg(int lineno, int columno, const char *text) {
-    return "Unexpected character '" + std::string(text) + "'" + " at line " + std::to_string(lineno) +
+    return "unexpected character '" + std::string(text) + "'" + " at line " + std::to_string(lineno) +
            ", column " + std::to_string(columno);
 }
 

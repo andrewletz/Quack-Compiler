@@ -1,4 +1,4 @@
-class Stmts() {
+class Stmts() extends Obj {
       this.ples = Ples(100);
    
       if (x == 10) { 

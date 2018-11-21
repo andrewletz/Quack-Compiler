@@ -12,6 +12,14 @@
 #include "location.hh"
 #include <string>
 
+// using preprocessor directives isn't a good thing...  
+// but I couldn't think of a better way to do this all over the code.
+#define OUT std::cout << "\033[0m"
+#define RED std::cerr << "\033[1;91m"
+#define YLW std::cerr << "\033[1;92m"
+#define GRN std::cerr << "\033[1;93m"
+#define END "\033[0m" << std::endl
+
 enum CompStage {
         LEXER, PARSER, CLASSHIERARCHY, INITBEFOREUSE, TYPEINFERENCE, CODEGENERATION,
         TYPECHECKER, PROMPT
@@ -29,6 +37,7 @@ extern std::string stageString(CompStage stage);
 // localize decisions like where the error reports go (stdout, stderr, etc)
 
 namespace report {
+
     // Halt execution if there are too many errors
     void bail(CompStage stage);
 

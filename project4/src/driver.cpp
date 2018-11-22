@@ -35,7 +35,7 @@ class Driver {
         if (result == 0 && report::ok()) {
             if (root == nullptr) {
                 report::error("Root really shouldn't be null here.", PARSER);
-                report::bail(PARSER);
+                report::reportAndBail();
             }
             return root; // program was legal
         } else {
@@ -112,6 +112,7 @@ int main(int argc, char *argv[]) {
         Typechecker typeChecker(root, stubsRoot);
         bool programValid = typeChecker.checkProgram();
 
+        report::reportAndBail();
         if (programValid) report::gnote("complete.", TYPECHECKER);
         // if programValid is false it should have bailed in the type checker
 
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
     } else {
         // either the parse has failed, or no AST was built.
         report::rnote("compilation failed - abstract syntax tree could not be generated!", PARSER);
-        report::bail(PARSER);
+        report::reportAndBail();
     }
 
     file.close();

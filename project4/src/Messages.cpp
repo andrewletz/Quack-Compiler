@@ -10,26 +10,35 @@ std::string stageString(CompStage stage) {
 namespace report {
 
 // The error count is global
-static int error_count = 0; // How many errors so far? */
-const int  error_limit = 5;
+const int  error_limit = 4;
 static bool debug = true;
+
+std::map<CompStage, int> error_count {
+    {LEXER, 0},
+    {PARSER, 0},
+    {CLASSHIERARCHY, 0},
+    {INITBEFOREUSE, 0},
+    {TYPEINFERENCE, 0},
+    {CODEGENERATION, 0},
+    {TYPECHECKER, 0}
+};
 
 void bail(CompStage stage) {
     switch (stage) {
         case 0:
-            std::cerr << "\033[1;91mToo many lexer errors, bailing with exit code 4.\033[0m" << std::endl;
+            RED << "Bailing with exit code 4 (SCANNER)." << END;
             exit(4);
         case 1:
-            std::cerr << "\033[1;91mToo many parser errors, bailing with exit code 8.\033[0m" << std::endl;
+            RED << "Bailing with exit code 8 (PARSER)." << END;
             exit(8);
         case 2:
-            std::cerr << "\033[1;91mClass hierarchy errors found, bailing with exit code 16.\033[0m" << std::endl;
+            RED << "Bailing with exit code 16 (CLASS_HIERARCHY)." << END;
             exit(16);
         case 3:
-            std::cerr << "\033[1;91mInitialization before use errors found, bailing with exit code 32.\033[0m" << std::endl;
+            RED << "Bailing with exit code 32 (INIT_BEFORE_USE)." << END;
             exit(32);
         case 4:
-            std::cerr << "\033[1;91mType inference errors found, bailing with exit code 64.\033[0m" << std::endl;
+            RED << "Bailing with exit code 64 (TYPE_INFERENCE)." << END;
             exit(64);
         default:
             exit(1);
@@ -45,43 +54,78 @@ void setDebug(bool flag) {
 // with IDEs and other tools:
 // /path/to/file:32:9: error: expression is not assignable
 void error_at(const yy::location& loc, const std::string& msg, CompStage stage) {
-    std::cerr << "\033[1;91m" << stageString(stage) << msg << " at " << loc << "\033[0m" << std::endl;
-    if (++error_count > error_limit) {
+    RED << stageString(stage) << msg << " at " << loc << "" << END;
+    if (++error_count[stage] > error_limit) {
         bail(stage);
     }
 }
 
 // An error that we can't locate in the input
 void error(const std::string& msg, CompStage stage) {
-    std::cerr << "\033[1;91m" << stageString(stage) << msg << "\033[0m" << std::endl;
-    if (++error_count > error_limit) {
+    RED << stageString(stage) << msg << "" << END;
+    if (++error_count[stage] > error_limit) {
+        bail(stage);
+    }
+}
+
+void trackError(CompStage stage) {
+    if (++error_count[stage] > error_limit) {
         bail(stage);
     }
 }
 
 // Additional diagnostic message, does not count against error limit
 void note(const std::string& msg, CompStage stage) {
-    std::cerr << "\033[1;37m" << stageString(stage) << msg << "\033[0m" << std::endl;
+    std::cerr << "\033[1;37m" << stageString(stage) << msg << "" << END;
 }
 
 // Additional diagnostic message, does not count against error limit
 void gnote(const std::string& msg, CompStage stage) {
-    if (debug) std::cerr << "\033[1;92m" << stageString(stage) << msg << "\033[0m" << std::endl;
+    if (debug) GRN << stageString(stage) << msg << "" << END;
 }
 
 // Additional diagnostic message, does not count against error limit
 void ynote(const std::string& msg, CompStage stage) {
-    if (debug) std::cerr << "\033[1;93m" << stageString(stage) << msg << "\033[0m" << std::endl;
+    if (debug) YLW << stageString(stage) << msg << "" << END;
 }
 
 // Additional diagnostic message, does not count against error limit
 void rnote(const std::string& msg, CompStage stage) {
-    std::cerr << "\033[1;91m" << stageString(stage) << msg << "\033[0m" << std::endl;
+    RED << stageString(stage) << msg << "" << END;
+}
+
+// goes through the error_count map looking for where errors occurred.
+// bails with the exit code of the place where the first error occurred.
+// (if an error occurs in the scanner and in the parser, the program
+// will bail with code 4, for scanner)
+void reportAndBail() {
+    bool shouldBail = false;
+    bool firstErrorSet = false;
+    CompStage firstError;
+
+    for (auto stage : error_count) {
+        if (stage.second > 0) {
+            if (!firstErrorSet) {
+                firstErrorSet = true;
+                firstError = stage.first;
+            }
+            shouldBail = true;
+        }
+    }
+
+    if (shouldBail) {
+        bail(firstError);
+    }
 }
 
 // Are we ok?
 bool ok() {
-    return (error_count == 0);
+    for (auto stage : error_count) {
+        if (stage.second > 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 };

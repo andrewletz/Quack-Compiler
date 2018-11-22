@@ -2,15 +2,13 @@
 //
 
 class P() {
-
-def s(x: Int) : Int {
-	return x;
+	def s(x: Int) : Int {
+		return x;
+	}
 }
-}
 
-class X() extends P{
-
-def s(x: Int) : Int {
-	return x+1;
-}
+class X() extends P {
+	def s(x: Int) : Int {
+		return x+1;
+	}
 }

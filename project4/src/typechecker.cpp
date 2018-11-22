@@ -4,6 +4,7 @@
 bool isSubclassOrEqual(std::string class1, std::string class2);
 bool doesClassExist(std::string classname);
 bool isBuiltin(std::string classname);
+bool isVarInit(Qmethod method, std::string ident);
 
 Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
 	Qmethod newMethod;
@@ -15,7 +16,7 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bo
 	if (!isConstructor) { // the name of a constructor is stored as the name of a class in the AST
 		if (newMethod.name == containerClass->name) {
 			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
-						"\" shares name with containing class!" << END;
+						"\" shares name with containing class" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
@@ -24,7 +25,7 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bo
 	for (Qmethod otherMethod : containerClass->methods) {
 		if (otherMethod.name == newMethod.name) {
 			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
-						"\" in class \"" << containerClass->name << "\" is defined more than once!" << END;
+						"\" in class \"" << containerClass->name << "\" is defined more than once" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
@@ -63,7 +64,7 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	if (newClass.super == "Nothing" || newClass.super == "String" ||
 		newClass.super == "Boolean" || newClass.super == "Int" ) {
 		RED << stageString(CLASSHIERARCHY) << "class \"" << newClass.name << 
-					"\" extends built-in type \"" << newClass.super << "\"!" << END;
+					"\" extends built-in type \"" << newClass.super << "\"" << END;
             	report::bail(CLASSHIERARCHY);
 	}
 	
@@ -96,12 +97,12 @@ void Typechecker::initializeClasses(AST::Node *astRoot) {
 			// check for class redeclaration here
 			if (this->classes.find(clazz.name) != this->classes.end()) {
 				RED << stageString(CLASSHIERARCHY) << "class \"" << clazz.name << 
-					"\" has already been defined!" << END;
+					"\" has already been defined" << END;
             	report::bail(CLASSHIERARCHY);
 			}
 
 			this->classes[clazz.name] = clazz;
-			printQclass(clazz);
+			//printQclass(clazz);
 		}
 	}
 }
@@ -133,7 +134,7 @@ void Typechecker::initialize() {
 		// we can easily check for no such super errors here, might aswell
 		if (!doesClassExist(super_name)) {
 			RED << stageString(CLASSHIERARCHY) << "class \"" << class_name << 
-				"\" extends undeclared superclass \"" << super_name << "\"!" << END;
+				"\" extends undeclared superclass \"" << super_name << "\"" << END;
         	report::bail(CLASSHIERARCHY);
 		}
 
@@ -201,14 +202,40 @@ bool Typechecker::methodsCompatibleCheck() {
 							|| !this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
 
 						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-							"\" in subclass \"" << qclss.second.name << "\" has improper return type \""
-							<< returnTypeChild << "\"!" << END;
-				    	report::bail(TYPEINFERENCE);
+							"\" in \"" << qclss.second.name << "\" has improper return type \""
+							<< returnTypeChild << "\"" << END;
+						report::trackError(TYPEINFERENCE);
+				    	//report::bail(TYPEINFERENCE);
 					}
 
-					
-					// OUT << "c: " << returnTypeChild << " p: " << returnTypeParent << END;
-					// OUT << method.name << " overrides " << parentMethod.name << END;
+					for (std::string var : method.init) {
+						if (isVarInit(parentMethod, var)) {
+							std::string varTypeChild = method.type[var];
+							if (!doesClassExist(varTypeChild)) {
+								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
+									"\" in \"" << qclss.second.name << "\" has argument \""
+									<< var << "\" with non-existant type \"" << varTypeChild << "\"" << END;
+								report::trackError(TYPEINFERENCE);
+								continue;
+							}
+							std::string varTypeParent = parentMethod.type[var];
+							if (!isSubclassOrEqual(varTypeChild, varTypeParent)) {
+								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
+									"\" in \"" << qclss.second.name << "\" has argument \""
+									<< var << "\" with incorrect type \"" << varTypeChild << "\"" 
+									<< " (should be \"" << varTypeParent << "\")" << END;
+								report::trackError(TYPEINFERENCE);
+								//report::bail(TYPEINFERENCE);
+							}
+						} else {
+							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method.name <<
+								"\" in \"" << qclss.second.name << "\" has argument \""
+								<< var << "\" not present in parent" << END;
+							report::trackError(CLASSHIERARCHY);
+				    		//report::bail(CLASSHIERARCHY);
+						}
+					}
+
 				}
 			}
 		}
@@ -247,14 +274,14 @@ bool Typechecker::checkProgram() {
     if (!classHierarchyValid) {
         report::error("class hierarchy check failed - circular dependency detected!", TYPECHECKER);
         report::bail(CLASSHIERARCHY);
-    } else {
-        report::gnote("class hierarchy check passed.", TYPECHECKER);
+    } else if (report::ok()) {
+        report::gnote("circular dependency check passed.", TYPECHECKER);
     }
 
     bool methodsCompatible = this->methodsCompatibleCheck();
     if (!methodsCompatible) {
         report::bail(CLASSHIERARCHY);
-    } else {
+    } else if (report::ok()) {
         report::gnote("method compatibility check passed.", TYPECHECKER);
     }
 
@@ -262,7 +289,7 @@ bool Typechecker::checkProgram() {
     if (!initBeforeUseCheckValid) {
         report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
         report::bail(INITBEFOREUSE);
-    } else {
+    } else if (report::ok()) {
         report::gnote("initialization before use check passed.", TYPECHECKER);
     }
 
@@ -270,7 +297,7 @@ bool Typechecker::checkProgram() {
     if (!typeInferenceCheckValid) {
         report::error("type inference check failed: idk what to put here yet!", TYPECHECKER);
         report::bail(TYPEINFERENCE);
-    } else {
+    } else if (report::ok()) {
         report::gnote("type inference check passed.", TYPECHECKER);
     }
 

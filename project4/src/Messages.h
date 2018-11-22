@@ -10,14 +10,15 @@
 #define AST_MESSAGES_H
 
 #include "location.hh"
+#include <map>
 #include <string>
 
 // using preprocessor directives isn't a good thing...  
 // but I couldn't think of a better way to do this all over the code.
 #define OUT std::cout << "\033[0m"
 #define RED std::cerr << "\033[1;91m"
-#define YLW std::cerr << "\033[1;92m"
-#define GRN std::cerr << "\033[1;93m"
+#define YLW std::cerr << "\033[1;93m"
+#define GRN std::cerr << "\033[1;92m"
 #define END "\033[0m" << std::endl
 
 enum CompStage {
@@ -50,6 +51,9 @@ namespace report {
     // An error that we can't locate in the input
     void error(const std::string& msg, CompStage stage);
 
+    // Track an error without reporting a message
+    void trackError(CompStage stage);
+
     // Additional diagnostic message, does not count against error limit
     void note(const std::string& msg, CompStage stage);
 
@@ -64,6 +68,9 @@ namespace report {
 
     // Is everything ok, or have we encountered errors?
     bool ok();
+
+    // for use in the driver after all stages are complete
+    void reportAndBail();
 };
 
 

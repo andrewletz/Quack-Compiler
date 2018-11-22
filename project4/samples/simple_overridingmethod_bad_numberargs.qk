@@ -6,13 +6,17 @@ class G() {}
 class Z() extends G {}
 
 class P() {
-	def s() : G {
+	def s(x: G, p: String, d: Int) : G {
 		return "a";
 	}
+
+	def d(x: Z, p: String, d: Int, b: Boolean) { }
 }
 
 class X() extends P {
-	def s(x: String) : G {
-		return x;
+	def s(x: G, p: String, d: Int, e: Int) : G {
+		return "a";
 	}
+
+	def d(x: Z, p: String, d: Int, b: Boolean, e: Int) { }
 }

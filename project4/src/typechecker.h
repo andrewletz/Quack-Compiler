@@ -46,6 +46,7 @@ class Typechecker {
         /* ============ */
         // passed in from the parser, is the root of our AST
         AST::Node *root;
+        AST::Node *stubs;
 
         // map from class name -> struct
         std::map<std::string, Qclass> classes;
@@ -58,7 +59,7 @@ class Typechecker {
         /* Constructors & Destructors */
         /* ========================== */
 
-        Typechecker(AST::Node *root) : root(root) { initialize(); };
+        Typechecker(AST::Node *root, AST::Node *stubs) : root(root), stubs(stubs) { initialize(); };
         virtual ~Typechecker() {};
 
         /* ======= */
@@ -66,6 +67,7 @@ class Typechecker {
         /* ======= */
 
         // grabs everything we need from the AST for type checking
+        void initializeClasses(AST::Node *astRoot);
         void initialize();
 
         // Type checking: phase one
@@ -78,6 +80,7 @@ class Typechecker {
         // - init before use on constructors
         // - check instance vars of children match parents
         // - init before use on methods
+        bool initCheckQmethod(bool isConstructor);
         bool initializeBeforeUseCheck();
 
         // Type checking: phase three
@@ -91,6 +94,8 @@ class Typechecker {
 
         // "helper" methods used throughout type checking
         bool isVarInit(Qmethod method, std::string ident);
+        bool isBuiltin(std::string classname);
+        bool doesClassExist(std::string classname);
         bool isSubclassOrEqual(std::string class1, std::string class2);
         std::string leastCommonAncestor(std::string class1, std::string class2);
         std::string getSuperClass(std::string class1);

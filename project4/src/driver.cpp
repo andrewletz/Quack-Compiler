@@ -3,6 +3,7 @@
 #include "EvalContext.h"
 #include "Messages.h"
 #include "typechecker.h"
+#include "stubs.h"
 #include <fstream>
 
 class Driver {
@@ -94,6 +95,9 @@ int main(int argc, char *argv[]) {
     // Parse and get AST into *root
     AST::Node* root = driver.parse();
     if (root != nullptr) {
+        Driver stubsDriver(STUBS);
+        AST::Node* stubsRoot = stubsDriver.parse();
+
         report::gnote("complete.", LEXER);
         report::gnote("complete.", PARSER);
         AST::AST_print_context context;
@@ -105,7 +109,7 @@ int main(int argc, char *argv[]) {
 
         // begin type checking on our non-null AST
         report::ynote("starting...", TYPECHECKER);
-        Typechecker typeChecker(root);
+        Typechecker typeChecker(root, stubsRoot);
         bool programValid = typeChecker.checkProgram();
 
         if (programValid) report::gnote("complete.", TYPECHECKER);

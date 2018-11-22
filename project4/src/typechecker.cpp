@@ -1,5 +1,10 @@
 #include "typechecker.h"
 
+// forward declare some helper methods so that we don't clutter the start of the file
+bool isSubclassOrEqual(std::string class1, std::string class2);
+bool doesClassExist(std::string classname);
+bool isBuiltin(std::string classname);
+
 Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
 	Qmethod newMethod;
 	newMethod.node = method;
@@ -10,7 +15,16 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bo
 	if (!isConstructor) { // the name of a constructor is stored as the name of a class in the AST
 		if (newMethod.name == containerClass->name) {
 			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
-						"\" shares same name as containing class!" << END;
+						"\" shares name with containing class!" << END;
+	            	report::bail(CLASSHIERARCHY);
+		}
+	}
+
+	// check for duplicate methods
+	for (Qmethod otherMethod : containerClass->methods) {
+		if (otherMethod.name == newMethod.name) {
+			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
+						"\" in class \"" << containerClass->name << "\" is defined more than once!" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
@@ -44,6 +58,14 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	newClass.node = clazz;
 	newClass.name = clazz->get(IDENT, CLASS_NAME)->name;
 	newClass.super = clazz->get(IDENT, SUPER_NAME)->name;
+
+	// make sure the class isn't extending any of the "final" Quack built-in classes
+	if (newClass.super == "Nothing" || newClass.super == "String" ||
+		newClass.super == "Boolean" || newClass.super == "Int" ) {
+		RED << stageString(CLASSHIERARCHY) << "class \"" << newClass.name << 
+					"\" extends built-in type \"" << newClass.super << "\"!" << END;
+            	report::bail(CLASSHIERARCHY);
+	}
 	
 	AST::Node *astConstructor = clazz->get(METHOD, CONSTRUCTOR);
 	Qmethod classConstructor = createQmethod(astConstructor, &newClass, true);
@@ -60,50 +82,59 @@ Qclass Typechecker::createQclass(AST::Node *clazz) {
 	return newClass;
 }
 
-// initializes map "classes" and Qclass statements so that
-// we can use them later for the actual type checking.
-// all information is gathered from the AST passed in with root.
-void Typechecker::initialize() { 
-	bool haveClasses = !root->get(CLASSES)->order.empty();
-	bool haveStatements = !root->get(BLOCK, STATEMENTS)->order.empty();
+void Typechecker::initializeClasses(AST::Node *astRoot) {
+	bool haveClasses = !astRoot->get(CLASSES)->order.empty();
+	bool haveStatements = !astRoot->get(BLOCK, STATEMENTS)->order.empty();
 	// if we have an empty program, no type checking
 	if ( !haveClasses && !haveStatements) { return; }
 
 	if ( haveClasses ) { // only initialize our classes if we have some
-		std::vector<AST::Node *> classes = root->get(CLASSES)->getAll(CLASS);
+		std::vector<AST::Node *> classes = astRoot->get(CLASSES)->getAll(CLASS);
 		for (AST::Node *n : classes) {
 			Qclass clazz = createQclass(n);
 
 			// check for class redeclaration here
 			if (this->classes.find(clazz.name) != this->classes.end()) {
-				RED << "Type Checker: class \"" << clazz.name << 
+				RED << stageString(CLASSHIERARCHY) << "class \"" << clazz.name << 
 					"\" has already been defined!" << END;
             	report::bail(CLASSHIERARCHY);
 			}
 
 			this->classes[clazz.name] = clazz;
-			//printQclass(clazz);
+			printQclass(clazz);
 		}
 	}
+}
+
+// initializes map "classes" and Qclass statements so that
+// we can use them later for the actual type checking.
+// all information is gathered from the AST passed in with root.
+// stub classes are created with passed in stubs
+void Typechecker::initialize() { 
+	this->initializeClasses(this->root);
+	this->initializeClasses(this->stubs);
 
 	// Initialize the class hierarchy table
 	std::string class_name;
 	std::string super_name;
 	std::map<std::string, std::vector<std::string>>::iterator it;
 
+	// put Obj on the hierarchy first
+	// std::vector<std::string> builtins;
+	// builtins.push_back("String");
+	// builtins.push_back("Int");
+	// builtins.push_back("Boolean");
+	// this->class_hierarchy.insert(std::pair<std::string, std::vector<std::string>>("Obj", builtins));
+
 	for (auto clss : this->classes) {
 		class_name = clss.second.name;
 		super_name = clss.second.super;
 
 		// we can easily check for no such super errors here, might aswell
-		if (this->classes.find(super_name) == this->classes.end()) {
-			if (super_name == "Obj") {
-				continue;
-			} else {
-				RED << "Type Checker: class \"" << class_name << 
-					"\" extends undeclared super \"" << super_name << "\"!" << END;
-            	report::bail(CLASSHIERARCHY);
-			}
+		if (!doesClassExist(super_name)) {
+			RED << stageString(CLASSHIERARCHY) << "class \"" << class_name << 
+				"\" extends undeclared superclass \"" << super_name << "\"!" << END;
+        	report::bail(CLASSHIERARCHY);
 		}
 
 		it = this->class_hierarchy.find(super_name);
@@ -113,6 +144,7 @@ void Typechecker::initialize() {
 		}
 		this->class_hierarchy[super_name].push_back(class_name);
 	}
+
 }
 
 bool Typechecker::classHierarchyCheck() {
@@ -124,6 +156,8 @@ bool Typechecker::classHierarchyCheck() {
 	// start at a static class like "Obj", then we won't be able to get to classes that *don't* inherit
 	// from Obj, such as the example found in circular_dependency.qk
 	for (auto qclss : this->class_hierarchy) {
+		if (isBuiltin(qclss.first)) continue;
+
 		class_stack.push(qclss.first);
 
 		while (!class_stack.empty()) {
@@ -156,9 +190,40 @@ bool Typechecker::classHierarchyCheck() {
 
 bool Typechecker::methodsCompatibleCheck() {
 	for (auto qclss : this->classes) {
-		printQclass(qclss.second);
+		for(Qmethod method : qclss.second.methods) {
+			for (Qmethod parentMethod : this->classes[qclss.second.super].methods) {
+				if (method.name == parentMethod.name) { 
+					// we must be overriding this method if names match exactly
+					// check that types properly line up for overriden method
+					std::string returnTypeChild = method.type["return"];
+					std::string returnTypeParent = parentMethod.type["return"];
+					if (!doesClassExist(returnTypeChild)
+							|| !this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
+
+						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
+							"\" in subclass \"" << qclss.second.name << "\" has improper return type \""
+							<< returnTypeChild << "\"!" << END;
+				    	report::bail(TYPEINFERENCE);
+					}
+
+					
+					// OUT << "c: " << returnTypeChild << " p: " << returnTypeParent << END;
+					// OUT << method.name << " overrides " << parentMethod.name << END;
+				}
+			}
+		}
+		//printQclass(qclss.second);
 	}
 	return true;
+}
+
+bool Typechecker::initCheckQmethod(bool isConstructor) {
+	// if you encounter an assign of form this.x, add it to Qclass's instanceVars
+	// then check if that instance var shares the same name as any given method in the same class
+	// if so, report an error
+
+	// check if l_expr is equal to a literal, if so report an error
+	// -> Attempt to assign to a literal in method "__"
 }
 
 bool Typechecker::initializeBeforeUseCheck() {
@@ -175,11 +240,12 @@ bool Typechecker::checkProgram() {
 	// - check if class method definitions are compatible with parent's
 	// (check if class has already been declared is done in initialize())
     // (check if class extends no such super is done in initialize())
-    // (check if method shares same name as calss is done in createQmethod())
+    // (check if method shares same name as class is done in createQmethod())
+    // (check for duplicate methods is done in createQmethod())
 
 	bool classHierarchyValid = this->classHierarchyCheck();
     if (!classHierarchyValid) {
-        report::error("class hierarchy check failed: circular dependency detected!", TYPECHECKER);
+        report::error("class hierarchy check failed - circular dependency detected!", TYPECHECKER);
         report::bail(CLASSHIERARCHY);
     } else {
         report::gnote("class hierarchy check passed.", TYPECHECKER);
@@ -219,6 +285,23 @@ bool Typechecker::isVarInit(Qmethod method, std::string ident) {
 
 std::string Typechecker::getSuperClass(std::string class1) {
 	return classes[class1].super;
+}
+
+bool Typechecker::isBuiltin(std::string classname) {
+	if (classname == "Obj" || classname == "String" || classname == "Nothing"
+		|| classname == "Int" || classname == "Boolean") { 
+		return true;
+	} else {
+		return false;
+	} 
+}
+
+bool Typechecker::doesClassExist(std::string classname) {
+	if (isBuiltin(classname)) { 
+		return true;
+	} else {
+		return this->classes.find(classname) != this->classes.end();
+	}
 }
 
 bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
@@ -310,6 +393,9 @@ std::string Typechecker::leastCommonAncestor(std::string class1, std::string cla
 }
 
 void Typechecker::printQclass(Qclass clazz) {
+	if (isBuiltin(clazz.name)) { 
+		return;
+	}
 	OUT << "******************| class " << clazz.name << " |******************" << END;
 	OUT << "Super: " << clazz.super << END << END;
 	printQmethod(clazz.constructor);

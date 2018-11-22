@@ -74,6 +74,7 @@ class Typechecker {
         // - check for circular dependency
         // - check if class method definitions are compatible with parent's
         bool classHierarchyCheck();
+        bool methodSignaturesTypecheck();
         bool methodsCompatibleCheck();
 
         // Type checking: phase two

@@ -98,7 +98,7 @@ void rnote(const std::string& msg, CompStage stage) {
 // bails with the exit code of the place where the first error occurred.
 // (if an error occurs in the scanner and in the parser, the program
 // will bail with code 4, for scanner)
-void reportAndBail() {
+void dynamicBail() {
     bool shouldBail = false;
     bool firstErrorSet = false;
     CompStage firstError;

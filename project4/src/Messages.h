@@ -70,7 +70,7 @@ namespace report {
     bool ok();
 
     // for use in the driver after all stages are complete
-    void reportAndBail();
+    void dynamicBail();
 };
 
 

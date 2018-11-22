@@ -189,59 +189,90 @@ bool Typechecker::classHierarchyCheck() {
 	return true;
 }
 
+bool Typechecker::methodSignaturesTypecheck() {
+	bool return_flag = true;
+	for (auto qclss : this->classes) {
+		for(Qmethod method : qclss.second.methods) {
+			std::string returnType = method.type["return"];
+
+			// check return type exists
+			if (!doesClassExist(returnType)) {
+				RED << stageString(TYPEINFERENCE) << "method \"" << method.name <<
+					"\" in \"" << qclss.second.name << "\" has non-existant return type \""
+					<< returnType << "\"" << END;
+				report::trackError(TYPEINFERENCE);
+				return_flag = false;
+			}
+
+			// check argument types
+			// when this code is ran, the only methods in init should be formal args
+			for (std::string var : method.init) {
+				std::string varType = method.type[var];
+				if (!doesClassExist(varType)) {
+					RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
+						"\" in \"" << qclss.second.name << "\" has argument \""
+						<< var << "\" with non-existant type \"" << varType << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					return_flag = false;
+					continue;
+				}
+			}
+		}
+	}
+	return return_flag;
+}
+
 bool Typechecker::methodsCompatibleCheck() {
+	bool return_flag = true;
 	for (auto qclss : this->classes) {
 		for(Qmethod method : qclss.second.methods) {
 			for (Qmethod parentMethod : this->classes[qclss.second.super].methods) {
 				if (method.name == parentMethod.name) { 
 					// we must be overriding this method if names match exactly
 					// check that types properly line up for overriden method
+
+					// compare return types
 					std::string returnTypeChild = method.type["return"];
 					std::string returnTypeParent = parentMethod.type["return"];
-					if (!doesClassExist(returnTypeChild)
-							|| !this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
 
+					if (!this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
 						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-							"\" in \"" << qclss.second.name << "\" has improper return type \""
-							<< returnTypeChild << "\"" << END;
+							"\" in \"" << qclss.second.name << "\" has return type \""
+							<< returnTypeChild << "\" inconsistent with parent method" << END;
 						report::trackError(TYPEINFERENCE);
-				    	//report::bail(TYPEINFERENCE);
+						return_flag = false;
 					}
 
+					// compare arguments
+					// when this code is ran, the only methods in init should be formal args
 					for (std::string var : method.init) {
 						if (isVarInit(parentMethod, var)) {
 							std::string varTypeChild = method.type[var];
-							if (!doesClassExist(varTypeChild)) {
-								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-									"\" in \"" << qclss.second.name << "\" has argument \""
-									<< var << "\" with non-existant type \"" << varTypeChild << "\"" << END;
-								report::trackError(TYPEINFERENCE);
-								continue;
-							}
 							std::string varTypeParent = parentMethod.type[var];
+
 							if (!isSubclassOrEqual(varTypeChild, varTypeParent)) {
 								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
 									"\" in \"" << qclss.second.name << "\" has argument \""
 									<< var << "\" with incorrect type \"" << varTypeChild << "\"" 
 									<< " (should be \"" << varTypeParent << "\")" << END;
 								report::trackError(TYPEINFERENCE);
-								//report::bail(TYPEINFERENCE);
+								return_flag = false;
 							}
+
 						} else {
 							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method.name <<
 								"\" in \"" << qclss.second.name << "\" has argument \""
-								<< var << "\" not present in parent" << END;
+								<< var << "\" not present in parent method" << END;
 							report::trackError(CLASSHIERARCHY);
-				    		//report::bail(CLASSHIERARCHY);
+							return_flag = false;
 						}
 					}
 
 				}
 			}
 		}
-		//printQclass(qclss.second);
 	}
-	return true;
+	return return_flag;
 }
 
 bool Typechecker::initCheckQmethod(bool isConstructor) {
@@ -264,6 +295,7 @@ bool Typechecker::typeInferenceCheck() {
 bool Typechecker::checkProgram() {
 	// Type checking: phase one
 	// - check for circular dependency
+	// - typecheck all method signatures
 	// - check if class method definitions are compatible with parent's
 	// (check if class has already been declared is done in initialize())
     // (check if class extends no such super is done in initialize())
@@ -278,9 +310,18 @@ bool Typechecker::checkProgram() {
         report::gnote("circular dependency check passed.", TYPECHECKER);
     }
 
+    bool methodsWelltyped = this->methodSignaturesTypecheck();
+    if (!methodsWelltyped) {
+    	report::error("method signature type check failed!", TYPECHECKER);
+        // don't bail here so we can see more errors
+    } else if (report::ok()) {
+        report::gnote("method signature type check passed.", TYPECHECKER);
+    }
+
     bool methodsCompatible = this->methodsCompatibleCheck();
     if (!methodsCompatible) {
-        report::bail(CLASSHIERARCHY);
+    	report::error("method compatibility check failed!", TYPECHECKER);
+        report::dynamicBail();
     } else if (report::ok()) {
         report::gnote("method compatibility check passed.", TYPECHECKER);
     }

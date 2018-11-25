@@ -32,11 +32,10 @@ struct Qclass {
     AST::Node *node; // pointer to the node in the tree
     std::string name;
     std::string super;
-    Qmethod constructor;
-    std::vector<Qmethod> methods;
-
+    Qmethod *constructor;
+    std::vector<Qmethod*> methods;    
     // for use in init before use checking in non constructor methods
-    std::set<std::string> instanceVars; 
+    std::vector<std::string> instanceVars; 
 };
 
 class Typechecker {
@@ -49,11 +48,11 @@ class Typechecker {
         AST::Node *stubs;
 
         // map from class name -> struct
-        std::map<std::string, Qclass> classes;
+        std::map<std::string, Qclass*> classes;
         std::map<std::string, std::vector<std::string>> class_hierarchy;
 
         // we create a main class to wrap our program's statements
-        Qclass statements;
+        Qclass* statements;
 
         /* ========================== */
         /* Constructors & Destructors */
@@ -81,7 +80,8 @@ class Typechecker {
         // - init before use on constructors
         // - check instance vars of children match parents
         // - init before use on methods
-        bool initCheckQmethod(bool isConstructor);
+        bool initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor);
+        bool initCheckQmethod(Qmethod *method, bool isConstructor);
         bool initializeBeforeUseCheck();
 
         // Type checking: phase three
@@ -94,18 +94,18 @@ class Typechecker {
         bool checkProgram();
 
         // "helper" methods used throughout type checking
-        bool isVarInit(Qmethod method, std::string ident);
+        bool isVarInit(Qmethod *method, std::string ident);
         bool isBuiltin(std::string classname);
         bool doesClassExist(std::string classname);
         bool isSubclassOrEqual(std::string class1, std::string class2);
         std::string leastCommonAncestor(std::string class1, std::string class2);
         std::string getSuperClass(std::string class1);
 
-        Qclass createQclass(AST::Node *clazz);
-        Qmethod createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor);
+        Qclass* createQclass(AST::Node *clazz);
+        Qmethod* createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor);
 
-        void printQclass(Qclass clazz);
-        void printQmethod(Qmethod method);
+        void printQclass(Qclass *clazz);
+        void printQmethod(Qmethod *method);
     };
 
 #endif

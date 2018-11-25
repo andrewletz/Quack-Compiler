@@ -17,7 +17,6 @@ class Driver {
     //                    used to pass the Node back here.
 
     explicit Driver(reflex::Input in) : lexer(in), parser(new yy::parser(lexer, &root)) {
-        report::ynote("starting...", LEXER);
         root = nullptr;
     }
 
@@ -27,7 +26,6 @@ class Driver {
     // parse: attempts to parse the given program (tokenized by input lexer).
     //        root is an Node ** in quack.yxx, used to pass the root back here.
     AST::Node* parse() {
-        report::ynote("starting...", PARSER);
         parser->set_debug_level(0); // 0 = no debugging, 1 = full tracing
 
         // parse() is defined by Bison. 0 = parse success
@@ -92,6 +90,8 @@ int main(int argc, char *argv[]) {
 
     Driver driver(file);
     
+    report::ynote("starting...", LEXER);
+    report::ynote("starting...", PARSER);
     // Parse and get AST into *root
     AST::Node* root = driver.parse();
     if (root != nullptr) {

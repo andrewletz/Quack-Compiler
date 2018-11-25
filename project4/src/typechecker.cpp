@@ -1,43 +1,37 @@
 #include "typechecker.h"
 
-// forward declare some helper methods so that we don't clutter the start of the file
-bool isSubclassOrEqual(std::string class1, std::string class2);
-bool doesClassExist(std::string classname);
-bool isBuiltin(std::string classname);
-bool isVarInit(Qmethod method, std::string ident);
-
-Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
-	Qmethod newMethod;
-	newMethod.node = method;
-	newMethod.clazz = containerClass;
-	newMethod.name = method->get(IDENT, METHOD_NAME)->name;
+Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
+	Qmethod *newMethod = new Qmethod();
+	newMethod->node = method;
+	newMethod->clazz = containerClass;
+	newMethod->name = method->get(IDENT, METHOD_NAME)->name;
 
 	// check for methods sharing a name with their class
 	if (!isConstructor) { // the name of a constructor is stored as the name of a class in the AST
-		if (newMethod.name == containerClass->name) {
-			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
+		if (newMethod->name == containerClass->name) {
+			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod->name << 
 						"\" shares name with containing class" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
 
 	// check for duplicate methods
-	for (Qmethod otherMethod : containerClass->methods) {
-		if (otherMethod.name == newMethod.name) {
-			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod.name << 
+	for (Qmethod* otherMethod : containerClass->methods) {
+		if (otherMethod->name == newMethod->name) {
+			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod->name << 
 						"\" in class \"" << containerClass->name << "\" is defined more than once" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
 
-	newMethod.type["return"] = method->get(IDENT, RETURN_TYPE)->name;
+	newMethod->type["return"] = method->get(IDENT, RETURN_TYPE)->name;
 
 	AST::Node *formalsContainer = method->get(FORMAL_ARGS);
 	if(!formalsContainer->order.empty()) { // empty formals check before iterating over it
 		std::vector<AST::Node *> formals = formalsContainer->getAll(CLASS_ARG);
 		for (AST::Node *arg : formals) {
-			newMethod.init.push_back(arg->get(IDENT, VAR_IDENT)->name);
-			newMethod.type[arg->get(IDENT, VAR_IDENT)->name] = arg->get(IDENT, TYPE_IDENT)->name;
+			newMethod->init.push_back(arg->get(IDENT, VAR_IDENT)->name);
+			newMethod->type[arg->get(IDENT, VAR_IDENT)->name] = arg->get(IDENT, TYPE_IDENT)->name;
 			// OUT << "	Formal: " << arg->get(IDENT, VAR_IDENT)->name
 			// 		<< ", " << arg->get(IDENT, TYPE_IDENT)->name << END;
 		}
@@ -46,7 +40,7 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bo
 	AST::Node *stmts = method->get(BLOCK, STATEMENTS); // from the newMethod, grab all statements
 	if (!stmts->order.empty()) { // empty newMethod check before iterating over it
 		for (AST::Node * stmt : method->get(BLOCK, STATEMENTS)->rawChildren) {
-			newMethod.stmts.push_back(stmt); // add each of these to the Qmethod in order
+			newMethod->stmts.push_back(stmt); // add each of these to the Qmethod in order
 		}
 	}
 
@@ -54,29 +48,29 @@ Qmethod Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bo
 }
 
 
-Qclass Typechecker::createQclass(AST::Node *clazz) {
-	Qclass newClass;
-	newClass.node = clazz;
-	newClass.name = clazz->get(IDENT, CLASS_NAME)->name;
-	newClass.super = clazz->get(IDENT, SUPER_NAME)->name;
+Qclass* Typechecker::createQclass(AST::Node *clazz) {
+	Qclass *newClass = new Qclass();
+	newClass->node = clazz;
+	newClass->name = clazz->get(IDENT, CLASS_NAME)->name;
+	newClass->super = clazz->get(IDENT, SUPER_NAME)->name;
 
-	// make sure the class isn't extending any of the "final" Quack built-in classes
-	if (newClass.super == "Nothing" || newClass.super == "String" ||
-		newClass.super == "Boolean" || newClass.super == "Int" ) {
-		RED << stageString(CLASSHIERARCHY) << "class \"" << newClass.name << 
-					"\" extends built-in type \"" << newClass.super << "\"" << END;
+	// check to make sure the class isn't extending any of the "final" Quack built-in classes
+	if (newClass->super == "Nothing" || newClass->super == "String" ||
+		newClass->super == "Boolean" || newClass->super == "Int" ) {
+		RED << stageString(CLASSHIERARCHY) << "class \"" << newClass->name << 
+					"\" extends built-in type \"" << newClass->super << "\"" << END;
             	report::bail(CLASSHIERARCHY);
 	}
 	
 	AST::Node *astConstructor = clazz->get(METHOD, CONSTRUCTOR);
-	Qmethod classConstructor = createQmethod(astConstructor, &newClass, true);
-	newClass.constructor = classConstructor;
+	Qmethod *classConstructor = createQmethod(astConstructor, newClass, true);
+	newClass->constructor = classConstructor;
 
 	AST::Node *methodsContainer = clazz->get(METHODS);
 	if(!methodsContainer->order.empty()) { // empty methods check before iterating over it
 		std::vector<AST::Node *> methods = methodsContainer->getAll(METHOD);
 		for (AST::Node *method : methods) {
-			newClass.methods.push_back(createQmethod(method, &newClass, false));
+			newClass->methods.push_back(createQmethod(method, newClass, false));
 		}
 	}
 
@@ -92,20 +86,20 @@ void Typechecker::initializeClasses(AST::Node *astRoot) {
 	if ( haveClasses ) { // only initialize our classes if we have some
 		std::vector<AST::Node *> classes = astRoot->get(CLASSES)->getAll(CLASS);
 		for (AST::Node *n : classes) {
-			Qclass clazz = createQclass(n);
+			Qclass *clazz = createQclass(n);
 
 			// check for class redeclaration here
-			if (this->classes.find(clazz.name) != this->classes.end()) {
-				RED << stageString(CLASSHIERARCHY) << "class \"" << clazz.name << 
+			if (this->classes.find(clazz->name) != this->classes.end()) {
+				RED << stageString(CLASSHIERARCHY) << "class \"" << clazz->name << 
 					"\" has already been defined" << END;
             	report::bail(CLASSHIERARCHY);
 			}
 
-			this->classes[clazz.name] = clazz;
-			//printQclass(clazz);
+			this->classes[clazz->name] = clazz;
 		}
 	}
 }
+
 
 // initializes map "classes" and Qclass statements so that
 // we can use them later for the actual type checking.
@@ -120,18 +114,11 @@ void Typechecker::initialize() {
 	std::string super_name;
 	std::map<std::string, std::vector<std::string>>::iterator it;
 
-	// put Obj on the hierarchy first
-	// std::vector<std::string> builtins;
-	// builtins.push_back("String");
-	// builtins.push_back("Int");
-	// builtins.push_back("Boolean");
-	// this->class_hierarchy.insert(std::pair<std::string, std::vector<std::string>>("Obj", builtins));
-
 	for (auto clss : this->classes) {
-		class_name = clss.second.name;
-		super_name = clss.second.super;
+		class_name = clss.second->name;
+		super_name = clss.second->super;
 
-		// we can easily check for no such super errors here, might aswell
+		// check for no such super errors here (not great style, but we're already iterating so might aswell)
 		if (!doesClassExist(super_name)) {
 			RED << stageString(CLASSHIERARCHY) << "class \"" << class_name << 
 				"\" extends undeclared superclass \"" << super_name << "\"" << END;
@@ -192,25 +179,25 @@ bool Typechecker::classHierarchyCheck() {
 bool Typechecker::methodSignaturesTypecheck() {
 	bool return_flag = true;
 	for (auto qclss : this->classes) {
-		for(Qmethod method : qclss.second.methods) {
-			std::string returnType = method.type["return"];
+		for(Qmethod *method : qclss.second->methods) {
+			std::string returnType = method->type["return"];
 
 			// check return type exists
 			if (!doesClassExist(returnType)) {
-				RED << stageString(TYPEINFERENCE) << "method \"" << method.name <<
-					"\" in \"" << qclss.second.name << "\" has non-existant return type \""
+				RED << stageString(TYPEINFERENCE) << "method \"" << method->name <<
+					"\" in \"" << qclss.second->name << "\" has non-existant return type \""
 					<< returnType << "\"" << END;
 				report::trackError(TYPEINFERENCE);
 				return_flag = false;
 			}
 
-			// check argument types
+			// check argument types exist
 			// when this code is ran, the only methods in init should be formal args
-			for (std::string var : method.init) {
-				std::string varType = method.type[var];
+			for (std::string var : method->init) {
+				std::string varType = method->type[var];
 				if (!doesClassExist(varType)) {
-					RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-						"\" in \"" << qclss.second.name << "\" has argument \""
+					RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
+						"\" in \"" << qclss.second->name << "\" has argument \""
 						<< var << "\" with non-existant type \"" << varType << "\"" << END;
 					report::trackError(TYPEINFERENCE);
 					return_flag = false;
@@ -225,34 +212,34 @@ bool Typechecker::methodSignaturesTypecheck() {
 bool Typechecker::methodsCompatibleCheck() {
 	bool return_flag = true;
 	for (auto qclss : this->classes) {
-		for(Qmethod method : qclss.second.methods) {
-			for (Qmethod parentMethod : this->classes[qclss.second.super].methods) {
-				if (method.name == parentMethod.name) { 
+		for(Qmethod *method : qclss.second->methods) {
+			for (Qmethod *parentMethod : this->classes[qclss.second->super]->methods) {
+				if (method->name == parentMethod->name) { 
 					// we must be overriding this method if names match exactly
 					// check that types properly line up for overriden method
 
-					// compare return types
-					std::string returnTypeChild = method.type["return"];
-					std::string returnTypeParent = parentMethod.type["return"];
+					// check return types between overriden and parent method
+					std::string returnTypeChild = method->type["return"];
+					std::string returnTypeParent = parentMethod->type["return"];
 
 					if (!this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
-						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-							"\" in \"" << qclss.second.name << "\" has return type \""
+						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
+							"\" in \"" << qclss.second->name << "\" has return type \""
 							<< returnTypeChild << "\" inconsistent with parent method" << END;
 						report::trackError(TYPEINFERENCE);
 						return_flag = false;
 					}
 
-					// compare arguments
+					// check argument types between overriden and parent method
 					// when this code is ran, the only methods in init should be formal args
-					for (std::string var : method.init) {
+					for (std::string var : method->init) {
 						if (isVarInit(parentMethod, var)) {
-							std::string varTypeChild = method.type[var];
-							std::string varTypeParent = parentMethod.type[var];
+							std::string varTypeChild = method->type[var];
+							std::string varTypeParent = parentMethod->type[var];
 
 							if (!isSubclassOrEqual(varTypeChild, varTypeParent)) {
-								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method.name <<
-									"\" in \"" << qclss.second.name << "\" has argument \""
+								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
+									"\" in \"" << qclss.second->name << "\" has argument \""
 									<< var << "\" with incorrect type \"" << varTypeChild << "\"" 
 									<< " (should be \"" << varTypeParent << "\")" << END;
 								report::trackError(TYPEINFERENCE);
@@ -260,8 +247,8 @@ bool Typechecker::methodsCompatibleCheck() {
 							}
 
 						} else {
-							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method.name <<
-								"\" in \"" << qclss.second.name << "\" has argument \""
+							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
+								"\" in \"" << qclss.second->name << "\" has argument \""
 								<< var << "\" not present in parent method" << END;
 							report::trackError(CLASSHIERARCHY);
 							return_flag = false;
@@ -275,17 +262,83 @@ bool Typechecker::methodsCompatibleCheck() {
 	return return_flag;
 }
 
-bool Typechecker::initCheckQmethod(bool isConstructor) {
+bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor) {
+	bool ret_flag = true;
+	Type nodeType = stmt->type;
+
+	if (nodeType == ASSIGN) {
+		// checking if we are assigning to an ident of form this.x
+		AST::Node *left = stmt->get(DOT, L_EXPR);
+		if (left != NULL) {
+			AST::Node *load = left->get(LOAD);
+			if (load != NULL) {
+				if (load->get(IDENT)->name == "this") { 
+					if (isConstructor) { // we have found a this.x = ... statement, push back to class's instancevars
+						// OUT << "defining this." << left->get(IDENT)->name << END;
+				 		method->clazz->instanceVars.push_back(left->get(IDENT)->name);
+					} else {
+						RED << stageString(INITBEFOREUSE) << "attempt to assign instance variable \"" << left->get(IDENT)->name <<
+							"\" in \"" << method->name << "\" in class \""
+							<< method->clazz->name << "\"" << END;
+						report::trackError(INITBEFOREUSE);
+						ret_flag = false;
+					}
+				}
+			} 
+		}
+
+	} else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
+		ret_vec.push_back(stmt);
+		return ret_flag;
+	}
+	
+	for (AST::Node *child : stmt->rawChildren) {
+		initCheckStmt(method, child, ret_vec, isConstructor);
+	}
+
+	return ret_flag;
+}
+
+bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor) {
+	bool ret_flag = true;
+	if (method->stmts.empty()) return ret_flag;
 	// if you encounter an assign of form this.x, add it to Qclass's instanceVars
 	// then check if that instance var shares the same name as any given method in the same class
 	// if so, report an error
 
 	// check if l_expr is equal to a literal, if so report an error
 	// -> Attempt to assign to a literal in method "__"
+	for (AST::Node* stmt : method->stmts) {
+		std::vector<AST::Node *> leaves;
+		ret_flag = initCheckStmt(method, stmt, leaves, isConstructor);
+
+		// print leaves
+		// std::cout << "--- new stmt ---" << std::endl;
+		// for (AST::Node* leaf : leaves) {
+		// 	if (leaf->nameinit) {
+		// 		std::cout << leaf->name << std::endl;
+		// 	} else if (leaf->valueinit) {
+		// 		std::cout << leaf->value << std::endl;
+		// 	}
+		// }
+	}
+	return ret_flag;
 }
 
 bool Typechecker::initializeBeforeUseCheck() {
-	return true;
+	bool ret_flag = true;
+
+	for (auto clss : this->classes) {
+		if (isBuiltin(clss.second->name)) { 
+			continue;
+		}
+		ret_flag = initCheckQmethod(clss.second->constructor, true);
+		for (Qmethod *m : clss.second->methods) {
+			ret_flag = initCheckQmethod(m, false);
+		}
+	}
+
+	return ret_flag;
 }
 
 bool Typechecker::typeInferenceCheck() {
@@ -346,13 +399,13 @@ bool Typechecker::checkProgram() {
     return true;
 }
 
-bool Typechecker::isVarInit(Qmethod method, std::string ident) {
-	return std::find(method.init.begin(), 
-		method.init.end(), ident) != method.init.end();
+bool Typechecker::isVarInit(Qmethod *method, std::string ident) {
+	return std::find(method->init.begin(), 
+		method->init.end(), ident) != method->init.end();
 }
 
 std::string Typechecker::getSuperClass(std::string class1) {
-	return classes[class1].super;
+	return classes[class1]->super;
 }
 
 bool Typechecker::isBuiltin(std::string classname) {
@@ -381,7 +434,7 @@ bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
 		return false;
 	}
 
-	if (classes[class1].super == "Obj" && class2 == "Obj") {
+	if (classes[class1]->super == "Obj" && class2 == "Obj") {
 		return true;
 	}
 
@@ -395,9 +448,9 @@ bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
 			return true;
 		}
 		for (auto clss : classes) {
-			Qclass second = clss.second;
-			if (second.name == tempSuper) {
-				tempSuper = second.super;
+			Qclass *second = clss.second;
+			if (second->name == tempSuper) {
+				tempSuper = second->super;
 			}
 		}
 	}
@@ -421,8 +474,8 @@ std::string Typechecker::leastCommonAncestor(std::string class1, std::string cla
 			if (tempSuper1 == "Obj") {
 				break;
 			}
-			class1Supers.push_back(classes[tempSuper1].super);
-			tempSuper1 = classes[tempSuper1].super;
+			class1Supers.push_back(classes[tempSuper1]->super);
+			tempSuper1 = classes[tempSuper1]->super;
 		}
 		class1Supers.push_back("Obj");
 	}
@@ -439,8 +492,8 @@ std::string Typechecker::leastCommonAncestor(std::string class1, std::string cla
 			if (tempSuper2 == "Obj") {
 				break;
 			}
-			class2Supers.push_back(classes[tempSuper2].super);
-			tempSuper2 = classes[tempSuper2].super;
+			class2Supers.push_back(classes[tempSuper2]->super);
+			tempSuper2 = classes[tempSuper2]->super;
 		}
 		class2Supers.push_back("Obj");
 	}
@@ -460,32 +513,32 @@ std::string Typechecker::leastCommonAncestor(std::string class1, std::string cla
 	return retVal;
 }
 
-void Typechecker::printQclass(Qclass clazz) {
-	if (isBuiltin(clazz.name)) { 
+void Typechecker::printQclass(Qclass *clazz) {
+	if (isBuiltin(clazz->name)) { 
 		return;
 	}
-	OUT << "******************| class " << clazz.name << " |******************" << END;
-	OUT << "Super: " << clazz.super << END << END;
-	printQmethod(clazz.constructor);
-	for (Qmethod m : clazz.methods) {
+	OUT << "******************| class " << clazz->name << " |******************" << END;
+	OUT << "Super: " << clazz->super << END << END;
+	printQmethod(clazz->constructor);
+	for (Qmethod *m : clazz->methods) {
 		printQmethod(m);
 	}
 }
 
-void Typechecker::printQmethod(Qmethod method) {
-	OUT << "	~~--~~| method " << method.name << " |~~--~~ " << END;
-	OUT << "	Inside class: " << method.clazz->name << END;
-	OUT << "	Return type: " << method.type["return"] << END;
+void Typechecker::printQmethod(Qmethod *method) {
+	OUT << "	~~--~~| method " << method->name << " |~~--~~ " << END;
+	OUT << "	Inside class: " << method->clazz->name << END;
+	OUT << "	Return type: " << method->type["return"] << END;
 	OUT << "	Initialized vars: " << END;
-	for (std::string s : method.init) {
+	for (std::string s : method->init) {
 		OUT << "		" << s << END;
 	}
 	OUT << "	Known types: " << END;
-	for (std::map<std::string, std::string>::iterator it = method.type.begin(); it != method.type.end(); ++it) {
+	for (std::map<std::string, std::string>::iterator it = method->type.begin(); it != method->type.end(); ++it) {
 	 	OUT << "		" << it->first << ", " << it->second << END;
 	}
 	OUT << "	Stmts: " << END;
-	for (AST::Node *stmt : method.stmts) { // print each stmt type inside Qmethod's stmts vector
+	for (AST::Node *stmt : method->stmts) { // print each stmt type inside Qmethod's stmts vector
 			OUT << "		" << typeString(stmt->type) << END;
 	}
 	OUT << END;

@@ -8,6 +8,8 @@ class P() {
 }
 
 class X() extends P {
+	def doesntMatter(x: Int) : Int {}
+	
 	def s(x: Int) : Int {
 		return x+1;
 	}

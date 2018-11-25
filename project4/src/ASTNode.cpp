@@ -68,7 +68,7 @@ namespace AST {
         std::map<Type, std::vector<Node *> >::iterator it = this->children.find(type);
         if (it != this->children.end()) {
             return it->second.front();
-        } else { }
+        } else { return NULL; }
     }
 
     Node * Node::get(Type type, Type subType) {
@@ -79,7 +79,7 @@ namespace AST {
                     return node;
                 }
             }
-        } else { }
+        } else { return NULL; }
     }
 
     std::vector<Node *> Node::getAll(Type type) {

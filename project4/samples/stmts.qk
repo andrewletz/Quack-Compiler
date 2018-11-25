@@ -1,4 +1,5 @@
 class Stmts() extends Obj {
+      x = this.foo().bar();
       this.ples = Ples(100);
    
       if (x == 10) { 
@@ -29,4 +30,6 @@ class Stmts() extends Obj {
       plumb : clest = clest(this.ples.far(y, z), "pleembee"); 
 
       return plumb.far(t, b);
+
+      foo.findmax(this.children).weight = 42;
 }

@@ -1,12 +1,18 @@
 class Stmts() extends Obj {
-      x = this.foo().bar();
+      foo = Foo();
+      this.children = 10;
+      this.children = 20;
+      foo.findmax(this.children).weight = 42;
+      x = this.mthd().bar();
+      
       this.ples = Ples(100);
+      this.z = foo.findmax(this.children).weight;
    
       if (x == 10) { 
-         t = "hello";
+         this.t = "hello"; // init before use error
       }
 
-      if (z == 100) {
+      if (z == 100) { 
          n = 10;
       } elif (w == 20) {
          u = "test";
@@ -14,22 +20,51 @@ class Stmts() extends Obj {
          p = "yes";
       }
 
+      y = 10;
       while (y == 20 and z == 100 or t == "t") {
          c = "self";
       }
 
+      plem = 10;
       plem;
+
+      // not_init; // init before use error
+
       clor = "esto";
+      clor = 1;
+
       clem = 10;
-      smut : name = foo(x, y, z);
+      smut : Nothing = whocares(x, y, z);
       schmeech : Int = 10 * 10 * 20 * 50 / 100;
 
       clormo = smut.bar(q, w, e, r, t);
-      smut(y, u, "50", 105);
+      // smut(y, u, "50", 105); // init before use error
 
       plumb : clest = clest(this.ples.far(y, z), "pleembee"); 
 
       return plumb.far(t, b);
 
-      foo.findmax(this.children).weight = 42;
+      def mthd() : C {
+         return C(100);
+      }
+
+      def whocares(x: Int, y: Int, z: Int) {}
+}
+
+class Ples(y: Int) {
+   this.y = y;
+}
+
+class C(x: Int) {
+   this.weight = x;
+
+   def bar() : Int {
+      return 10;
+   }
+}
+
+class Foo() {
+   def findmax(x: Int) : C {
+      return C(x);
+   }
 }

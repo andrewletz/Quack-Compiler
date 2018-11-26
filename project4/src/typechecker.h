@@ -35,7 +35,8 @@ struct Qclass {
     Qmethod *constructor;
     std::vector<Qmethod*> methods;    
     // for use in init before use checking in non constructor methods
-    std::vector<std::string> instanceVars; 
+    std::vector<std::string> instanceVars;
+    std::map<std::string, std::string> instanceVarType;
 };
 
 class Typechecker {

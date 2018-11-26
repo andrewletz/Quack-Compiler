@@ -1,0 +1,641 @@
+{ "kind" : "program_",  
+    "classes_" : 
+    { "kind" : "classes_", "elements_" : [
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Stmts"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Stmts"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Stmts"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "foo"},
+                        "r_expr_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Foo"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : []}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "children"}},
+                        "r_expr_" : 
+                        { "kind" : "intconst_", "value_" : "10"}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "call_" : 
+                            { "kind" : "call_",  
+                                "l_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "foo"}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "findmax"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "l_expr_" : 
+                                        { "kind" : "load_",  
+                                            "l_expr_" : 
+                                            { "kind" : "dot_",  
+                                                "l_expr_" : 
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "this"}},
+                                                "r_expr_" : 
+                                                { "kind" : "ident_", "text_" : "children"}}}}]}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "weight"}},
+                        "r_expr_" : 
+                        { "kind" : "intconst_", "value_" : "42"}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "x"},
+                        "r_expr_" : 
+                        { "kind" : "call_",  
+                            "call_" : 
+                            { "kind" : "call_",  
+                                "l_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "this"}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "mthd"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : []}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "bar"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : []}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "ples"}},
+                        "r_expr_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "Ples"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "intconst_" : 
+                                    { "kind" : "intconst_", "value_" : "100"}}]}}},
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "z"}},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "l_expr_" : 
+                            { "kind" : "dot_",  
+                                "call_" : 
+                                { "kind" : "call_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "foo"}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "findmax"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "method_arg_",  
+                                            "l_expr_" : 
+                                            { "kind" : "load_",  
+                                                "l_expr_" : 
+                                                { "kind" : "dot_",  
+                                                    "l_expr_" : 
+                                                    { "kind" : "load_",  
+                                                        "loc_" : 
+                                                        { "kind" : "ident_", "text_" : "this"}},
+                                                    "r_expr_" : 
+                                                    { "kind" : "ident_", "text_" : "children"}}}}]}},
+                                "r_expr_" : 
+                                { "kind" : "ident_", "text_" : "weight"}}}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "y"},
+                        "r_expr_" : 
+                        { "kind" : "intconst_", "value_" : "10"}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "clor"},
+                        "r_expr_" : 
+                        { "kind" : "strconst_", "text_" : "esto"}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "clor"},
+                        "r_expr_" : 
+                        { "kind" : "intconst_", "value_" : "1"}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "clem"},
+                        "r_expr_" : 
+                        { "kind" : "intconst_", "value_" : "10"}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "smut"},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Nothing"},
+                        "r_expr_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "whocares"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "x"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "y"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "z"}}}]}}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "schmeech"},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "Int"},
+                        "r_expr_" : 
+                        { "kind" : "call_",  
+                            "mult_" : 
+                            { "kind" : "call_",  
+                                "mult_" : 
+                                { "kind" : "call_",  
+                                    "mult_" : 
+                                    { "kind" : "call_",  
+                                        "intconst_" : 
+                                        { "kind" : "intconst_", "value_" : "10"},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "MULT"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "intconst_", "value_" : "10"}]}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "MULT"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "intconst_", "value_" : "20"}]}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "MULT"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "intconst_", "value_" : "50"}]}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "DIV"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "intconst_", "value_" : "100"}]}}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "clormo"},
+                        "r_expr_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "smut"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "bar"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "q"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "w"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "e"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "r"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "t"}}}]}}},
+                    { "kind" : "assign_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "plumb"},
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "clest"},
+                        "r_expr_" : 
+                        { "kind" : "constructor_",  
+                            "ident_" : 
+                            { "kind" : "ident_", "text_" : "clest"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "call_" : 
+                                    { "kind" : "call_",  
+                                        "l_expr_" : 
+                                        { "kind" : "load_",  
+                                            "l_expr_" : 
+                                            { "kind" : "dot_",  
+                                                "l_expr_" : 
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "this"}},
+                                                "r_expr_" : 
+                                                { "kind" : "ident_", "text_" : "ples"}}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "far"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "method_arg_",  
+                                                "l_expr_" : 
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "y"}}},
+                                            { "kind" : "method_arg_",  
+                                                "l_expr_" : 
+                                                { "kind" : "load_",  
+                                                    "loc_" : 
+                                                    { "kind" : "ident_", "text_" : "z"}}}]}}},
+                                { "kind" : "method_arg_",  
+                                    "strconst_" : 
+                                    { "kind" : "strconst_", "text_" : "pleembee"}}]}}},
+                    { "kind" : "if_",  
+                        "eq_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "x"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "EQ"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "intconst_", "value_" : "10"}]}},
+                        "statements_true_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "l_expr_" : 
+                                { "kind" : "dot_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "this"}},
+                                    "r_expr_" : 
+                                    { "kind" : "ident_", "text_" : "t"}},
+                                "r_expr_" : 
+                                { "kind" : "strconst_", "text_" : "hello"}}]},
+                        "statements_false_" : 
+                        { "kind" : "block_", "elements_" : []}},
+                    { "kind" : "if_",  
+                        "eq_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "z"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "EQ"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "intconst_", "value_" : "100"}]}},
+                        "statements_true_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "n"},
+                                "r_expr_" : 
+                                { "kind" : "intconst_", "value_" : "10"}}]},
+                        "statements_false_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "if_",  
+                                "eq_" : 
+                                { "kind" : "call_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "w"}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "EQ"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "intconst_", "value_" : "20"}]}},
+                                "statements_true_" : 
+                                { "kind" : "block_", "elements_" : [
+                                    { "kind" : "assign_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "u"},
+                                        "r_expr_" : 
+                                        { "kind" : "strconst_", "text_" : "test"}}]},
+                                "statements_false_" : 
+                                { "kind" : "block_", "elements_" : [
+                                    { "kind" : "assign_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "p"},
+                                        "r_expr_" : 
+                                        { "kind" : "strconst_", "text_" : "yes"}}]}}]}},
+                    { "kind" : "while_",  
+                        "or_" : 
+                        { "kind" : "call_",  
+                            "and_" : 
+                            { "kind" : "call_",  
+                                "eq_" : 
+                                { "kind" : "call_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "y"}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "EQ"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "intconst_", "value_" : "20"}]}},
+                                "method_" : 
+                                { "kind" : "ident_", "text_" : "AND"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "call_",  
+                                        "l_expr_" : 
+                                        { "kind" : "load_",  
+                                            "loc_" : 
+                                            { "kind" : "ident_", "text_" : "z"}},
+                                        "method_" : 
+                                        { "kind" : "ident_", "text_" : "EQ"},
+                                        "actual_args_" : 
+                                        { "kind" : "actual_args_", "elements_" : [
+                                            { "kind" : "intconst_", "value_" : "100"}]}}]}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "OR"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "call_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "t"}},
+                                    "method_" : 
+                                    { "kind" : "ident_", "text_" : "EQ"},
+                                    "actual_args_" : 
+                                    { "kind" : "actual_args_", "elements_" : [
+                                        { "kind" : "strconst_", "text_" : "t"}]}}]}},
+                        "statements_" : 
+                        { "kind" : "block_", "elements_" : [
+                            { "kind" : "assign_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "c"},
+                                "r_expr_" : 
+                                { "kind" : "strconst_", "text_" : "self"}}]}},
+                    { "kind" : "load_",  
+                        "loc_" : 
+                        { "kind" : "ident_", "text_" : "plem"}},
+                    { "kind" : "constructor_",  
+                        "ident_" : 
+                        { "kind" : "ident_", "text_" : "smut"},
+                        "actual_args_" : 
+                        { "kind" : "actual_args_", "elements_" : [
+                            { "kind" : "method_arg_",  
+                                "l_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "y"}}},
+                            { "kind" : "method_arg_",  
+                                "l_expr_" : 
+                                { "kind" : "load_",  
+                                    "loc_" : 
+                                    { "kind" : "ident_", "text_" : "u"}}},
+                            { "kind" : "method_arg_",  
+                                "strconst_" : 
+                                { "kind" : "strconst_", "text_" : "50"}},
+                            { "kind" : "method_arg_",  
+                                "intconst_" : 
+                                { "kind" : "intconst_", "value_" : "105"}}]}},
+                    { "kind" : "return_",  
+                        "r_expr_" : 
+                        { "kind" : "call_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "plumb"}},
+                            "method_" : 
+                            { "kind" : "ident_", "text_" : "far"},
+                            "actual_args_" : 
+                            { "kind" : "actual_args_", "elements_" : [
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "t"}}},
+                                { "kind" : "method_arg_",  
+                                    "l_expr_" : 
+                                    { "kind" : "load_",  
+                                        "loc_" : 
+                                        { "kind" : "ident_", "text_" : "b"}}}]}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "mthd"},
+                    "return_type_" : 
+                    { "kind" : "ident_", "text_" : "C"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "intconst_" : 
+                                        { "kind" : "intconst_", "value_" : "100"}}]}}}]}},
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "whocares"},
+                    "return_type_" : 
+                    { "kind" : "ident_", "text_" : "Nothing"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "x"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}},
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "y"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}},
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "z"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}}]},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : []}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Ples"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Ples"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Ples"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "y"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "y"}},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "y"}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : []}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "C"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "C"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "C"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : [
+                    { "kind" : "class_arg_",  
+                        "var_name_" : 
+                        { "kind" : "ident_", "text_" : "x"},
+                        "var_type_" : 
+                        { "kind" : "ident_", "text_" : "Int"}}]},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : [
+                    { "kind" : "assign_",  
+                        "l_expr_" : 
+                        { "kind" : "dot_",  
+                            "l_expr_" : 
+                            { "kind" : "load_",  
+                                "loc_" : 
+                                { "kind" : "ident_", "text_" : "this"}},
+                            "r_expr_" : 
+                            { "kind" : "ident_", "text_" : "weight"}},
+                        "r_expr_" : 
+                        { "kind" : "load_",  
+                            "loc_" : 
+                            { "kind" : "ident_", "text_" : "x"}}}]}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "bar"},
+                    "return_type_" : 
+                    { "kind" : "ident_", "text_" : "Int"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : []},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "intconst_", "value_" : "10"}}]}}]}},
+        { "kind" : "class_",  
+            "class_name_" : 
+            { "kind" : "ident_", "text_" : "Foo"},
+            "super_name_" : 
+            { "kind" : "ident_", "text_" : "Obj"},
+            "constructor_" : 
+            { "kind" : "method_",  
+                "method_name_" : 
+                { "kind" : "ident_", "text_" : "Foo"},
+                "return_type_" : 
+                { "kind" : "ident_", "text_" : "Foo"},
+                "formal_args_" : 
+                { "kind" : "formal_args_", "elements_" : []},
+                "statements_" : 
+                { "kind" : "block_", "elements_" : []}},
+            "methods_" : 
+            { "kind" : "methods_", "elements_" : [
+                { "kind" : "method_",  
+                    "method_name_" : 
+                    { "kind" : "ident_", "text_" : "findmax"},
+                    "return_type_" : 
+                    { "kind" : "ident_", "text_" : "C"},
+                    "formal_args_" : 
+                    { "kind" : "formal_args_", "elements_" : [
+                        { "kind" : "class_arg_",  
+                            "var_name_" : 
+                            { "kind" : "ident_", "text_" : "x"},
+                            "var_type_" : 
+                            { "kind" : "ident_", "text_" : "Int"}}]},
+                    "statements_" : 
+                    { "kind" : "block_", "elements_" : [
+                        { "kind" : "return_",  
+                            "r_expr_" : 
+                            { "kind" : "constructor_",  
+                                "ident_" : 
+                                { "kind" : "ident_", "text_" : "C"},
+                                "actual_args_" : 
+                                { "kind" : "actual_args_", "elements_" : [
+                                    { "kind" : "method_arg_",  
+                                        "l_expr_" : 
+                                        { "kind" : "load_",  
+                                            "loc_" : 
+                                            { "kind" : "ident_", "text_" : "x"}}}]}}}]}}]}}]},
+    "statements_" : 
+    { "kind" : "block_", "elements_" : []}}

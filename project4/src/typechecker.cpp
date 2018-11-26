@@ -267,7 +267,8 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 	Type nodeType = stmt->type;
 
 	if (nodeType == ASSIGN) {
-		// checking if we are assigning to an ident of form this.x
+
+		// assign of form "this.x = ..."
 		AST::Node *left = stmt->get(DOT, L_EXPR);
 		if (left != NULL) {
 			AST::Node *load = left->get(LOAD);
@@ -285,7 +286,13 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 								ret_flag = false;
 							}
 						}
-				 		method->clazz->instanceVars.push_back(instanceVar);
+
+						// if it isn't in the vector already, push it in
+						if (!isInstanceVar(method, instanceVar)) {
+							method->clazz->instanceVars.push_back(instanceVar);
+				 			method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
+						}
+				 		
 					} else {
 						if (!isInstanceVar(method, instanceVar)) {
 							RED << stageString(INITBEFOREUSE) << "attempt to assign to non-existant instance variable \""
@@ -299,11 +306,43 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			} 
 		}
 
-	} else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
+		// assign of form "x = ..." and "x : Clss = ..."
+		left = stmt->get(IDENT, LOC);
+		if (left != NULL) {
+			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+			if (explicit_type != NULL) {
+				method->type[left->name] = explicit_type->name;
+			} else {
+				method->type[left->name] = "UNKNOWN";
+			}
+			method->init.push_back(left->name);
+		}
+
+	}
+	// leaf node, push onto leaves return vector
+	else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
 		ret_vec.push_back(stmt);
 		return ret_flag;
 	}
-	
+
+	// stmt of form "x.x"
+	else if (nodeType == DOT) {
+		AST::Node *load = stmt->get(LOAD);
+		if (load != NULL) {
+			// we have a "this.x" somewhere in a method, make appropriate checks
+			if (load->get(IDENT)->name == "this") { 
+				std::string instanceVar = stmt->get(IDENT)->name;
+				if (!isInstanceVar(method, instanceVar)) {
+					RED << stageString(INITBEFOREUSE) << "unknown instance variable \""
+						<< instanceVar << "\" used in method \"" << method->name << "\" in class \""
+						<< method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+				}
+			}
+		}
+	}
+
 	for (AST::Node *child : stmt->rawChildren) {
 		initCheckStmt(method, child, ret_vec, isConstructor);
 	}
@@ -321,6 +360,29 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor) {
 	// check if l_expr is equal to a literal, if so report an error
 	// -> Attempt to assign to a literal in method "__"
 	for (AST::Node* stmt : method->stmts) {
+		// do some preliminary checks before handing it off to the recursive method
+		if (stmt->type == CONSTRUCTOR) {
+			// if you found a constructor "Class(x, y, z);" on its own, that is an error (maybe should be a warning?)
+			RED << stageString(INITBEFOREUSE) << "constructor not assigned to any variable in method \""
+				<< method->name << "\" in class \""
+				<< method->clazz->name << "\"" << END;
+			report::trackError(INITBEFOREUSE);
+			ret_flag = false;
+			continue;
+		} else if (stmt->type == LOAD) {
+			// if you have a statement that is just "x;" you should throw an error if it isn't initialized
+			AST::Node *ident = stmt->get(IDENT, LOC);
+			if (ident != NULL) {
+				if (!isVarInit(method, ident->name)) {
+					RED << stageString(INITBEFOREUSE) << "attempt to load uninitialized variable \""
+					<< ident->name << "\" in method \"" << method->name << "\" in class \""
+					<< method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+					continue;
+				}
+			}
+		}
 		std::vector<AST::Node *> leaves;
 		ret_flag = initCheckStmt(method, stmt, leaves, isConstructor);
 
@@ -392,6 +454,11 @@ bool Typechecker::checkProgram() {
     }
 
     bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();
+
+    // for (auto clzz : this->classes) {
+    // 	printQclass(clzz.second);
+    // }
+
     if (!initBeforeUseCheckValid) {
         report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
         report::bail(INITBEFOREUSE);
@@ -536,6 +603,13 @@ void Typechecker::printQclass(Qclass *clazz) {
 	}
 	OUT << "******************| class " << clazz->name << " |******************" << END;
 	OUT << "Super: " << clazz->super << END << END;
+		
+	OUT << "Instance vars: " << END;
+	for (std::string s : clazz->instanceVars) {
+		OUT << "	Name: " << s << ", Type: " << clazz->instanceVarType[s] << END;
+	}
+	OUT << END;
+
 	printQmethod(clazz->constructor);
 	for (Qmethod *m : clazz->methods) {
 		printQmethod(m);

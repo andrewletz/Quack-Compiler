@@ -79,6 +79,7 @@ namespace AST {
                     return node;
                 }
             }
+            return NULL;
         } else { return NULL; }
     }
 

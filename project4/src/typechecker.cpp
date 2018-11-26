@@ -273,15 +273,27 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			AST::Node *load = left->get(LOAD);
 			if (load != NULL) {
 				if (load->get(IDENT)->name == "this") { 
+					std::string instanceVar = left->get(IDENT)->name;
 					if (isConstructor) { // we have found a this.x = ... statement, push back to class's instancevars
 						// OUT << "defining this." << left->get(IDENT)->name << END;
-				 		method->clazz->instanceVars.push_back(left->get(IDENT)->name);
+						for (Qmethod *clssmethod : method->clazz->methods) {
+							if (clssmethod->name == instanceVar) {
+								RED << stageString(INITBEFOREUSE) << "instance variable \""
+									<< instanceVar << "\" in class \""
+									<< method->clazz->name << "\" shares name with method" << END;
+								report::trackError(INITBEFOREUSE);
+								ret_flag = false;
+							}
+						}
+				 		method->clazz->instanceVars.push_back(instanceVar);
 					} else {
-						RED << stageString(INITBEFOREUSE) << "attempt to assign instance variable \"" << left->get(IDENT)->name <<
-							"\" in \"" << method->name << "\" in class \""
-							<< method->clazz->name << "\"" << END;
-						report::trackError(INITBEFOREUSE);
-						ret_flag = false;
+						if (!isInstanceVar(method, instanceVar)) {
+							RED << stageString(INITBEFOREUSE) << "attempt to assign to non-existant instance variable \""
+								<< instanceVar << "\" in \"" << method->name << "\" in class \""
+								<< method->clazz->name << "\"" << END;
+							report::trackError(INITBEFOREUSE);
+							ret_flag = false;
+						}
 					}
 				}
 			} 
@@ -402,6 +414,11 @@ bool Typechecker::checkProgram() {
 bool Typechecker::isVarInit(Qmethod *method, std::string ident) {
 	return std::find(method->init.begin(), 
 		method->init.end(), ident) != method->init.end();
+}
+
+bool Typechecker::isInstanceVar(Qmethod *method, std::string ident) {
+	return std::find(method->clazz->instanceVars.begin(), 
+		method->clazz->instanceVars.end(), ident) != method->clazz->instanceVars.end();
 }
 
 std::string Typechecker::getSuperClass(std::string class1) {

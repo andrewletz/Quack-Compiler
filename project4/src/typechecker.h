@@ -94,6 +94,7 @@ class Typechecker {
         bool checkProgram();
 
         // "helper" methods used throughout type checking
+        bool isInstanceVar(Qmethod *method, std::string ident);
         bool isVarInit(Qmethod *method, std::string ident);
         bool isBuiltin(std::string classname);
         bool doesClassExist(std::string classname);

@@ -32,7 +32,9 @@
         method->subType = METHOD; 
         retVal->insert(method);
         AST::Node *actuals = new AST::Node(ACTUAL_ARGS);
-        actuals->insert(dollarThree);
+        AST::Node *method_arg = new AST::Node(METHOD_ARG);
+        method_arg->insert(dollarThree);
+        actuals->insert(method_arg);
         retVal->insert(actuals);
         return retVal;
     }

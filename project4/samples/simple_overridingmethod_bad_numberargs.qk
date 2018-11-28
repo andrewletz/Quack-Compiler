@@ -8,7 +8,7 @@ class Z() extends G {}
 
 class P() {
 	def s(x: G, p: String, d: Int) : G {
-		return aaaa;
+		return "a";
 	}
 
 	def d(x: Z, p: String, d: Int, b: Boolean) { }

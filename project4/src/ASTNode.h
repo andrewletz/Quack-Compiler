@@ -43,8 +43,6 @@ namespace AST {
 
             bool isLastNode = false;
             bool isLastOrder = false;
-            bool isLeaf = false;
-            bool isInstanceVar = false;
 
             /* ========================== */
             /* Constructors & Destructors */

@@ -1,5 +1,16 @@
 #include "typechecker.h"
 
+std::vector<std::string> intersection(std::vector<std::string> vec1, std::vector<std::string> vec2) {
+    std::vector<std::string> ret_vec;
+
+    std::sort(vec1.begin(), vec1.end());
+    std::sort(vec2.begin(), vec2.end());
+
+    std::set_intersection(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), std::inserter(ret_vec, ret_vec.begin()));
+
+    return ret_vec;
+}
+
 Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
 	Qmethod *newMethod = new Qmethod();
 	newMethod->node = method;
@@ -291,11 +302,35 @@ bool Typechecker::fieldsCompatibleCheck() {
 	return true;
 }
 
-bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor, bool isMainStatements) {
+bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, 
+							std::vector<std::string> &var_init,
+                            std::vector<std::string> &field_init,
+                            bool isConstructor, bool isMainStatements) {
 	bool ret_flag = true;
 	Type nodeType = stmt->type;
 
-	if (nodeType == ASSIGN) {
+	// control flow has the most complicated case, have to check all syntactic paths
+	if (nodeType == IF) {
+		AST::Node *true_stmts = stmt->get(BLOCK, TRUE_STATEMENTS);
+		std::vector<std::string> var_init_copy1 = var_init;
+		std::vector<std::string> field_init_copy1 = field_init;
+		for (AST::Node *n : true_stmts->rawChildren) {
+			if (!initCheckStmt(method, n, var_init_copy1, field_init_copy1, isConstructor, isMainStatements)) ret_flag = false;
+		}
+
+		AST::Node *false_stmts = stmt->get(BLOCK, FALSE_STATEMENTS);
+		std::vector<std::string> var_init_copy2 = var_init;
+		std::vector<std::string> field_init_copy2 = field_init;
+		for (AST::Node *n : false_stmts->rawChildren) {
+			if (!initCheckStmt(method, n, var_init_copy2, field_init_copy2, isConstructor, isMainStatements)) ret_flag = false;
+		}
+
+		var_init = intersection(var_init_copy1, var_init_copy2);
+		field_init = intersection(field_init_copy1, field_init_copy2);
+		return ret_flag;
+	}
+	// matches all types of assign nodes ("something = something")
+	else if (nodeType == ASSIGN) {
 
 		// assign of form "this.x = ..."
 		AST::Node *left = stmt->get(DOT, L_EXPR);
@@ -330,19 +365,29 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 						}
 
 						// if it isn't in the vector already, push it in
-						if (!isInstanceVar(method, instanceVar)) {
-							method->clazz->instanceVars.push_back(instanceVar);
-							AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
-							if (explicit_type != NULL) {
-								method->clazz->instanceVarType[instanceVar] = explicit_type->name;
-							} else {
-								method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
-							}
-				 			
+						if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
+							// method->clazz->instanceVars.push_back(instanceVar);
+							// method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
+							field_init.push_back(instanceVar);
 						}
+
+						// if it has an explicit type
+						// AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+						// if (explicit_type != NULL) {
+						// 	if (method->clazz->instanceVarType.find(instanceVar) == method->clazz->instanceVarType.end()
+						// 		|| method->clazz->instanceVarType[instanceVar] == "UNKNOWN") {
+						// 		method->clazz->instanceVarType[instanceVar] = explicit_type->name;
+						// 	} else {
+						// 		RED << stageString(INITBEFOREUSE) << "instance variable \""
+						// 			<< instanceVar << "\" in class \""
+						// 			<< method->clazz->name << "\" is assigned explicit type more than once" << END;
+						// 		report::trackError(INITBEFOREUSE);
+						// 		ret_flag = false;
+						// 	}
+						// }
 				 		
 					} else {
-						if (!isInstanceVar(method, instanceVar)) {
+						if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
 							RED << stageString(INITBEFOREUSE) << "attempt to assign to non-existant instance variable \""
 								<< instanceVar << "\" in \"" << method->name << "\" in class \""
 								<< method->clazz->name << "\"" << END;
@@ -369,13 +414,26 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			}
 
 			if (!is_invalid) {
-				AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
-				if (explicit_type != NULL) {
-					method->type[left->name] = explicit_type->name;
-				} else {
-					method->type[left->name] = "UNKNOWN";
+				if (!isVarInit(method, left->name) && (std::find(var_init.begin(), var_init.end(), left->name) == var_init.end()) ) {
+					// method->init.push_back(left->name);
+					// method->type[left->name] = "UNKNOWN";
+					var_init.push_back(left->name);
 				}
-				method->init.push_back(left->name);
+				// if it has an explicit type
+				// AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+				// if (explicit_type != NULL) {
+				// 	if (method->type.find(left->name) == method->type.end()
+				// 		|| method->type[left->name] == "UNKNOWN") {
+				// 		method->type[left->name] = explicit_type->name;
+				// 	} else {
+				// 		RED << stageString(INITBEFOREUSE) << "variable \""
+				// 			<< left->name << "\" in " << method->name <<  "() in class \""
+				// 			<< method->clazz->name << "\" is assigned explicit type more than once" << END;
+				// 		report::trackError(INITBEFOREUSE);
+				// 		ret_flag = false;
+				// 	}
+				// }
+				
 			}
 		}
 
@@ -392,15 +450,9 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 						ret_flag = false;
 						return ret_flag;
 				}
-				// make the "this" ident not a leaf so we don't check it 
-				load->get(IDENT)->isLeaf = false;
-
-				// make the actual var ident a leaf and an instance var
-				stmt->get(IDENT)->isLeaf = true;
-				stmt->get(IDENT)->isInstanceVar = true;
 
 				std::string instanceVar = stmt->get(IDENT)->name;
-				if (!isInstanceVar(method, instanceVar)) {
+				if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
 					RED << stageString(INITBEFOREUSE) << "uninitialized instance variable \"this."
 						<< instanceVar << "\" used in method \"" << method->name << "\" in class \""
 						<< method->clazz->name << "\"" << END;
@@ -422,12 +474,11 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 						ret_flag = false;
 						return ret_flag;
 				}
-				stmt->get(IDENT)->isInstanceVar = true;
 			} else {
 				// if its a boolean, we dont need to check if its init
 				std::string ident = stmt->get(IDENT)->name;
 				if (ident != "false" && ident != "true") {
-					if (!isVarInit(method, ident)) {
+					if (!isVarInit(method, ident) && (std::find(var_init.begin(), var_init.end(), ident) == var_init.end()) )  {
 						RED << stageString(INITBEFOREUSE) << "uninitialized variable \""
 							<< stmt->get(IDENT)->name << "\" used in " << method->name << "() in class \""
 							<< method->clazz->name << "\"" << END;
@@ -438,14 +489,13 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			}
 		}
 	}
-	// leaf node, push onto leaves return vector
+	// leaf node, we can return now
 	else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
-		ret_vec.push_back(stmt);
 		return ret_flag;
 	}
 
 	for (AST::Node *child : stmt->rawChildren) {
-		if (!initCheckStmt(method, child, ret_vec, isConstructor, isMainStatements)) ret_flag = false;
+		if (!initCheckStmt(method, child, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
 	}
 
 	return ret_flag;
@@ -460,6 +510,11 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor, bool isM
 
 	// check if l_expr is equal to a literal, if so report an error
 	// -> Attempt to assign to a literal in method "__"
+	
+	// we pass this vector around so we know what we initialized after each statement
+	std::vector<std::string> var_init;
+	std::vector<std::string> field_init;
+
 	for (AST::Node* stmt : method->stmts) {
 		// do some preliminary checks before handing it off to the recursive method
 		if (stmt->type == CONSTRUCTOR) {
@@ -484,23 +539,22 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor, bool isM
 				}
 			}
 		}
-		std::vector<AST::Node *> leaves;
-		if(!initCheckStmt(method, stmt, leaves, isConstructor, isMainStatements)) ret_flag = false;
 
-		// print leaves
-		// std::cout << "--- new stmt in method " << method->name << " ---" << std::endl;
-		// for (AST::Node* leaf : leaves) {
-		// 	if (leaf->nameinit) {
-		// 		OUT << leaf->name;
-		// 		if (leaf->isInstanceVar) {
-		// 			OUT << " (field)";
-		// 		}
-		// 		OUT << END;
-		// 	} else if (leaf->valueinit) {
-		// 		OUT << leaf->value << END;
-		// 	}
-		// }
+		if(!initCheckStmt(method, stmt, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
+
+		// for each thing in passed around vector, add to init/instancevars, then clear the vectors/maps
+		for (std::string var : var_init) {
+			method->init.push_back(var);
+			method->type[var] = "UNKNOWN";
+		}
+		for (std::string field : field_init) {
+			method->clazz->instanceVars.push_back(field);
+			method->clazz->instanceVarType[field] = "UNKNOWN";
+		}
+		var_init.clear();
+		field_init.clear();
 	}
+
 	return ret_flag;
 }
 
@@ -567,9 +621,9 @@ bool Typechecker::checkProgram() {
 
     bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();
 
-    // for (auto clzz : this->classes) {
-    // 	printQclass(clzz.second);
-    // }
+    for (auto clzz : this->classes) {
+    	printQclass(clzz.second);
+    }
 
     if (!initBeforeUseCheckValid) {
         report::error("initialization before use check failed!", TYPECHECKER);

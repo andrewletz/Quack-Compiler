@@ -257,7 +257,7 @@ r_expr
         ;
 
 l_expr
-        : ident { $$ = $1; $$->isLeaf = true; $$->subType = LOC; /* new AST::Node(LOAD); $$->insert($1); */ }
+        : ident { $$ = $1; $$->subType = LOC; /* new AST::Node(LOAD); $$->insert($1); */ }
         | r_expr '.' ident { $$ = new AST::Node(DOT); $$->subType = L_EXPR; $$->insert($1); 
                              $3->subType = R_EXPR; $$->insert($3); }
         ;

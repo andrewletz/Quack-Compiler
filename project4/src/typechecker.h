@@ -82,7 +82,10 @@ class Typechecker {
         // - init before use on constructors
         // - check instance vars of children match parents
         // - init before use on methods
-        bool initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor, bool isMainStatements);
+        bool initCheckStmt(Qmethod *method, AST::Node *stmt, 
+                            std::vector<std::string> &var_init,
+                            std::vector<std::string> &field_init,
+                            bool isConstructor, bool isMainStatements);
         bool initCheckQmethod(Qmethod *method, bool isConstructor, bool isMainStatements);
         bool initializeBeforeUseCheck();
 

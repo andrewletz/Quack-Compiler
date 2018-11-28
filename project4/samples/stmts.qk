@@ -1,4 +1,7 @@
-class Stmts() extends Obj {
+class Stmts(carg: Int) extends Obj {
+      // true = false; // type error
+      // false = true; // type error
+      ast : Int = 10;
       foo = Foo();
       this.children = 10;
       this.children = 20;
@@ -48,7 +51,11 @@ class Stmts() extends Obj {
          return C(100);
       }
 
-      def whocares(x: Int, y: Int, z: Int) {}
+      def whocares(x: Int, y: Int, z: Int) { 
+         glarp = 10; 
+         m = method(this); 
+         z = this; 
+      }
 }
 
 class Ples(y: Int) {

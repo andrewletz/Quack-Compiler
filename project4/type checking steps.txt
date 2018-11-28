@@ -47,7 +47,15 @@ type inference on constructors (phase 3):
 
 
 
+notes:
+- if an error occurs in a method with the same name as the class, it is the constructor
+- if an error occurs in $MAIN(), it is in the main statements area
 
+Assumptions:
+- you cannot reassign to "this" (eg, this = 10;)
+- you cannot use the keyword "this" inside the main program statements
+- you may not have a method with the same name as a class
+- you may not have a field with the same name as a class or method
 
 
 

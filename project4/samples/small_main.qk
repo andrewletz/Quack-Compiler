@@ -1,0 +1,9 @@
+class DoesntMatter() {
+	
+}
+
+x = 20;
+this = 10;
+y = 20;
+z = x + y;
+b = DoesntMatter();

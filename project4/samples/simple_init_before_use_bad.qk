@@ -1,0 +1,16 @@
+class Stmts() extends Obj {
+      this.x = y;
+      this.y;
+      this.z = this.x; // doesn't throw a third error 
+                        // because this.x is still added to the fields
+      
+      d = 10;
+
+      e = Other(d, this);
+
+      g = this;
+
+      b = Other(g);
+
+      long = b.foo(g.bar(d.zem(error))).nine;
+}

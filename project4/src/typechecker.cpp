@@ -9,8 +9,8 @@ Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, b
 	// check for methods sharing a name with their class
 	if (!isConstructor) { // the name of a constructor is stored as the name of a class in the AST
 		if (newMethod->name == containerClass->name) {
-			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod->name << 
-						"\" shares name with containing class" << END;
+			RED << stageString(CLASSHIERARCHY) << "method " << newMethod->name << 
+						"() shares name with containing class" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
@@ -18,8 +18,8 @@ Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, b
 	// check for duplicate methods
 	for (Qmethod* otherMethod : containerClass->methods) {
 		if (otherMethod->name == newMethod->name) {
-			RED << stageString(CLASSHIERARCHY) << "method \"" << newMethod->name << 
-						"\" in class \"" << containerClass->name << "\" is defined more than once" << END;
+			RED << stageString(CLASSHIERARCHY) << "method " << newMethod->name << 
+						"() in class \"" << containerClass->name << "\" is defined more than once" << END;
 	            	report::bail(CLASSHIERARCHY);
 		}
 	}
@@ -31,6 +31,7 @@ Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, b
 		std::vector<AST::Node *> formals = formalsContainer->getAll(CLASS_ARG);
 		for (AST::Node *arg : formals) {
 			newMethod->init.push_back(arg->get(IDENT, VAR_IDENT)->name);
+			newMethod->args.push_back(arg->get(IDENT, VAR_IDENT)->name);
 			newMethod->type[arg->get(IDENT, VAR_IDENT)->name] = arg->get(IDENT, TYPE_IDENT)->name;
 			// OUT << "	Formal: " << arg->get(IDENT, VAR_IDENT)->name
 			// 		<< ", " << arg->get(IDENT, TYPE_IDENT)->name << END;
@@ -53,6 +54,8 @@ Qclass* Typechecker::createQclass(AST::Node *clazz) {
 	newClass->node = clazz;
 	newClass->name = clazz->get(IDENT, CLASS_NAME)->name;
 	newClass->super = clazz->get(IDENT, SUPER_NAME)->name;
+	newClass->instanceVars.push_back("this");
+	newClass->instanceVarType["this"] = newClass->name;
 
 	// check to make sure the class isn't extending any of the "final" Quack built-in classes
 	if (newClass->super == "Nothing" || newClass->super == "String" ||
@@ -108,6 +111,28 @@ void Typechecker::initializeClasses(AST::Node *astRoot) {
 void Typechecker::initialize() { 
 	this->initializeClasses(this->root);
 	this->initializeClasses(this->stubs);
+
+	AST::Node *main_stmts = this->root->get(BLOCK, STATEMENTS);
+	// build fake main if we have statements
+	if (!main_stmts->order.empty()) {
+		Qclass *mainWrapper = new Qclass();
+		mainWrapper->node = main_stmts;
+		mainWrapper->name = "$MAIN";
+		mainWrapper->super = "$MAIN";
+
+		Qmethod *mainConstructor = new Qmethod();
+		mainConstructor->clazz = mainWrapper;
+		mainConstructor->name = "$MAIN";
+		for (AST::Node * stmt : main_stmts->rawChildren) {
+			mainConstructor->stmts.push_back(stmt); // add each of these to the Qmethod in order
+		}
+
+		mainWrapper->constructor = mainConstructor;
+
+		this->main = mainWrapper;
+	} else {
+		this->main = NULL;
+	}
 
 	// Initialize the class hierarchy table
 	std::string class_name;
@@ -184,8 +209,8 @@ bool Typechecker::methodSignaturesTypecheck() {
 
 			// check return type exists
 			if (!doesClassExist(returnType)) {
-				RED << stageString(TYPEINFERENCE) << "method \"" << method->name <<
-					"\" in \"" << qclss.second->name << "\" has non-existant return type \""
+				RED << stageString(TYPEINFERENCE) << "method " << method->name <<
+					"() in \"" << qclss.second->name << "\" has non-existant return type \""
 					<< returnType << "\"" << END;
 				report::trackError(TYPEINFERENCE);
 				return_flag = false;
@@ -196,8 +221,8 @@ bool Typechecker::methodSignaturesTypecheck() {
 			for (std::string var : method->init) {
 				std::string varType = method->type[var];
 				if (!doesClassExist(varType)) {
-					RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
-						"\" in \"" << qclss.second->name << "\" has argument \""
+					RED << stageString(TYPEINFERENCE) << "overriden method " << method->name <<
+						"() in \"" << qclss.second->name << "\" has argument \""
 						<< var << "\" with non-existant type \"" << varType << "\"" << END;
 					report::trackError(TYPEINFERENCE);
 					return_flag = false;
@@ -262,7 +287,11 @@ bool Typechecker::methodsCompatibleCheck() {
 	return return_flag;
 }
 
-bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor) {
+bool Typechecker::fieldsCompatibleCheck() {
+	return true;
+}
+
+bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor, bool isMainStatements) {
 	bool ret_flag = true;
 	Type nodeType = stmt->type;
 
@@ -274,9 +303,22 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			AST::Node *load = left->get(LOAD);
 			if (load != NULL) {
 				if (load->get(IDENT)->name == "this") { 
+					if (isMainStatements) {
+						RED << stageString(INITBEFOREUSE) << "reference to \"this\" found in program's main statements" << END;
+						report::trackError(INITBEFOREUSE);
+						ret_flag = false;
+						return ret_flag;
+					}
 					std::string instanceVar = left->get(IDENT)->name;
 					if (isConstructor) { // we have found a this.x = ... statement, push back to class's instancevars
 						// OUT << "defining this." << left->get(IDENT)->name << END;
+						if (method->clazz->name == instanceVar) {
+							RED << stageString(INITBEFOREUSE) << "instance variable \""
+								<< instanceVar << "\" in class \""
+								<< method->clazz->name << "\" shares name with containing class" << END;
+							report::trackError(INITBEFOREUSE);
+							ret_flag = false;
+						}
 						for (Qmethod *clssmethod : method->clazz->methods) {
 							if (clssmethod->name == instanceVar) {
 								RED << stageString(INITBEFOREUSE) << "instance variable \""
@@ -290,7 +332,13 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 						// if it isn't in the vector already, push it in
 						if (!isInstanceVar(method, instanceVar)) {
 							method->clazz->instanceVars.push_back(instanceVar);
-				 			method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
+							AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+							if (explicit_type != NULL) {
+								method->clazz->instanceVarType[instanceVar] = explicit_type->name;
+							} else {
+								method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
+							}
+				 			
 						}
 				 		
 					} else {
@@ -309,31 +357,51 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 		// assign of form "x = ..." and "x : Clss = ..."
 		left = stmt->get(IDENT, LOC);
 		if (left != NULL) {
-			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
-			if (explicit_type != NULL) {
-				method->type[left->name] = explicit_type->name;
-			} else {
-				method->type[left->name] = "UNKNOWN";
+			// check if we are assigning to an illegal value (boolean identifier)
+			bool is_invalid = false;
+			if (left->name == "false" || left->name == "true" || left->name == "this") {
+				RED << stageString(TYPEINFERENCE) << "attempt to assign to invalid value \""
+					<< left->name << "\" in \"" << method->name << "\" in class \""
+					<< method->clazz->name << "\"" << END;
+				report::trackError(TYPEINFERENCE);
+				ret_flag = false;
+				is_invalid = true;
 			}
-			method->init.push_back(left->name);
+
+			if (!is_invalid) {
+				AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+				if (explicit_type != NULL) {
+					method->type[left->name] = explicit_type->name;
+				} else {
+					method->type[left->name] = "UNKNOWN";
+				}
+				method->init.push_back(left->name);
+			}
 		}
 
 	}
-	// leaf node, push onto leaves return vector
-	else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
-		ret_vec.push_back(stmt);
-		return ret_flag;
-	}
-
 	// stmt of form "x.x"
 	else if (nodeType == DOT) {
 		AST::Node *load = stmt->get(LOAD);
 		if (load != NULL) {
 			// we have a "this.x" somewhere in a method, make appropriate checks
-			if (load->get(IDENT)->name == "this") { 
+			if (load->get(IDENT)->name == "this") {
+				if (isMainStatements) {
+						RED << stageString(INITBEFOREUSE) << "reference to \"this\" found in program's main statements" << END;
+						report::trackError(INITBEFOREUSE);
+						ret_flag = false;
+						return ret_flag;
+				}
+				// make the "this" ident not a leaf so we don't check it 
+				load->get(IDENT)->isLeaf = false;
+
+				// make the actual var ident a leaf and an instance var
+				stmt->get(IDENT)->isLeaf = true;
+				stmt->get(IDENT)->isInstanceVar = true;
+
 				std::string instanceVar = stmt->get(IDENT)->name;
 				if (!isInstanceVar(method, instanceVar)) {
-					RED << stageString(INITBEFOREUSE) << "unknown instance variable \""
+					RED << stageString(INITBEFOREUSE) << "uninitialized instance variable \"this."
 						<< instanceVar << "\" used in method \"" << method->name << "\" in class \""
 						<< method->clazz->name << "\"" << END;
 					report::trackError(INITBEFOREUSE);
@@ -342,15 +410,48 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AS
 			}
 		}
 	}
+	// either a variable of form "x" or a reference to "this"
+	else if (nodeType == LOAD) {
+
+		// if we find a "this" on its own, set it to an instance var
+		if (stmt->get(IDENT) != NULL) { 
+			if (stmt->get(IDENT)->name == "this") {
+				if (isMainStatements) {
+						RED << stageString(INITBEFOREUSE) << "reference to \"this\" found in program's main statements" << END;
+						report::trackError(INITBEFOREUSE);
+						ret_flag = false;
+						return ret_flag;
+				}
+				stmt->get(IDENT)->isInstanceVar = true;
+			} else {
+				// if its a boolean, we dont need to check if its init
+				std::string ident = stmt->get(IDENT)->name;
+				if (ident != "false" && ident != "true") {
+					if (!isVarInit(method, ident)) {
+						RED << stageString(INITBEFOREUSE) << "uninitialized variable \""
+							<< stmt->get(IDENT)->name << "\" used in " << method->name << "() in class \""
+							<< method->clazz->name << "\"" << END;
+						report::trackError(INITBEFOREUSE);
+						ret_flag = false;
+					}
+				}
+			}
+		}
+	}
+	// leaf node, push onto leaves return vector
+	else if (nodeType == INTCONST || nodeType == STRCONST || nodeType == IDENT) {
+		ret_vec.push_back(stmt);
+		return ret_flag;
+	}
 
 	for (AST::Node *child : stmt->rawChildren) {
-		initCheckStmt(method, child, ret_vec, isConstructor);
+		if (!initCheckStmt(method, child, ret_vec, isConstructor, isMainStatements)) ret_flag = false;
 	}
 
 	return ret_flag;
 }
 
-bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor) {
+bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor, bool isMainStatements) {
 	bool ret_flag = true;
 	if (method->stmts.empty()) return ret_flag;
 	// if you encounter an assign of form this.x, add it to Qclass's instanceVars
@@ -384,15 +485,19 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor) {
 			}
 		}
 		std::vector<AST::Node *> leaves;
-		ret_flag = initCheckStmt(method, stmt, leaves, isConstructor);
+		if(!initCheckStmt(method, stmt, leaves, isConstructor, isMainStatements)) ret_flag = false;
 
 		// print leaves
-		// std::cout << "--- new stmt ---" << std::endl;
+		// std::cout << "--- new stmt in method " << method->name << " ---" << std::endl;
 		// for (AST::Node* leaf : leaves) {
 		// 	if (leaf->nameinit) {
-		// 		std::cout << leaf->name << std::endl;
+		// 		OUT << leaf->name;
+		// 		if (leaf->isInstanceVar) {
+		// 			OUT << " (field)";
+		// 		}
+		// 		OUT << END;
 		// 	} else if (leaf->valueinit) {
-		// 		std::cout << leaf->value << std::endl;
+		// 		OUT << leaf->value << END;
 		// 	}
 		// }
 	}
@@ -402,14 +507,21 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor) {
 bool Typechecker::initializeBeforeUseCheck() {
 	bool ret_flag = true;
 
+	// init before use check constructor, then init check methods
+	// we don't need to do all constructors first here, but we do in type checking
 	for (auto clss : this->classes) {
 		if (isBuiltin(clss.second->name)) { 
 			continue;
 		}
-		ret_flag = initCheckQmethod(clss.second->constructor, true);
+		if (!initCheckQmethod(clss.second->constructor, true, false)) ret_flag = false;
 		for (Qmethod *m : clss.second->methods) {
-			ret_flag = initCheckQmethod(m, false);
+			if(!initCheckQmethod(m, false, false)) ret_flag = false;
 		}
+	}
+
+	// init check the main statements
+	if (this->main != NULL) {
+		if (!initCheckQmethod(this->main->constructor, false, true)) ret_flag = false;
 	}
 
 	return ret_flag;
@@ -448,7 +560,7 @@ bool Typechecker::checkProgram() {
     bool methodsCompatible = this->methodsCompatibleCheck();
     if (!methodsCompatible) {
     	report::error("method compatibility check failed!", TYPECHECKER);
-        report::dynamicBail();
+        // don't bail here so we can see more errors
     } else if (report::ok()) {
         report::gnote("method compatibility check passed.", TYPECHECKER);
     }
@@ -460,7 +572,7 @@ bool Typechecker::checkProgram() {
     // }
 
     if (!initBeforeUseCheckValid) {
-        report::error("initialization before use check failed: idk what to put here yet!", TYPECHECKER);
+        report::error("initialization before use check failed!", TYPECHECKER);
         report::bail(INITBEFOREUSE);
     } else if (report::ok()) {
         report::gnote("initialization before use check passed.", TYPECHECKER);
@@ -468,10 +580,18 @@ bool Typechecker::checkProgram() {
 
     bool typeInferenceCheckValid = this->typeInferenceCheck();
     if (!typeInferenceCheckValid) {
-        report::error("type inference check failed: idk what to put here yet!", TYPECHECKER);
+        report::error("type inference check failed!", TYPECHECKER);
         report::bail(TYPEINFERENCE);
     } else if (report::ok()) {
         report::gnote("type inference check passed.", TYPECHECKER);
+    }
+
+    bool fieldsCompatible = this->fieldsCompatibleCheck();
+    if (!fieldsCompatible) {
+        report::error("field compatibility check failed!", TYPECHECKER);
+        report::bail(TYPEINFERENCE);
+    } else if (report::ok()) {
+        report::gnote("field compatibility check passed.", TYPECHECKER);
     }
 
     // if we reach the end we know nothing has failed, return true to the driver
@@ -481,6 +601,11 @@ bool Typechecker::checkProgram() {
 bool Typechecker::isVarInit(Qmethod *method, std::string ident) {
 	return std::find(method->init.begin(), 
 		method->init.end(), ident) != method->init.end();
+}
+
+bool Typechecker::isVarArg(Qmethod *method, std::string ident) {
+	return std::find(method->args.begin(), 
+		method->args.end(), ident) != method->args.end();
 }
 
 bool Typechecker::isInstanceVar(Qmethod *method, std::string ident) {
@@ -622,8 +747,13 @@ void Typechecker::printQmethod(Qmethod *method) {
 	OUT << "	Return type: " << method->type["return"] << END;
 	OUT << "	Initialized vars: " << END;
 	for (std::string s : method->init) {
-		OUT << "		" << s << END;
+		OUT << "		" << s;
+		if (isVarArg(method, s)) {
+			OUT << " (arg)";
+		}
+		OUT << END;
 	}
+	
 	OUT << "	Known types: " << END;
 	for (std::map<std::string, std::string>::iterator it = method->type.begin(); it != method->type.end(); ++it) {
 	 	OUT << "		" << it->first << ", " << it->second << END;

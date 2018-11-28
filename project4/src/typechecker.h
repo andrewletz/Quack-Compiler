@@ -23,6 +23,7 @@ struct Qmethod {
     Qclass *clazz;
     
     std::string name;
+    std::vector<std::string> args;
     std::vector<std::string> init;
     std::map<std::string, std::string> type;
     std::vector<AST::Node*> stmts;
@@ -53,7 +54,7 @@ class Typechecker {
         std::map<std::string, std::vector<std::string>> class_hierarchy;
 
         // we create a main class to wrap our program's statements
-        Qclass* statements;
+        Qclass* main;
 
         /* ========================== */
         /* Constructors & Destructors */
@@ -81,14 +82,15 @@ class Typechecker {
         // - init before use on constructors
         // - check instance vars of children match parents
         // - init before use on methods
-        bool initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor);
-        bool initCheckQmethod(Qmethod *method, bool isConstructor);
+        bool initCheckStmt(Qmethod *method, AST::Node *stmt, std::vector<AST::Node *> &ret_vec, bool isConstructor, bool isMainStatements);
+        bool initCheckQmethod(Qmethod *method, bool isConstructor, bool isMainStatements);
         bool initializeBeforeUseCheck();
 
         // Type checking: phase three
         // - type inference on constructors
         // - type inference on methods
         bool typeInferenceCheck();
+        bool fieldsCompatibleCheck();
 
         // Type check our entire program and report errors/bail appropriately
         // this returns true back to driver.cpp if we passed all checks
@@ -96,7 +98,9 @@ class Typechecker {
 
         // "helper" methods used throughout type checking
         bool isInstanceVar(Qmethod *method, std::string ident);
+
         bool isVarInit(Qmethod *method, std::string ident);
+        bool isVarArg(Qmethod *method, std::string ident);
         bool isBuiltin(std::string classname);
         bool doesClassExist(std::string classname);
         bool isSubclassOrEqual(std::string class1, std::string class2);

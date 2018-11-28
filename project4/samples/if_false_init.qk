@@ -1,5 +1,5 @@
 class C1() {
-    if True {
+    if true {
     } else {
         this.X = 5;
     }

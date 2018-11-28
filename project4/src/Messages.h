@@ -13,6 +13,16 @@
 #include <map>
 #include <string>
 
+class Switch {
+public:
+    bool value = true;
+    Switch() {};
+    virtual ~Switch() {};
+    void set_false() {
+        this->value = false;
+    }
+};
+
 // using preprocessor directives isn't a good thing...  
 // but I couldn't think of a better way to do this all over the code.
 #define OUT std::cout << "\033[39m"

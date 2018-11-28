@@ -186,13 +186,15 @@ stmts
 // -~-~-~- Statements : Control flow
 // -~-~-~- Control flow : if/else
 stmt
-        : IF r_expr stmt_block opt_elif { $$ = new AST::Node(IF); $$->insert($2); 
+        : IF r_expr stmt_block opt_elif { $$ = new AST::Node(IF); AST::Node *cond = new AST::Node(COND); 
+                                          cond->insert($2); $$->insert(cond); 
                                           $3->subType = TRUE_STATEMENTS; $$->insert($3); $$->insert($4); }
         ;
 
 opt_elif:  
         ELIF r_expr stmt_block opt_elif { $$ = new AST::Node(BLOCK); $$->subType = FALSE_STATEMENTS;
-                                          AST::Node *newif = new AST::Node(IF); newif->insert($2); 
+                                          AST::Node *newif = new AST::Node(IF); AST::Node *cond = new AST::Node(COND); 
+                                          cond->insert($2); newif->insert(cond); 
                                           $3->subType = TRUE_STATEMENTS; newif->insert($3); 
                                           newif->insert($4); $$->insert(newif); }
         | ELSE stmt_block   { $2->subType = FALSE_STATEMENTS; $$ = $2; }
@@ -201,7 +203,8 @@ opt_elif:
 
 // -~-~-~- Control flow : while loop
 stmt
-        : WHILE r_expr stmt_block { $$ = new AST::Node(WHILE); $$->insert($2); $$->insert($3); }
+        : WHILE r_expr stmt_block { $$ = new AST::Node(WHILE); AST::Node *cond = new AST::Node(COND); 
+                                    cond->insert($2); $$->insert(cond); $$->insert($3); }
         ;
 
 // -~-~-~- Statements : Other

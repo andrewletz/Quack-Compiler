@@ -11,6 +11,19 @@ std::vector<std::string> intersection(std::vector<std::string> vec1, std::vector
     return ret_vec;
 }
 
+std::vector<std::string> difference(std::vector<std::string> vec1, std::vector<std::string> vec2) {
+	if (vec1.empty()) return vec2;
+	if (vec2.empty()) return vec1;
+    std::vector<std::string> ret_vec;
+
+    std::sort(vec1.begin(), vec1.end());
+    std::sort(vec2.begin(), vec2.end());
+
+    std::set_difference(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), std::inserter(ret_vec, ret_vec.begin()));
+
+    return ret_vec;
+}
+
 Qmethod* Typechecker::createQmethod(AST::Node *method, Qclass *containerClass, bool isConstructor) {
 	Qmethod *newMethod = new Qmethod();
 	newMethod->node = method;
@@ -310,7 +323,46 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 	Type nodeType = stmt->type;
 
 	// control flow has the most complicated case, have to check all syntactic paths
-	if (nodeType == IF) {
+	// init check while loop
+	if (nodeType == WHILE) {
+		// check that the cond is init first (no type checking yet, it can be anything)
+		AST::Node *cond = stmt->get(COND);
+		if (cond != NULL) {
+			if (!initCheckStmt(method, cond, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
+		}
+
+		AST::Node *while_stmts = stmt->get(BLOCK, STATEMENTS);
+		std::vector<std::string> var_init_copy1 = var_init;
+		std::vector<std::string> field_init_copy1 = field_init;
+		for (AST::Node *n : while_stmts->rawChildren) {
+			if (!initCheckStmt(method, n, var_init_copy1, field_init_copy1, isConstructor, isMainStatements)) ret_flag = false;
+		}
+
+		if (isConstructor) {
+			std::vector<std::string> uninitializedFields;
+			uninitializedFields = difference(field_init, field_init_copy1);
+			for (std::string f : uninitializedFields) {
+				RED << stageString(INITBEFOREUSE) << "instance variable \"" << f 
+					<< "\" not initialized on all syntactic paths in \"" << method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+				return ret_flag;
+			}
+		}
+
+		// update final return vectors
+		var_init = intersection(var_init, var_init_copy1);
+		field_init = intersection(field_init, field_init_copy1);
+		return ret_flag;
+	}
+	// init check if statements
+	else if (nodeType == IF) {
+		// check that the cond is init first (no type checking yet, it can be anything)
+		AST::Node *cond = stmt->get(COND);
+		if (cond != NULL) {
+			if (!initCheckStmt(method, cond, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
+		}
+
 		AST::Node *true_stmts = stmt->get(BLOCK, TRUE_STATEMENTS);
 		std::vector<std::string> var_init_copy1 = var_init;
 		std::vector<std::string> field_init_copy1 = field_init;
@@ -325,6 +377,22 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 			if (!initCheckStmt(method, n, var_init_copy2, field_init_copy2, isConstructor, isMainStatements)) ret_flag = false;
 		}
 
+		// if we're in the constructor, we need to make sure all fields are initialized on all paths
+		// if we aren't in the constructor, we don't have to assign on all paths (but will still throw
+		// an error later on if we attempt to assign to an unknown field)
+		if (isConstructor) {
+			std::vector<std::string> uninitializedFields;
+			uninitializedFields = difference(field_init_copy1, field_init_copy2);
+			for (std::string f : uninitializedFields) {
+				RED << stageString(INITBEFOREUSE) << "instance variable \"" << f 
+					<< "\" not initialized on all syntactic paths in \"" << method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+				return ret_flag;
+			}
+		}
+
+		// update our final return vectors
 		var_init = intersection(var_init_copy1, var_init_copy2);
 		field_init = intersection(field_init_copy1, field_init_copy2);
 		return ret_flag;
@@ -621,9 +689,9 @@ bool Typechecker::checkProgram() {
 
     bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();
 
-    for (auto clzz : this->classes) {
-    	printQclass(clzz.second);
-    }
+    // for (auto clzz : this->classes) {
+    // 	printQclass(clzz.second);
+    // }
 
     if (!initBeforeUseCheckValid) {
         report::error("initialization before use check failed!", TYPECHECKER);

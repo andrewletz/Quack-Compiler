@@ -5,75 +5,26 @@ from Quack (programming language) -> C
 | ---------- | ------ |
 | Lexer | Complete |
 | Parser | Complete |
-| AST | Complete-ish |
-| Type checker | In progress |
-| Code generator | Incomplete |
+| AST | Complete |
+| Type checker | Nearing completion |
+| Code generator | In progress |
+
+<hr>
 
 ### Compilation Instructions
-
-## Lexer (/project1)
-Type
-```
-make
-```
-to get the *lexer* executable. Usage: ./lexer [filename]
-
-
-Type
-```
-make clean
-```
-to get rid of stuff.
-
-<hr>
-
-## Parser (/project2)
 Type
 ```
 ./build.sh
 ```
-to get the *parser* executable. usage: ./parser < [filename]
-
-This will print whether the program was valid alongside any syntax errors found.
-
-Type
-```
-./clean.sh
-```
-to get rid of stuff.
-
-<hr>
-
-## AST (/project3)
-Type
-```
-./build.sh
-```
-to get the *parser* executable. usage: ./parser < [filename]
-
-This will print the program's abstract syntax tree in JSON format to stdout.
-
-Type
-```
-./clean.sh
-```
-to get rid of stuff.
-
-<hr>
-
-## Type checker (/project4)
-Type
-```
-./build.sh
-```
-to get the *qcc* executable. usage: ./qcc [filename] [--json=true]\*
+to get the *qcc* executable. usage: ./qcc [filename] [--json=true]\* [--no-debug]\*
 
 The [--json=true] flag will print the program's abstract syntax tree in JSON format to stdout.
+The [--no-debug] flag will hide compilation information (compile-stage completion messages).
 
 Type
 ```
 ./clean.sh
 ```
-to get rid of stuff.
+to get rid of the build directory and the qcc executable.
 
 <hr>

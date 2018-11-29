@@ -71,6 +71,19 @@ namespace AST {
         } else { return NULL; }
     }
 
+    Node * Node::getBySubtype(Type subType) {
+        // Finds a given type of node in the map, returns the first node in its vector.
+        // This is used when getting types of nodes that only have one identifier, such
+        // as a class name, etc.
+        
+        Node *retNode = NULL;
+        for (Node *child : this->rawChildren) {
+            if (child->subType == subType) return child;
+        }
+
+        return retNode;
+    }
+
     Node * Node::get(Type type, Type subType) {
         std::map<Type, std::vector<Node *> >::iterator it = this->children.find(type);
         if (it != this->children.end()) {

@@ -52,7 +52,7 @@ notes:
 - if an error occurs in $MAIN(), it is in the main statements area
 
 Assumptions/decisions based on ambiguity:
-- you cannot assign explicit type more than once
+- you may not declare explicit type on re-assignment of a variable
 - you cannot reassign to "this" (eg, this = 10;)
 - you cannot use the keyword "this" inside the main program statements
 - you may not have a method with the same name as a class

@@ -60,6 +60,7 @@ namespace AST {
 
             void insert(Node* inputNode);
             Node* get(Type type); // if you know there is only a single node of this type, use get
+            Node* getBySubtype(Type type);
             Node* get(Type type, Type subType); // second argument is for subtype
             std::vector<Node *> getAll(Type type); // if there can be multiple, use getAll
             std::vector<Node *> getAll(Type type, Type subType); // second argument is for subtype

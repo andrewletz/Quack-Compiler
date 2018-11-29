@@ -1,8 +1,12 @@
-class Smeo() {
-	z = 1;
-	while (z) {
-    	z = 10;
-    	b = 20;
-    }
 
+
+class Smeo() {
+	b = false;
+	z = 1;
+	x : Int = 1;
+	this.children = 10;
+	foo = Foo();
+	foo.findmax(this.children).weight = 42;
+	this.weight = foo.findmax(this.children).weight;
+	x = this.createNewC().cMethod();
 }

@@ -7,7 +7,7 @@ class DoesntMatter() {
 			this.z = 10;
 		}
 	} else {
-		this.y = 10;
+		y = 10;
 		if (true) {
 			this.z = 10;
 		} else {

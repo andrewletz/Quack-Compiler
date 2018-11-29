@@ -9,12 +9,17 @@ class Stmts(carg: Int) extends Obj {
       x = this.mthd().bar();
       
       this.ples = Ples(100);
-      this.z = foo.findmax(this.children).weight;
+      this.weight = foo.findmax(this.children).weight;
    
       if (x == 10) { 
          this.t = "hello"; // init before use error
+      } else {
+         this.t = "harlo";
       }
 
+      z = 10;
+      w = 10;
+      t = 10;
       if (z == 100) { 
          n = 10;
       } elif (w == 20) {
@@ -40,6 +45,10 @@ class Stmts(carg: Int) extends Obj {
       smut : Nothing = whocares(x, y, z);
       schmeech : Int = 10 * 10 * 20 * 50 / 100;
 
+      q = 10;
+      e = 10;
+      r = 10;
+      b = 10;
       clormo = smut.bar(q, w, e, r, t);
       // smut(y, u, "50", 105); // init before use error
 

@@ -11,15 +11,19 @@ std::vector<std::string> intersection(std::vector<std::string> vec1, std::vector
     return ret_vec;
 }
 
+// std::set_difference doesn't work properly... so I made my own simple version
 std::vector<std::string> difference(std::vector<std::string> vec1, std::vector<std::string> vec2) {
 	if (vec1.empty()) return vec2;
 	if (vec2.empty()) return vec1;
     std::vector<std::string> ret_vec;
 
-    std::sort(vec1.begin(), vec1.end());
-    std::sort(vec2.begin(), vec2.end());
+    for (std::string v1 : vec1) {
+    	if ((std::find(vec2.begin(), vec2.end(), v1) == vec2.end())) ret_vec.push_back(v1);
+    }
 
-    std::set_difference(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), std::inserter(ret_vec, ret_vec.begin()));
+    for (std::string v2 : vec2) {
+    	if ((std::find(vec1.begin(), vec1.end(), v2) == vec1.end())) ret_vec.push_back(v2);
+    }
 
     return ret_vec;
 }
@@ -414,7 +418,6 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 					}
 					std::string instanceVar = left->get(IDENT)->name;
 					if (isConstructor) { // we have found a this.x = ... statement, push back to class's instancevars
-						// OUT << "defining this." << left->get(IDENT)->name << END;
 						if (method->clazz->name == instanceVar) {
 							RED << stageString(INITBEFOREUSE) << "instance variable \""
 								<< instanceVar << "\" in class \""
@@ -434,25 +437,8 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 
 						// if it isn't in the vector already, push it in
 						if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
-							// method->clazz->instanceVars.push_back(instanceVar);
-							// method->clazz->instanceVarType[instanceVar] = "UNKNOWN";
 							field_init.push_back(instanceVar);
 						}
-
-						// if it has an explicit type
-						// AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
-						// if (explicit_type != NULL) {
-						// 	if (method->clazz->instanceVarType.find(instanceVar) == method->clazz->instanceVarType.end()
-						// 		|| method->clazz->instanceVarType[instanceVar] == "UNKNOWN") {
-						// 		method->clazz->instanceVarType[instanceVar] = explicit_type->name;
-						// 	} else {
-						// 		RED << stageString(INITBEFOREUSE) << "instance variable \""
-						// 			<< instanceVar << "\" in class \""
-						// 			<< method->clazz->name << "\" is assigned explicit type more than once" << END;
-						// 		report::trackError(INITBEFOREUSE);
-						// 		ret_flag = false;
-						// 	}
-						// }
 				 		
 					} else {
 						if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
@@ -483,28 +469,10 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 
 			if (!is_invalid) {
 				if (!isVarInit(method, left->name) && (std::find(var_init.begin(), var_init.end(), left->name) == var_init.end()) ) {
-					// method->init.push_back(left->name);
-					// method->type[left->name] = "UNKNOWN";
 					var_init.push_back(left->name);
 				}
-				// if it has an explicit type
-				// AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
-				// if (explicit_type != NULL) {
-				// 	if (method->type.find(left->name) == method->type.end()
-				// 		|| method->type[left->name] == "UNKNOWN") {
-				// 		method->type[left->name] = explicit_type->name;
-				// 	} else {
-				// 		RED << stageString(INITBEFOREUSE) << "variable \""
-				// 			<< left->name << "\" in " << method->name <<  "() in class \""
-				// 			<< method->clazz->name << "\" is assigned explicit type more than once" << END;
-				// 		report::trackError(INITBEFOREUSE);
-				// 		ret_flag = false;
-				// 	}
-				// }
-				
 			}
 		}
-
 	}
 	// stmt of form "x.x"
 	else if (nodeType == DOT) {
@@ -572,13 +540,7 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor, bool isMainStatements) {
 	bool ret_flag = true;
 	if (method->stmts.empty()) return ret_flag;
-	// if you encounter an assign of form this.x, add it to Qclass's instanceVars
-	// then check if that instance var shares the same name as any given method in the same class
-	// if so, report an error
 
-	// check if l_expr is equal to a literal, if so report an error
-	// -> Attempt to assign to a literal in method "__"
-	
 	// we pass this vector around so we know what we initialized after each statement
 	std::vector<std::string> var_init;
 	std::vector<std::string> field_init;
@@ -649,8 +611,99 @@ bool Typechecker::initializeBeforeUseCheck() {
 	return ret_flag;
 }
 
+std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
+                            bool isConstructor, bool isMainStatements, bool &changed, bool &ret_flag) {
+	Type nodeType = stmt->type;
+
+	if (nodeType == ASSIGN) {
+		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
+		if (r_expr != NULL) {
+			// OUT << typeString(r_expr->type) << END;
+		}
+
+		// assign of form "this.x = ..."
+		AST::Node *left = stmt->get(DOT, L_EXPR);
+		if (left != NULL) {
+			AST::Node *load = left->get(LOAD);
+			if (load != NULL) {
+				if (load->get(IDENT)->name == "this") { // we have found a this.x = ... statement
+					std::string instanceVar = left->get(IDENT)->name;
+					// if it has an explicit type
+					AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+					if (explicit_type != NULL) {
+						if (method->clazz->instanceVarType.find(instanceVar) == method->clazz->instanceVarType.end()
+							|| method->clazz->instanceVarType[instanceVar] == "UNKNOWN") {
+							method->clazz->instanceVarType[instanceVar] = explicit_type->name;
+						} else {
+							RED << stageString(INITBEFOREUSE) << "instance variable \""
+								<< instanceVar << "\" in class \""
+								<< method->clazz->name << "\" is assigned explicit type more than once" << END;
+							report::trackError(INITBEFOREUSE);
+							ret_flag = false;
+						}
+					}
+				}
+			} 
+		}
+
+		// assign of form "x = ..." and "x : Clss = ..."
+		left = stmt->get(IDENT, LOC);
+		if (left != NULL) {
+			// if it has an explicit type
+			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
+			if (explicit_type != NULL) {
+				if (method->type.find(left->name) == method->type.end()
+					|| method->type[left->name] == "UNKNOWN") {
+					method->type[left->name] = explicit_type->name;
+				} else {
+					RED << stageString(INITBEFOREUSE) << "variable \""
+						<< left->name << "\" in " << method->name <<  "() in class \""
+						<< method->clazz->name << "\" is assigned explicit type more than once" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+				}
+			}
+				
+		}
+	}
+
+	return "UNKNOWN";
+}
+
+bool Typechecker::typeInferQmethod(Qmethod *method, bool isConstructor, bool isMainStatements, bool &changed) {
+	bool ret_flag = true;
+	if (method->stmts.empty()) return ret_flag;
+
+	for (AST::Node* stmt : method->stmts) {
+		typeInferStmt(method, stmt, isConstructor, isMainStatements, changed, ret_flag);
+	}
+
+	return ret_flag;
+}
+
 bool Typechecker::typeInferenceCheck() {
-	return true;
+	bool ret_flag = true;
+
+	bool changed;
+	do {
+		changed = false;
+		for (auto clss : this->classes) {
+			if (isBuiltin(clss.second->name)) { 
+				continue;
+			}
+			if (!typeInferQmethod(clss.second->constructor, true, false, changed)) ret_flag = false;
+			for (Qmethod *m : clss.second->methods) {
+				if(!typeInferQmethod(m, false, false, changed)) ret_flag = false;
+			}
+		}
+
+		// init check the main statements
+		if (this->main != NULL) {
+			if (!typeInferQmethod(this->main->constructor, false, true, changed)) ret_flag = false;
+		}
+	} while (changed);
+
+	return ret_flag;
 }
 
 bool Typechecker::checkProgram() {
@@ -688,11 +741,6 @@ bool Typechecker::checkProgram() {
     }
 
     bool initBeforeUseCheckValid = this->initializeBeforeUseCheck();
-
-    // for (auto clzz : this->classes) {
-    // 	printQclass(clzz.second);
-    // }
-
     if (!initBeforeUseCheckValid) {
         report::error("initialization before use check failed!", TYPECHECKER);
         report::bail(INITBEFOREUSE);
@@ -701,6 +749,9 @@ bool Typechecker::checkProgram() {
     }
 
     bool typeInferenceCheckValid = this->typeInferenceCheck();
+    // for (auto clzz : this->classes) {
+    // 	printQclass(clzz.second);
+    // }
     if (!typeInferenceCheckValid) {
         report::error("type inference check failed!", TYPECHECKER);
         report::bail(TYPEINFERENCE);

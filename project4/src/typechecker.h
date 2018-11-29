@@ -92,6 +92,9 @@ class Typechecker {
         // Type checking: phase three
         // - type inference on constructors
         // - type inference on methods
+        std::string typeInferStmt(Qmethod *method, AST::Node *stmt,
+                            bool isConstructor, bool isMainStatements, bool &changed, bool &ret_flag);
+        bool typeInferQmethod(Qmethod *method, bool isConstructor, bool isMainStatements, bool &changed);
         bool typeInferenceCheck();
         bool fieldsCompatibleCheck();
 

@@ -1,12 +1,20 @@
 
 
-class Smeo() {
-	b = false;
-	z = 1;
-	x : Int = 1;
+class R() {}
+
+class Smeo(bleep: String) {
 	this.children = 10;
-	foo = Foo();
-	foo.findmax(this.children).weight = 42;
-	this.weight = foo.findmax(this.children).weight;
-	x = this.createNewC().cMethod();
+	this.children = "memes";
+
+	aaa = true;
+	zzz = aaa;
+
+	//foo = Foo();
+	//foo.findmax(this.children).weight = 42;
+	//this.weight = foo.findmax(this.children).weight;
+	//x = this.createNewC().cMethod();
+
+	def z(b: Int) : Int {
+		return 10;
+	}
 }

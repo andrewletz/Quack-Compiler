@@ -23,9 +23,16 @@ struct Qmethod {
     Qclass *clazz;
     
     std::string name;
+
+    // mainly for type inference/method compatibility
     std::vector<std::string> args;
+    std::map<std::string, std::string> argtype;
+
+    // tracking of initialized variables and their types
     std::vector<std::string> init;
+    std::vector<std::string> explicitVars;
     std::map<std::string, std::string> type;
+    
     std::vector<AST::Node*> stmts;
 };
 
@@ -37,6 +44,7 @@ struct Qclass {
     std::vector<Qmethod*> methods;    
     // for use in init before use checking in non constructor methods
     std::vector<std::string> instanceVars;
+    std::vector<std::string> explicitFields;
     std::map<std::string, std::string> instanceVarType;
 };
 
@@ -104,9 +112,11 @@ class Typechecker {
 
         // "helper" methods used throughout type checking
         bool isInstanceVar(Qmethod *method, std::string ident);
+        bool isInstanceVarExplicit(Qmethod *method, std::string ident);
 
         bool isVarInit(Qmethod *method, std::string ident);
         bool isVarArg(Qmethod *method, std::string ident);
+        bool isVarExplicit(Qmethod *method, std::string ident);
         bool isBuiltin(std::string classname);
         bool doesClassExist(std::string classname);
         bool isSubclassOrEqual(std::string class1, std::string class2);

@@ -49,6 +49,10 @@ void setDebug(bool flag) {
     debug = flag;
 }
 
+bool getDebug() {
+    return debug;
+}
+
 // An error that we can locate in the input
 // Note: An error message should look like this to work well
 // with IDEs and other tools:

@@ -44,6 +44,8 @@ namespace AST {
             bool isLastNode = false;
             bool isLastOrder = false;
 
+            bool skip = false; // for type checking (dont want to report the same error more than once)
+
             /* ========================== */
             /* Constructors & Destructors */
             /* ========================== */

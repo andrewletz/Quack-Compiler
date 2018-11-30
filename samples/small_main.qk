@@ -1,13 +1,37 @@
-
+/*
+need:
+- constructors
+- calls
+- if and while conds
+- return
+- typecase
+*/
 
 class R() {}
 
-class Smeo(bleep: String) {
-	this.children = 10;
-	this.children = "memes";
+class B(x: Boolean) {}
 
-	aaa = true;
-	zzz = aaa;
+class Zoo() {}
+
+class Foo(a: Int, b: Int, c: Int, d: Int) {}
+
+class Smeo(bleep: String) {
+	bool = true;
+
+	a = 1;
+	b = 2;
+	c = 3;
+	d = 4;
+
+	bar = Bar(a, b).z(a, b);
+	zoo = Zoo();
+	zoo = Zoo();
+	r = R();
+	bee = B(false);
+	foo = Foo(a, b, c, d);	
+	//t = Foo(z(10), z(20), Smeo("a").z(10), 5);
+
+	while (bool and bool or bool) {}
 
 	//foo = Foo();
 	//foo.findmax(this.children).weight = 42;
@@ -15,6 +39,7 @@ class Smeo(bleep: String) {
 	//x = this.createNewC().cMethod();
 
 	def z(b: Int) : Int {
+		za = "hello";
 		return 10;
 	}
 }

@@ -248,9 +248,8 @@ bool Typechecker::methodSignaturesTypecheck() {
 			}
 
 			// check argument types exist
-			// when this code is ran, the only methods in init should be formal args
-			for (std::string var : method->init) {
-				std::string varType = method->type[var];
+			for (std::string var : method->args) {
+				std::string varType = method->argtype[var];
 				if (!doesClassExist(varType)) {
 					RED << stageString(TYPEINFERENCE) << "overriden method " << method->name <<
 						"() in \"" << qclss.second->name << "\" has argument \""
@@ -286,39 +285,38 @@ bool Typechecker::methodsCompatibleCheck() {
 						return_flag = false;
 					}
 
-					// check argument types between overriden and parent method
-					for (std::string var : method->init) {
-						if (isVarInit(parentMethod, var)) {
-							std::string varTypeChild = method->type[var];
-							std::string varTypeParent = parentMethod->type[var];
-						} else {
+					// check that we have matching types
+					int numArgsParent = parentMethod->args.size();
+					int numArgsChild = method->args.size();
+					for (int i = 0; i < numArgsParent; i++) {
+						std::string parentArg = parentMethod->args[i];
+						std::string parentArgType = parentMethod->argtype[parentArg];
+						if (i >= numArgsChild) {
 							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
-								"\" in \"" << qclss.second->name << "\" has argument \""
-								<< var << "\" not present in parent method" << END;
+								"\" in \"" << qclss.second->name << "\" is missing argument \""
+								<< parentArg << "\"" << END;
 							report::trackError(CLASSHIERARCHY);
 							return_flag = false;
-						}
-					}
-
-					// check if we're missing some
-					for (std::string var : parentMethod->args) {
-						if (isVarInit(method, var)) {
-							std::string varTypeChild = method->type[var];
-							std::string varTypeParent = parentMethod->type[var];
-
-							if (!isSubclassOrEqual(varTypeChild, varTypeParent)) {
+						} else {
+							std::string childArg = method->args[i];
+							std::string childArgType = method->argtype[childArg];
+							if (!isSubclassOrEqual(childArgType, parentArgType)) {
 								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
 									"\" in \"" << qclss.second->name << "\" has argument \""
-									<< var << "\" with incorrect type \"" << varTypeChild << "\"" 
-									<< " (should be \"" << varTypeParent << "\")" << END;
+									<< childArg << "\" with incorrect type \"" << childArgType << "\"" 
+									<< " (should be \"" << parentArgType << "\")" << END;
 								report::trackError(TYPEINFERENCE);
 								return_flag = false;
 							}
+						}
+					}
 
-						} else {
+					// check we don't have too many args in child method
+					if (numArgsChild > numArgsParent) {
+						for (int i = numArgsChild - 1; i < numArgsChild; i++) {
 							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
-								"\" in \"" << qclss.second->name << "\" is missing argument \""
-								<< var << "\"" << END;
+								"\" in \"" << qclss.second->name << "\" has argument \""
+								<< method->args[i] << "\" not present in parent method" << END;
 							report::trackError(CLASSHIERARCHY);
 							return_flag = false;
 						}
@@ -607,11 +605,11 @@ bool Typechecker::initCheckQmethod(Qmethod *method, bool isConstructor, bool isM
 		// for each thing in passed around vector, add to init/instancevars, then clear the vectors/maps
 		for (std::string var : var_init) {
 			method->init.push_back(var);
-			method->type[var] = "UNKNOWN";
+			method->type[var] = "$UNKNOWN";
 		}
 		for (std::string field : field_init) {
 			method->clazz->instanceVars.push_back(field);
-			method->clazz->instanceVarType[field] = "UNKNOWN";
+			method->clazz->instanceVarType[field] = "$UNKNOWN";
 		}
 		var_init.clear();
 		field_init.clear();
@@ -651,9 +649,38 @@ bool Typechecker::initializeBeforeUseCheck() {
 // When a type is inferred for a variable, it is set as a side effect rather than returned.
 std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
                             bool isConstructor, bool isMainStatements, bool &changed, bool &ret_flag) {
+	if (stmt->skip == true) return ""; 
 	Type nodeType = stmt->type;
 
-	if (nodeType == ASSIGN) {
+	if (nodeType == CONSTRUCTOR) {
+		AST::Node *class_name_node = stmt->get(IDENT);
+		if (class_name_node != NULL) {
+			std::string class_name = class_name_node->name;
+			if (doesClassExist(class_name)) {
+				Qclass *qclass = this->classes[class_name];
+
+				// make sure all our args line up
+				AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
+				if (actual_args_container != NULL) {
+					std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
+					if (!actual_args.empty()) {
+						for (AST::Node *arg : actual_args) {
+
+						}
+					}
+				}
+				
+			} else {
+				RED << stageString(TYPEINFERENCE) << "invalid constructor for unknown class \""
+					<< class_name << "\" used in method \"" << method->name << "\" in class \""
+					<< method->clazz->name << "\"" << END;
+				report::trackError(TYPEINFERENCE);
+				ret_flag = false;
+				stmt->skip = true;
+			}
+		}
+	}
+	else if (nodeType == ASSIGN) {
 		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
 
 		// assign of form "this.x = ..."
@@ -667,23 +694,37 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 					// if it has an explicit type
 					AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 					if (explicit_type != NULL) {
-						if (!isInstanceVarExplicit(method, instanceVar)) {
+						if (isSubclassOrEqual(explicit_type->name, method->clazz->instanceVarType[instanceVar])) {
 							method->clazz->instanceVarType[instanceVar] = explicit_type->name;
-							method->clazz->explicitFields.push_back(instanceVar);
 						} else {
-							RED << stageString(INITBEFOREUSE) << "instance variable \""
+							RED << stageString(TYPEINFERENCE) << "instance variable \""
 								<< instanceVar << "\" in class \""
-								<< method->clazz->name << "\" is assigned explicit type more than once" << END;
-							report::trackError(INITBEFOREUSE);
+								<< method->clazz->name << "\" is assigned invalid explicit type \"" << explicit_type->name << "\"" << END;
+							report::trackError(TYPEINFERENCE);
 							ret_flag = false;
+							stmt->skip = true;
+							return method->clazz->instanceVarType[instanceVar];
 						}
-						return method->clazz->instanceVarType[instanceVar];
+						if (!isInstanceVarExplicit(method, instanceVar)) {
+							method->clazz->explicitFields.push_back(instanceVar);
+						}
 					}
 
 					//OUT << "Inferring type for: " << instanceVar << END;
 					std::string curr_type = method->clazz->instanceVarType[instanceVar];
 					//OUT << "	curr_type: " << curr_type<< END;
 					std::string assigned_type = typeInferStmt(method, r_expr, isConstructor, isMainStatements, changed, ret_flag);
+					if (isInstanceVarExplicit(method, instanceVar)) {
+						if (!isSubclassOrEqual(assigned_type, curr_type)) {
+							RED << stageString(TYPEINFERENCE) << "instance variable \""
+								<< instanceVar << "\" in class \""
+								<< method->clazz->name << "\" is assigned invalid type \"" << assigned_type << "\"" << END;
+							report::trackError(TYPEINFERENCE);
+							ret_flag = false;
+							stmt->skip = true;
+							return curr_type;
+						}
+					}
 					//OUT << "	assigned_type: " << assigned_type<< END;
 					std::string new_type = leastCommonAncestor(curr_type, assigned_type);
 					//OUT << "	new_type: " << new_type<< END;
@@ -702,22 +743,37 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 			// if it has an explicit type
 			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 			if (explicit_type != NULL) {
-				if (!isVarExplicit(method, left->name)) {
+				if (isSubclassOrEqual(explicit_type->name, method->type[left->name])) {
 					method->type[left->name] = explicit_type->name;
-					method->explicitVars.push_back(left->name);
 				} else {
-					RED << stageString(INITBEFOREUSE) << "variable \""
+					RED << stageString(TYPEINFERENCE) << "variable \""
 						<< left->name << "\" in " << method->name <<  "() in class \""
-						<< method->clazz->name << "\" is assigned explicit type more than once" << END;
-					report::trackError(INITBEFOREUSE);
+						<< method->clazz->name << "\" is assigned invalid explicit type \"" << explicit_type->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
 					ret_flag = false;
+					stmt->skip = true;
+					return method->type[left->name];
 				}
-				return method->type[left->name];
+				if (!isVarExplicit(method, left->name)) {
+					method->explicitVars.push_back(left->name);
+				}
 			}
 
 			// infer type if we don't have an explicit one
 			std::string curr_type = method->type[left->name];
 			std::string assigned_type = typeInferStmt(method, r_expr, isConstructor, isMainStatements, changed, ret_flag);
+			if (isVarExplicit(method, left->name)) {
+				if (!isSubclassOrEqual(assigned_type, curr_type)) {
+					RED << stageString(TYPEINFERENCE) << "variable \""
+						<< left->name << "\" in " << method->name <<  "() in class \""
+						<< method->clazz->name << "\" is assigned invalid type \"" << assigned_type << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+					return curr_type;
+				}
+			}
+
 			std::string new_type = leastCommonAncestor(curr_type, assigned_type);
 			if (new_type != curr_type) {
 				method->type[left->name] = new_type;
@@ -756,7 +812,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 		if (stmt->name == "true" || stmt->name == "false") return "Boolean";
 	}
 
-	return "UNKNOWN";
+	return "$UNKNOWN";
 }
 
 bool Typechecker::typeInferQmethod(Qmethod *method, bool isConstructor, bool isMainStatements, bool &changed) {
@@ -838,9 +894,11 @@ bool Typechecker::checkProgram() {
     }
 
     bool typeInferenceCheckValid = this->typeInferenceCheck();
-    for (auto clzz : this->classes) {
-    	printQclass(clzz.second);
-    }
+    if (report::getDebug()) {
+	    for (auto clzz : this->classes) {
+	    	printQclass(clzz.second);
+	    }
+	}
     if (!typeInferenceCheckValid) {
         report::error("type inference check failed!", TYPECHECKER);
         report::bail(TYPEINFERENCE);
@@ -907,27 +965,16 @@ bool Typechecker::doesClassExist(std::string classname) {
 }
 
 bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
-	if (class1 == class2) {
-		return true;
-	}
-
-	if (class1 == "Obj") {
-		return false;
-	}
-
-	if (classes[class1]->super == "Obj" && class2 == "Obj") {
-		return true;
-	}
+	if (class1 == "$UNKNOWN" || class2 == "$UNKNOWN") return true;
+	if (class1 == class2) return true;
+	if (class1 == "Obj") return false;
+	if (classes[class1]->super == "Obj" && class2 == "Obj") return true;
 
 	std::string tempSuper = class1;
-
 	while (tempSuper != class2 || tempSuper != "Obj") {
-		if (tempSuper == "Obj") {
-			break;
-		}
-		if (tempSuper == class2) {
-			return true;
-		}
+		if (tempSuper == "Obj") break;
+		if (tempSuper == class2) return true;
+
 		for (auto clss : classes) {
 			Qclass *second = clss.second;
 			if (second->name == tempSuper) {
@@ -943,8 +990,8 @@ bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
 // assign it to the type of the r_expr directly instead of computing the LCA.
 std::string Typechecker::leastCommonAncestor(std::string class1, std::string class2) {
 	if (class1 == class2) return class1;
-	if (class1 == "UNKNOWN") return class2;
-	if (!doesClassExist(class1) || !doesClassExist(class2)) return "UNKNOWN";
+	if (class1 == "$UNKNOWN") return class2;
+	if (!doesClassExist(class1) || !doesClassExist(class2)) return "$UNKNOWN";
 
 	std::vector<std::string> class1Supers;
 

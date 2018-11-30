@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/qcc.dir/quack.tab.cxx.o CMakeFiles/qcc.dir/lex.yy.cpp.o CMakeFiles/qcc.dir/typechecker.cpp.o CMakeFiles/qcc.dir/ASTNode.cpp.o CMakeFiles/qcc.dir/driver.cpp.o CMakeFiles/qcc.dir/Messages.cpp.o  -o qcc /usr/local/lib/libreflex.a 

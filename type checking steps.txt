@@ -50,9 +50,13 @@ type inference on constructors (phase 3):
 notes:
 - if an error occurs in a method with the same name as the class, it is the constructor
 - if an error occurs in $MAIN(), it is in the main statements area
+- method signatures are checked based on type and number of arguments, not by name of the arguments. ie, a sub class can rename an overriden method's arguments but not change their type.
 
 Assumptions/decisions based on ambiguity:
-- you may not declare explicit type on re-assignment of a variable
+- class constructor arguments must be a super set of their parent
+- you may only assign an explicit type that is a sub-type or equal to the variable's current type
+	- if it is the first declaration of that variable, you may declare any
+	explicit type. (however, if the value on the right hand side of the expression is of the wrong type, you will get a type error)
 - you cannot reassign "this" (eg, this = 10;)
 - you cannot use the keyword "this" inside the main program statements
 - you cannot pass "this" as an argument in a constructor

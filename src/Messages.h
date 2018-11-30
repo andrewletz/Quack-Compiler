@@ -44,6 +44,7 @@ namespace report {
 
     // enables / disables ynotes and gnotes
     void setDebug(bool flag);
+    bool getDebug();
 
     // An error that we can locate in the input
     void error_at(const yy::location& loc, const std::string& msg, CompStage stage);

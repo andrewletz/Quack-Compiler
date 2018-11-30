@@ -660,7 +660,25 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 
 	}
 	else if (nodeType == RETURN) {
+		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
+		std::string curr_type = method->type["return"];
+		if (stmt->skip) return curr_type;
+		std::string new_type = typeInferStmt(method, r_expr, changed, ret_flag);
 
+		// return type must be equal to or sub type of explicitly declared return type
+		if (!isSubclassOrEqual(new_type, curr_type)) {
+			RED << stageString(TYPEINFERENCE) << "return type in method " << method->name << "() in class \"" 
+				<< method->clazz->name << "\"" << " is invalid (must be subclass or equal to \"" << curr_type << "\")"
+				<< END;
+			report::trackError(TYPEINFERENCE);
+			ret_flag = false;
+			stmt->skip = true;
+			return curr_type;
+		}
+
+		if (new_type != curr_type) {
+			method->type["return"] = leastCommonAncestor(curr_type, new_type);
+		}
 	}
 	else if (nodeType == IF) {
 		AST::Node *cond = stmt->get(COND)->rawChildren[0];

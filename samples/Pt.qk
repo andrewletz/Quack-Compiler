@@ -27,6 +27,7 @@
      	 this.x = this.x + dx;
 	 this.y = this.y + dy;
      }
+     
 
      /* More functional style: Evaluate for value */
      def PLUS(other: Pt): Pt {

@@ -36,16 +36,6 @@ class Smeo() {
 	    ggg = 20;
 	    zzz = z;
 	}
-	x = 10;
-	
-	def z() {
-		x = 10;
-		return x;
-		return "hello";
-		return 10;
-		return R().z();
-		return A(10).instancevar;
-	}
 }
 
 

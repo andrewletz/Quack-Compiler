@@ -7,7 +7,9 @@ need:
 - typecase
 */
 
-class R() {}
+class R() {
+	def z() {}
+}
 
 class B(x: Boolean) {}
 
@@ -15,8 +17,41 @@ class Zoo(x: Int) {}
 
 class Foo(a: Int, b: Int, c: Int, d: Int) {}
 
-class Smeo(bleep: String) {
-	this.bleep : String = "aa";
+class A(x: Int) {
+	this.instancevar = "10";
+}
+
+class Smeo() {
+	if (true) {
+	    x = 10;
+	    z = 10;
+	    if (true) {
+	        t = x;
+	        if (true) {
+	        	z = "hello";
+	        }
+	    } else {
+	    	z = R();
+	    }
+	    ggg = 20;
+	    zzz = z;
+	}
+	x = 10;
+	
+	def z() {
+		x = 10;
+		return x;
+		return "hello";
+		return 10;
+		return R().z();
+		return A(10).instancevar;
+	}
+}
+
+
+/*
+
+this.bleep : String = "aa";
 	bool = true;
 
 	a = 1;
@@ -42,4 +77,39 @@ class Smeo(bleep: String) {
 		za = "hello";
 		return 10;
 	}
-}
+
+	if (true) {
+	    x = 10;
+	    z = 10;
+	    if (x == z) {
+	        t = x;
+	        if (true) {
+	        	z = "hello";
+	        }
+	    } else {
+	    	z = Otherclass();
+	    }
+	    ggg = 20;
+	    zzz = z;
+	}
+
+	this.x = 10;
+	y = this.x;
+
+	newa = A(10);
+	z = newa.instancevar;
+
+	hh = A(y).instancevar;
+	bool = true;
+
+	a = 1;
+	b = 2;
+	c = 3;
+	d = 4;
+
+	bar = Bar(a, b).z(a, b);
+	zoo = Zoo(10);
+	r = R();
+	bee = B(true);
+	foo = Foo(a, b, c, d);	
+*/

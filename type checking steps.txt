@@ -53,6 +53,7 @@ notes:
 - method signatures are checked based on type and number of arguments, not by name of the arguments. ie, a sub class can rename an overriden method's arguments but not change their type.
 
 Assumptions/decisions based on ambiguity:
+- you cannot use the dot operator (field access) on a builtin. eg "z".foo; 
 - class constructor arguments must be a super set of their parent
 - you may only assign an explicit type that is a sub-type or equal to the variable's current type
 	- if it is the first declaration of that variable, you may declare any

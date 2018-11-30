@@ -558,7 +558,12 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 		return ret_flag;
 	}
 	else if (nodeType == RETURN) {
-
+		if (isConstructor) {
+			RED << stageString(INITBEFOREUSE) << "explicit return found in constructor of class \""
+				<< method->clazz->name << "\"" << END;
+			report::trackError(INITBEFOREUSE);
+			ret_flag = false;
+		}
 	}
 
 	for (AST::Node *child : stmt->rawChildren) {
@@ -648,11 +653,61 @@ bool Typechecker::initializeBeforeUseCheck() {
 // The result of the type inference is set through "ret_flag", this time through a passed reference
 // rather than return value (so we can reserve the return value for the previously mentioned reason).
 // When a type is inferred for a variable, it is set as a side effect rather than returned.
-std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
-                            bool isConstructor, bool isMainStatements, bool &changed, bool &ret_flag) {
+std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &changed, bool &ret_flag) {
 	Type nodeType = stmt->type;
 
-	if (nodeType == CONSTRUCTOR) {
+	if (nodeType == CALL) {
+
+	}
+	else if (nodeType == RETURN) {
+
+	}
+	else if (nodeType == IF) {
+		AST::Node *cond = stmt->get(COND)->rawChildren[0];
+		if (cond != NULL) {
+			std::string condType = typeInferStmt(method, cond, changed, ret_flag);
+			if (condType != "Boolean") {
+				if (!cond->skip) {
+					RED << stageString(TYPEINFERENCE) << "if statement condition not of type boolean in \"" 
+						<< method->name << "() in \"" << method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					cond->skip = true;
+				}
+			}
+		}
+
+		AST::Node *true_stmts = stmt->get(BLOCK, TRUE_STATEMENTS);
+		for (AST::Node *true_stmt : true_stmts->rawChildren) {
+			typeInferStmt(method, true_stmt, changed, ret_flag);
+		}
+
+		AST::Node *false_stmts = stmt->get(BLOCK, FALSE_STATEMENTS);
+		for (AST::Node *false_stmt : false_stmts->rawChildren) {
+			typeInferStmt(method, false_stmt, changed, ret_flag);
+		}
+	}
+	else if (nodeType == WHILE) {
+		AST::Node *cond = stmt->get(COND)->rawChildren[0];
+		if (cond != NULL) {
+			std::string condType = typeInferStmt(method, cond, changed, ret_flag);
+			if (condType != "Boolean") {
+				if (!cond->skip) {
+					RED << stageString(TYPEINFERENCE) << "while statement condition not of type boolean in \"" 
+						<< method->name << "() in \"" << method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					cond->skip = true;
+				}
+			}
+		}
+
+		AST::Node *while_stmts = stmt->get(BLOCK, STATEMENTS);
+		for (AST::Node *while_stmt : while_stmts->rawChildren) {
+			typeInferStmt(method, while_stmt, changed, ret_flag);
+		}
+	}
+	else if (nodeType == CONSTRUCTOR) {
 		AST::Node *class_name_node = stmt->get(IDENT);
 		if (class_name_node != NULL) {
 			std::string class_name = class_name_node->name;
@@ -670,7 +725,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 						std::vector<std::string> argTypes;
 						for (AST::Node *arg : actual_args) {
 							AST::Node *subLexpr = arg->getBySubtype(METHOD_ARG);
-							std::string argType = typeInferStmt(method, subLexpr, isConstructor, isMainStatements, changed, ret_flag);
+							std::string argType = typeInferStmt(method, subLexpr, changed, ret_flag);
 							argTypes.push_back(argType);
 						}
 						
@@ -732,12 +787,14 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 				}
 				return class_name;
 			} else {
-				RED << stageString(TYPEINFERENCE) << "invalid constructor for unknown class \""
-					<< class_name << "\" used in method \"" << method->name << "\" in class \""
-					<< method->clazz->name << "\"" << END;
-				report::trackError(TYPEINFERENCE);
-				ret_flag = false;
-				stmt->skip = true;
+				if (!stmt->skip) {
+					RED << stageString(TYPEINFERENCE) << "invalid constructor for unknown class \""
+						<< class_name << "\" used in method \"" << method->name << "\" in class \""
+						<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+				}
 			}
 		}
 
@@ -776,7 +833,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 					//OUT << "Inferring type for: " << instanceVar << END;
 					std::string curr_type = method->clazz->instanceVarType[instanceVar];
 					//OUT << "	curr_type: " << curr_type<< END;
-					std::string assigned_type = typeInferStmt(method, r_expr, isConstructor, isMainStatements, changed, ret_flag);
+					std::string assigned_type = typeInferStmt(method, r_expr, changed, ret_flag);
 					if (isInstanceVarExplicit(method, instanceVar)) {
 						if (!isSubclassOrEqual(assigned_type, curr_type)) {
 							RED << stageString(TYPEINFERENCE) << "instance variable \""
@@ -825,7 +882,9 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 
 			// infer type if we don't have an explicit one
 			std::string curr_type = method->type[left->name];
-			std::string assigned_type = typeInferStmt(method, r_expr, isConstructor, isMainStatements, changed, ret_flag);
+			//OUT << "curr_type: " << curr_type << END;
+			std::string assigned_type = typeInferStmt(method, r_expr, changed, ret_flag);
+			//OUT << "assigned_type: " << assigned_type << END;
 			if (isVarExplicit(method, left->name)) {
 				if (!isSubclassOrEqual(assigned_type, curr_type)) {
 					RED << stageString(TYPEINFERENCE) << "variable \""
@@ -849,21 +908,56 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 		AST::Node *load = stmt->get(LOAD);
 		if (load != NULL) {
 			// we have a "this.x" somewhere in a method, make appropriate checks
-			if (load->get(IDENT)->name == "this") {
+			std::string lhs = load->get(IDENT)->name;
+			if (lhs == "this") {
 				std::string instanceVar = stmt->get(IDENT)->name;
+				return method->clazz->instanceVarType[instanceVar];
+			} else { // we have a "x.y" somewhere in a method
+				std::string lhsType = method->type[lhs];
+				std::string instanceVar = stmt->getBySubtype(R_EXPR)->name;
+				Qclass *lhsClass = this->classes[lhsType];
+				if (stmt->skip) return lhsType;
+				if (!isInstanceVar(lhsClass->constructor, instanceVar)) {
+					RED << stageString(TYPEINFERENCE) << "attempt to access unknown instance variable \"" 
+					<< instanceVar << "\" from variable \"" << lhs << "\" in " << method->name <<  "() in class \""
+					<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+				} else {
+					return lhsClass->instanceVarType[instanceVar]; // get the type of that instance var from the other class
+				}
 			}
-		}
+		} else { // if the lhs of the DOT isn't a load, we have to infer its type generically
+			std::string lhsType = typeInferStmt(method, stmt->rawChildren[0], changed, ret_flag);
+			std::string instanceVar = stmt->getBySubtype(R_EXPR)->name;
+			Qclass *lhsClass = this->classes[lhsType];
+			if (stmt->skip) return lhsType;
+			if (!isInstanceVar(lhsClass->constructor, instanceVar)) {
+				RED << stageString(TYPEINFERENCE) << "attempt to access unknown instance variable \"" 
+				<< instanceVar << "\" from class type \"" << lhsType << "\" in " << method->name <<  "() in class \""
+				<< method->clazz->name << "\"" << END;
+				report::trackError(TYPEINFERENCE);
+				ret_flag = false;
+				stmt->skip = true;
+			} else {
+				return lhsClass->instanceVarType[instanceVar]; // get the type of that instance var from the other class
+			}
+ 		}
 	} else if (nodeType == LOAD) {
 		if (stmt->get(IDENT) != NULL) { 
 			std::string ident = stmt->get(IDENT)->name;
 			if (ident == "this") {
 				return method->clazz->name;
 			} else if (ident == "true" || ident == "false") { 
+				//OUT << "Returning Boolean..." << END;
 				return "Boolean";
 			} else {
-				// OUT << "	Inferring type " << method->type[ident] << " in LOAD" << END;
 				return method->type[ident];
 			}
+		} else {
+			// if it doesn't go straight to an ident, grab whatever it's loading (most likely a dot)
+			return typeInferStmt(method, stmt->rawChildren[0], changed, ret_flag);
 		}
 
 	} else if (nodeType == INTCONST) {
@@ -879,12 +973,12 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 	return "$UNKNOWN";
 }
 
-bool Typechecker::typeInferQmethod(Qmethod *method, bool isConstructor, bool isMainStatements, bool &changed) {
+bool Typechecker::typeInferQmethod(Qmethod *method, bool &changed) {
 	bool ret_flag = true;
 	if (method->stmts.empty()) return ret_flag;
 
 	for (AST::Node* stmt : method->stmts) {
-		typeInferStmt(method, stmt, isConstructor, isMainStatements, changed, ret_flag);
+		typeInferStmt(method, stmt, changed, ret_flag);
 	}
 
 	return ret_flag;
@@ -900,15 +994,15 @@ bool Typechecker::typeInferenceCheck() {
 			if (isBuiltin(clss.second->name)) { 
 				continue;
 			}
-			if (!typeInferQmethod(clss.second->constructor, true, false, changed)) ret_flag = false;
+			if (!typeInferQmethod(clss.second->constructor, changed)) ret_flag = false;
 			for (Qmethod *m : clss.second->methods) {
-				if(!typeInferQmethod(m, false, false, changed)) ret_flag = false;
+				if(!typeInferQmethod(m, changed)) ret_flag = false;
 			}
 		}
 
 		// init check the main statements
 		if (this->main != NULL) {
-			if (!typeInferQmethod(this->main->constructor, false, true, changed)) ret_flag = false;
+			if (!typeInferQmethod(this->main->constructor, changed)) ret_flag = false;
 		}
 	} while (changed);
 

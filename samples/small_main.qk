@@ -1,12 +1,9 @@
 /*
 need:
-- constructors
 - calls
-- if and while conds
-- return
 - typecase
 */
-
+/*
 class R() {
 	def z() {}
 }
@@ -20,28 +17,72 @@ class Foo(a: Int, b: Int, c: Int, d: Int) {}
 class A(x: Int) {
 	this.instancevar = "10";
 }
+################################################ */ 
+class C(x: Int) {
+     this.weight = x;
+     def cMethod() : Int { return 10; }
+}
 
-class Smeo() {
-	if (true) {
-	    x = 10;
-	    z = 10;
-	    if (true) {
-	        t = x;
-	        if (true) {
-	        	z = "hello";
-	        }
-	    } else {
-	    	z = R();
-	    }
-	    ggg = 20;
-	    zzz = z;
-	}
+class Foo() {
+     def findmax(x: Int) : C { return C(x); }
+}
+
+class Ples(s: String) {
+    this.s = s;     // field with same name as argument
 }
 
 
-/*
 
-this.bleep : String = "aa";
+class Zmeo() {
+    foo = Foo();
+
+    foo.findmax(this.children).weight = 42; 
+    this.weight = foo.findmax(this.children).weight;
+    
+    x = this.createNewC().cMethod();
+    
+    // use of logical operators
+    one = 1;
+    two = 2;
+    three = 3;
+    greeting = "hello";
+    not_true = false;
+    c = "before_while";
+    while (one == 1 and two == 2 and not not_true or greeting == "heylo" and three == 3) {
+        c = "after_while";
+        not_true = true;
+        three = 4;      // should no longer be in the loop
+    }
+    c.PRINT(); // should print "after_while"
+
+    def identity(t: Zmeo) : Zmeo { return t; }
+
+    def createNewC() : C { return C(100); }
+
+    def thisTester() {
+        this_again = this.identity(this); 
+        this_again_again = this; 
+    }
+}
+
+
+
+/* ################################################
+	// Old tests
+
+	class I() {
+		this.he = 10;
+	}
+
+	class W() {
+		this.she = I();
+	}
+
+	class Y() {
+		this.her = W();
+		def b() {}
+	}
+	this.bleep : String = "aa";
 	bool = true;
 
 	a = 1;
@@ -102,4 +143,18 @@ this.bleep : String = "aa";
 	r = R();
 	bee = B(true);
 	foo = Foo(a, b, c, d);	
+
+	him = Y();
+	//teee = him.b().z.ar;
+	xxxx = him.her.she.he;
+	bleep = him.her;
+	x = Y().her.she.he;
+
+	him = Y();
+	//x = him.her.she.he;
+
+	def giveMeAnI() : I {
+		ttt = Y().her.she;
+		return ttt;
+	}
 */

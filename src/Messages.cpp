@@ -11,7 +11,9 @@ namespace report {
 
 // The error count is global
 const int  error_limit = 99;
-static bool debug = true;
+static bool debug = false;
+static bool verbose = false;
+static bool generateImage = false;
 
 std::map<CompStage, int> error_count {
     {LEXER, 0},
@@ -51,6 +53,22 @@ void setDebug(bool flag) {
 
 bool getDebug() {
     return debug;
+}
+
+void setVerbose(bool flag) {
+    verbose = flag;
+}
+
+bool getVerbose() {
+    return verbose;
+}
+
+void setGenerateImage(bool flag) {
+    generateImage = flag;
+}
+
+bool getGenerateImage() {
+    return generateImage;
 }
 
 // An error that we can locate in the input

@@ -23,6 +23,7 @@ class DoesntMatter() {
 		if (x == 10) {
 			if (b == 10) {
 				if (c == 10) {
+					end = 10;
 					blem : String = "t";
 				} elif (true) {
 					g = "g";

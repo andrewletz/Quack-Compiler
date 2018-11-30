@@ -66,13 +66,17 @@ int main(int argc, char *argv[]) {
     std::string filename;
     bool json = false;
 
-    // Get our filename arg and optional json flag
+    // Get our filename arg and optional flags
     for (int i = 1; i < argc; i++) {
-        if (std::strcmp(argv[i], "--json=true") == 0) {
+        if (std::strcmp(argv[i], "-json") == 0) {
             json = true;
             report::setDebug(false);
-        } else if (std::strcmp(argv[i], "--no-debug") == 0) {
-            report::setDebug(false);
+        } else if (std::strcmp(argv[i], "-debug") == 0) {
+            report::setDebug(true);
+        } else if (std::strcmp(argv[i], "-astonly") == 0) {
+            report::setGenerateImage(true);
+        } else if (std::strcmp(argv[i], "-verbose") == 0) {
+            report::setVerbose(true);
         } else {
             filename = std::string(argv[i]);
         }

@@ -15,9 +15,9 @@ class P() {
 }
 
 class X() extends P {
-	def s(x: G, p: String, d: Int) : Z {
+	def s(x: G, p: String, d: Int, e: Int) : Z {
 		return "a";
 	}
 
-	def d(x: Z, p: String, d: Int, b: Boolean) { }
+	def d(x: Z, p: String, d: Int, b: Boolean, e: Int) { }
 }

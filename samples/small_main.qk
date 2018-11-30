@@ -11,11 +11,12 @@ class R() {}
 
 class B(x: Boolean) {}
 
-class Zoo() {}
+class Zoo(x: Int) {}
 
 class Foo(a: Int, b: Int, c: Int, d: Int) {}
 
 class Smeo(bleep: String) {
+	this.bleep : String = "aa";
 	bool = true;
 
 	a = 1;
@@ -24,10 +25,9 @@ class Smeo(bleep: String) {
 	d = 4;
 
 	bar = Bar(a, b).z(a, b);
-	zoo = Zoo();
-	zoo = Zoo();
+	zoo = Zoo(10);
 	r = R();
-	bee = B(false);
+	bee = B(true);
 	foo = Foo(a, b, c, d);	
 	//t = Foo(z(10), z(20), Smeo("a").z(10), 5);
 

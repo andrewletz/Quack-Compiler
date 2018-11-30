@@ -313,7 +313,8 @@ bool Typechecker::methodsCompatibleCheck() {
 
 					// check we don't have too many args in child method
 					if (numArgsChild > numArgsParent) {
-						for (int i = numArgsChild - 1; i < numArgsChild; i++) {
+						int difference = numArgsChild - numArgsParent;
+						for (int i = numArgsParent; i < numArgsChild; i++) {
 							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
 								"\" in \"" << qclss.second->name << "\" has argument \""
 								<< method->args[i] << "\" not present in parent method" << END;
@@ -649,7 +650,6 @@ bool Typechecker::initializeBeforeUseCheck() {
 // When a type is inferred for a variable, it is set as a side effect rather than returned.
 std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
                             bool isConstructor, bool isMainStatements, bool &changed, bool &ret_flag) {
-	if (stmt->skip == true) return ""; 
 	Type nodeType = stmt->type;
 
 	if (nodeType == CONSTRUCTOR) {
@@ -657,19 +657,80 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 		if (class_name_node != NULL) {
 			std::string class_name = class_name_node->name;
 			if (doesClassExist(class_name)) {
+				if (stmt->skip) return class_name; // we dont want to error check again
 				Qclass *qclass = this->classes[class_name];
 
+				Qmethod *constructorMethod = qclass->constructor;
+				int numArgsConstructor = constructorMethod->args.size();
 				// make sure all our args line up
 				AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
 				if (actual_args_container != NULL) {
 					std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
 					if (!actual_args.empty()) {
+						std::vector<std::string> argTypes;
 						for (AST::Node *arg : actual_args) {
+							AST::Node *subLexpr = arg->getBySubtype(METHOD_ARG);
+							std::string argType = typeInferStmt(method, subLexpr, isConstructor, isMainStatements, changed, ret_flag);
+							argTypes.push_back(argType);
+						}
+						
+						int numArgsCallToConstructor = argTypes.size();
+						for (int i = 0; i < numArgsConstructor; i++) {
+							std::string constructorArg = constructorMethod->args[i]; // get arg name from class we are constructing
+							std::string constructorArgType = constructorMethod->argtype[constructorArg]; // get the type of that arg
+							if (i >= numArgsCallToConstructor) { // if we are missing args in our call to the constructor
+								RED << stageString(TYPEINFERENCE) << "call to constructor of class \"" << class_name
+									<< "\" in method " << method->name <<
+									"() in \"" << method->clazz->name << "\" is missing argument \""
+									<< constructorArg << "\"" << END;
+								report::trackError(TYPEINFERENCE);
+								ret_flag = false;
+								stmt->skip = true;
+							} else {
+								std::string callToConstructorType = argTypes[i]; // type of arg i in our call to the constructor
+								if (!isSubclassOrEqual(callToConstructorType, constructorArgType)) { // type check that arg
+									RED << stageString(TYPEINFERENCE) << "argument " << i << " of call to constructor "
+										<< class_name << "() in method " << method->name << "() is of incorrect type \"" 
+										<< callToConstructorType << "\"" << " (must be subclass or equal to \"" << constructorArgType << "\")"
+										<< END;
+									report::trackError(TYPEINFERENCE);
+									ret_flag = false;
+									stmt->skip = true;
+								}
+							}
+						}
 
+						// check we don't have too many args in our call to the constructor
+						if (numArgsCallToConstructor > numArgsConstructor) {
+							int difference = numArgsCallToConstructor - numArgsConstructor;
+							for (int i = numArgsConstructor; i < numArgsCallToConstructor; i++) {
+								RED << stageString(TYPEINFERENCE) << "invalid argument " << i+1 << " in call to constructor "
+									<< class_name << "() in method " << method->name << "() (too many args)" << END; 
+								report::trackError(TYPEINFERENCE);
+								ret_flag = false;
+								stmt->skip = true;
+							}
+						}
+
+					} else { // we have a constructor call with 0 args
+						if (numArgsConstructor == 0) { // if the class also has 0 args, great, just return that class name
+							return class_name; 
+						} else { // if it does have args however, print all the ones we're missing in our constructor call
+							for (int i = 0; i < numArgsConstructor; i++) {
+								std::string constructorArg = constructorMethod->args[i]; // get arg name from class we are constructing
+								std::string constructorArgType = constructorMethod->argtype[constructorArg]; // get the type of that arg
+								RED << stageString(TYPEINFERENCE) << "call to constructor of class \"" << class_name
+									<< "\" in method " << method->name <<
+									"() in \"" << method->clazz->name << "\" is missing argument \""
+									<< constructorArg << "\"" << END;
+								report::trackError(TYPEINFERENCE);
+								ret_flag = false;
+								stmt->skip = true;
+							}
 						}
 					}
 				}
-				
+				return class_name;
 			} else {
 				RED << stageString(TYPEINFERENCE) << "invalid constructor for unknown class \""
 					<< class_name << "\" used in method \"" << method->name << "\" in class \""
@@ -679,6 +740,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 				stmt->skip = true;
 			}
 		}
+
 	}
 	else if (nodeType == ASSIGN) {
 		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
@@ -690,6 +752,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 			if (load != NULL) {
 				if (load->get(IDENT)->name == "this") { // we have found a this.x = ... statement
 					std::string instanceVar = left->get(IDENT)->name;
+					if (stmt->skip) return method->clazz->instanceVarType[instanceVar];
 
 					// if it has an explicit type
 					AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
@@ -740,6 +803,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt,
 		// assign of form "x = ..." and "x : Clss = ..."
 		left = stmt->get(IDENT, LOC);
 		if (left != NULL) {
+			if (stmt->skip) return method->type[left->name];
 			// if it has an explicit type
 			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 			if (explicit_type != NULL) {

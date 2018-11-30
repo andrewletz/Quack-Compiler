@@ -280,7 +280,7 @@ actuals
         ;
 
 actual
-        : r_expr { $$ = new AST::Node(METHOD_ARG); $$->insert($1); }
+        : r_expr { $$ = new AST::Node(METHOD_ARG); $1->subType = METHOD_ARG; $$->insert($1); }
         ;
 
 // -~-~-~-~-~-~-~-~-~-~-~-~ Ident NT -~-~-~-~-~-~-~-~-~-~-~-~

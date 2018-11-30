@@ -6,7 +6,8 @@ Generates assembly-like C code from a given Quack program.
 | Lexer | Complete |
 | Parser | Complete |
 | AST | Complete |
-| Type checker | Nearing completion |
+| Initialization before use | Complete |
+| Type-checker & type inference | Nearing completion |
 | Code generator | In progress |
 
 <hr>

@@ -1,0 +1,9 @@
+Point received.
+(7, 8)
+Int received.
+5
+Nothing received.
+<nothing>
+Object received.
+Point received.
+(65, 33)

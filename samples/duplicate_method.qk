@@ -1,6 +1,10 @@
+/**
+ * Invalid to have two methods of the same name even
+ * if they have different return types.
+ */
 class C1() {
 
-    def x() {}
+    def x() : Int {}
 
-    def x() {}
+    def x() : String {}
 }

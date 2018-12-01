@@ -1,23 +1,16 @@
 //The number of formal arguments of the overriding method must be the same as the number of arguments in the method it overrides
 //test should fail. The number of arguments do not match
 
-
-class G() {}
-
-class Z() extends G {}
-
 class P() {
-	def s(x: G, p: String, d: Int) : G {
-		return "a";
-	}
 
-	def d(x: Z, p: String, d: Int, b: Boolean) { }
+def s() : String {
+	return "a";
+}
 }
 
-class X() extends P {
-	def s(x: G, p: String, d: Int, e: Int) : Z {
-		return "a";
-	}
+class X() extends P{
 
-	def d(x: Z, p: String, d: Int, b: Boolean, e: Int) { }
+def s(x: String) : String {
+	return x;
+}
 }

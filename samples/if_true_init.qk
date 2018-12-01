@@ -1,5 +1,8 @@
+/**
+ * this.X fails init before use since only initialized on one half of the if (TRUE).
+ */
 class C1() {
-    if true {
+    if True {
         this.X = 5;
     } else {
     }

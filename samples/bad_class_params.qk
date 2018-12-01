@@ -1,4 +1,7 @@
-class ddd (,) extends yyy {
+/**
+ * Nothing in the parameter space so fail.
+ */
+class ddd (,) {
 }
 
 5 + 4;

@@ -1,0 +1,5 @@
+/* Tiny example to check hypothesis about
+ * type compatibility in generated code.
+ */
+
+"This is a string\n".PRINT();

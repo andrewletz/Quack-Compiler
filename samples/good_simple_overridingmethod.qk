@@ -1,0 +1,15 @@
+//The number of formal arguments of the overriding method must be the same as the number of arguments in the method it overrides
+//
+
+class P() {
+
+    def s(x: Int) : Int {
+        return x;
+    }
+}
+
+class X() extends P{
+    def s(x: Int) : Int {
+        return x+1;
+    }
+}

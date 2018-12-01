@@ -1,0 +1,10 @@
+/**
+ * Verifies integer literals, string conversion, and printing.
+ */
+class A() {
+    def foo(): Int { return 42; }
+}
+
+x = A();
+x.foo().PRINT();
+

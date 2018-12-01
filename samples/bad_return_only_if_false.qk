@@ -1,0 +1,13 @@
+/**
+ * Only returns on one of the paths (FALSE) in the If statement.  It cannot add a "return None"
+ * at the end since it is not a subclass of Int.
+ */
+class C1() {
+    def return_test() : Int {
+        if (true) {
+        } else {
+            return 5;
+        }
+    }
+
+}

@@ -1,3 +1,7 @@
+/**
+ * Type check error since C2 extends C1 but its x method's return type is not a subclass
+ * of C2's x method.
+ */
 class C1() {
     def x() : Int {}
 }

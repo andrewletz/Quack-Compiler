@@ -1,3 +1,6 @@
+/**
+ * Return type "Garbage" does not exist.
+ */
 class C1() {
 
     def PLUS(other : C1): Garbage {

@@ -1,0 +1,12 @@
+/**
+ * Another class/method match test that shows that catching 
+ * this issue during parsing is a poor approach since class
+ * C1 is defined after method C1.
+ */
+class C2() {
+    this.C1 =1;
+}
+
+class C1() {
+}
+

@@ -1,3 +1,7 @@
+/**
+ * Super types do not match as this.X in C1 is "Int" but it is less restrictive in
+ * C2 which inherits C1.
+ */
 class C1() {
     this.X : Int = 4;
 }

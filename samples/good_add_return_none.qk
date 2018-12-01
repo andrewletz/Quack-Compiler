@@ -1,0 +1,15 @@
+/**
+ * Verifies the proper handling of return on all paths. Neither
+ * method returns anything so an inherent return None is added.
+ * That is verified via a print.
+ */
+class AddReturnNone() {
+    def dummy() { }
+
+    def dummy2() : Obj {}
+}
+
+x = AddReturnNone();
+x.dummy().PRINT();
+"""\n""".PRINT();
+x.dummy2().PRINT();

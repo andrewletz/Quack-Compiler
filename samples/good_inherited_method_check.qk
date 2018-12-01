@@ -1,0 +1,35 @@
+class C1() {
+    def TellMeAboutYourself() : String {
+        return """I am a C1\n""";
+    }
+}
+
+class C2() extends C1 {
+    def TellMeAboutYourself() : String {
+        return """I am a C2. I inherit C1.\n""";
+    }
+}
+
+class C3() extends C1 {
+    def TellMeAboutYourself() : String {
+        return """I am a C3. I inherit C1.\n""";
+    }
+}
+
+class C4() extends C2 {
+    def TellMeAboutYourself() : String {
+        return """I am a C4. I inherit C2.\n""";
+    }
+}
+
+x : C1 = C4();
+x.TellMeAboutYourself().PRINT();
+
+x = C2();
+x.TellMeAboutYourself().PRINT();
+
+x = C3();
+x.TellMeAboutYourself().PRINT();
+
+x = C1();
+x.TellMeAboutYourself().PRINT();

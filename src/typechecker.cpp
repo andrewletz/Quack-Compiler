@@ -268,6 +268,12 @@ bool Typechecker::methodsCompatibleCheck() {
 	bool return_flag = true;
 	for (auto qclss : this->classes) {
 		for(Qmethod *method : qclss.second->methods) {
+			if (doesClassExist(method->name)) {
+				RED << stageString(CLASSHIERARCHY) << "method " << method->name <<
+					"() in \"" << qclss.second->name << "\" shares name with class" << END;
+				report::trackError(CLASSHIERARCHY);
+				return_flag = false;
+			}
 			for (Qmethod *parentMethod : this->classes[qclss.second->super]->methods) {
 				if (method->name == parentMethod->name) { 
 					// we must be overriding this method if names match exactly
@@ -278,8 +284,8 @@ bool Typechecker::methodsCompatibleCheck() {
 					std::string returnTypeParent = parentMethod->type["return"];
 
 					if (!this->isSubclassOrEqual(returnTypeChild, returnTypeParent)) {
-						RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
-							"\" in \"" << qclss.second->name << "\" has return type \""
+						RED << stageString(TYPEINFERENCE) << "overriden method " << method->name <<
+							"() in \"" << qclss.second->name << "\" has return type \""
 							<< returnTypeChild << "\" inconsistent with parent method" << END;
 						report::trackError(TYPEINFERENCE);
 						return_flag = false;
@@ -292,8 +298,8 @@ bool Typechecker::methodsCompatibleCheck() {
 						std::string parentArg = parentMethod->args[i];
 						std::string parentArgType = parentMethod->argtype[parentArg];
 						if (i >= numArgsChild) {
-							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
-								"\" in \"" << qclss.second->name << "\" is missing argument \""
+							RED << stageString(CLASSHIERARCHY) << "overriden method " << method->name <<
+								"() in \"" << qclss.second->name << "\" is missing argument \""
 								<< parentArg << "\"" << END;
 							report::trackError(CLASSHIERARCHY);
 							return_flag = false;
@@ -301,8 +307,8 @@ bool Typechecker::methodsCompatibleCheck() {
 							std::string childArg = method->args[i];
 							std::string childArgType = method->argtype[childArg];
 							if (!isSubclassOrEqual(childArgType, parentArgType)) {
-								RED << stageString(TYPEINFERENCE) << "overriden method \"" << method->name <<
-									"\" in \"" << qclss.second->name << "\" has argument \""
+								RED << stageString(TYPEINFERENCE) << "overriden method " << method->name <<
+									"() in \"" << qclss.second->name << "\" has argument \""
 									<< childArg << "\" with incorrect type \"" << childArgType << "\"" 
 									<< " (should be \"" << parentArgType << "\")" << END;
 								report::trackError(TYPEINFERENCE);
@@ -315,8 +321,8 @@ bool Typechecker::methodsCompatibleCheck() {
 					if (numArgsChild > numArgsParent) {
 						int difference = numArgsChild - numArgsParent;
 						for (int i = numArgsParent; i < numArgsChild; i++) {
-							RED << stageString(CLASSHIERARCHY) << "overriden method \"" << method->name <<
-								"\" in \"" << qclss.second->name << "\" has argument \""
+							RED << stageString(CLASSHIERARCHY) << "overriden method " << method->name <<
+								"() in \"" << qclss.second->name << "\" has argument \""
 								<< method->args[i] << "\" not present in parent method" << END;
 							report::trackError(CLASSHIERARCHY);
 							return_flag = false;
@@ -328,10 +334,6 @@ bool Typechecker::methodsCompatibleCheck() {
 		}
 	}
 	return return_flag;
-}
-
-bool Typechecker::fieldsCompatibleCheck() {
-	return true;
 }
 
 bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt, 
@@ -481,10 +483,10 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 					} 
 
 					if (isConstructor) { // we have found a this.x = ... statement, push back to class's instancevars
-						if (method->clazz->name == instanceVar) {
+						if (doesClassExist(instanceVar)) {
 							RED << stageString(INITBEFOREUSE) << "instance variable \""
 								<< instanceVar << "\" in class \""
-								<< method->clazz->name << "\" shares name with containing class" << END;
+								<< method->clazz->name << "\" shares name with class \"" << instanceVar << "\"" << END;
 							report::trackError(INITBEFOREUSE);
 							ret_flag = false;
 						}
@@ -1259,6 +1261,37 @@ bool Typechecker::typeInferenceCheck() {
 			if (!typeInferQmethod(this->main->constructor, changed)) ret_flag = false;
 		}
 	} while (changed);
+
+	return ret_flag;
+}
+
+bool Typechecker::fieldsCompatibleCheck() {
+	bool ret_flag = true;
+
+	for (auto map_entry : this->classes) {
+		std::string name = map_entry.first;
+		Qclass *child = map_entry.second;
+		Qclass *parent = this->classes[child->super];
+
+		for (std::string instanceVar : parent->instanceVars) {
+			if (instanceVar == "this") continue; // don't want to compare the actual classes
+			if (std::find(child->instanceVars.begin(), child->instanceVars.end(), instanceVar) == child->instanceVars.end()) {
+				RED << stageString(INITBEFOREUSE) << "child class \"" << child->name << "\" does not define field \"" 
+					<< instanceVar << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+				ret_flag = false;
+			} else { // we know the child defined the field, now check its type
+				std::string childType = child->instanceVarType[instanceVar];
+				std::string parentType = parent->instanceVarType[instanceVar];
+				if (childType != parentType) {
+					RED << stageString(TYPEINFERENCE) << "child class \"" << child->name << "\" defines field \"" 
+						<< instanceVar << "\" with incorrect type \"" << childType << "\" (should be \"" << parentType << "\")" << END;
+						report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+				}
+			}
+		}
+	}
 
 	return ret_flag;
 }

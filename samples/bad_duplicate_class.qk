@@ -1,4 +1,4 @@
-// Two classes with same name
+// Two classes with same name is not allowed.
 class C1() { }
 
 class C1() { }

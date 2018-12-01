@@ -1,0 +1,13 @@
+/**
+ * Verifies sugaring of integer arithmetic.
+ * Also verifies printing for Booleans, Nothing, and Integers.
+ */
+(5 + 4).PRINT(); """\n""".PRINT();
+(95 / 5).PRINT(); """\n""".PRINT();
+(5 * 6).PRINT(); """\n""".PRINT();
+(3 - 20).PRINT(); """\n""".PRINT();
+
+true.PRINT(); """\n""".PRINT();
+false.PRINT(); """\n""".PRINT();
+
+none.PRINT(); """\n""".PRINT();

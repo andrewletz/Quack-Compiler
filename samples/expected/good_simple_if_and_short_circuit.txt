@@ -1,0 +1,11 @@
+SUCCESS_1
+True Printed
+SUCCESS_2
+SUCCESS_3
+True Printed
+SUCCESS_4
+False Printed
+SUCCESS_5
+False Singleton Success
+True Singleton Success
+Singleton not equal success

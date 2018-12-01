@@ -11,6 +11,7 @@ class Point(x : Int, y:Int) {
             pt: Point { return this.x == pt.x and this.y == pt.y; }
             thing: ObjNotExist { return false; }
         }
+        return true;
     }
 }
 

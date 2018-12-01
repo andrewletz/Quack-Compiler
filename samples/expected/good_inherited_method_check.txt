@@ -1,0 +1,4 @@
+I am a C4. I inherit C2.
+I am a C2. I inherit C1.
+I am a C3. I inherit C1.
+I am a C1

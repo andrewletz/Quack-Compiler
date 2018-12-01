@@ -1,0 +1,12 @@
+/**
+ * Simple checking of the "typing" command. It also checks that the unary
+ * negation command works as expected.  Basic type checking as well.
+ */
+// Simple unary negation
+x : Obj = -564;
+x.PRINT();
+"""\n""".PRINT();
+
+y = 5 * -3;
+y.PRINT();
+"""\n""".PRINT();

@@ -19,5 +19,5 @@ class Bot(x: Int) {
    } else {
       this.hand = RightHand(7);
    }
-   this.answer : Int = this.hand.foo(); 
+   this.answer = this.hand.foo(); 
 }

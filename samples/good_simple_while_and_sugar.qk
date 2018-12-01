@@ -1,0 +1,39 @@
+/**
+ * Simple test method to verify that while loops work as expected.  It also
+ * verifies the proper calling of the sugared compare commands.
+ */
+x : Int = 1;
+while x < 10 {
+    x.PRINT();
+    """\n""".PRINT();
+    x = x + 1;
+}
+
+x = 12;
+while x <= 13 {
+    x.PRINT();
+    """\n""".PRINT();
+    x = x + 1;
+}
+
+x : Int = 15;
+while x > 10 {
+    x.PRINT();
+    """\n""".PRINT();
+    x = x - 1;
+}
+
+x = 4;
+while x >= 2 {
+    x.PRINT();
+    """\n""".PRINT();
+    x = x - 1;
+}
+
+x = 0;
+while not (x == 5) {
+    x.PRINT();
+    """\n""".PRINT();
+    x = x + 1;
+}
+

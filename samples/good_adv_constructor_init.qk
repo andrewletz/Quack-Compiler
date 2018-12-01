@@ -1,0 +1,8 @@
+class C1_Fer(x: Int, y: Boolean, z: String) {
+    while (x > 5) {
+        w : Boolean = true;
+    }
+    return this;
+}
+
+

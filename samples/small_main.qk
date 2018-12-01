@@ -17,33 +17,42 @@ class A(x: Int) {
 	this.instancevar = "10";
 }
 ################################################ */ 
-class C1()  extends Obj {
-   def foo() : Obj {
-       return Obj();
-   }
+class Test() {
+	def type_case(other : Obj) : Obj {
+	        typecase other {
+	            y : Nothing {
+	                """Nothing received.\n""".PRINT();
+	                y.PRINT();
+	                """\n""".PRINT();
+	                return;
+	            }
+	            z : Int {
+	                """Int received.\n""".PRINT();
+	                z.PRINT();
+	                """\n""".PRINT();
+	                return;
+	            }
+	        }
+	        """No match found\n""".PRINT();
+	        return none;
+	    }
 }
 
-class C2() extends C1 {
-   def foo() : C1 {
-        return C1();   /* Conforms to C1.foo() */
-   }
-}
-class C3() extends C2 {
-   def foo() : C2 {
-        return C2();   /* Conforms to C2.foo() */
-   }
-}
+class Point(x : Int, y:Int) {
+    this.x = x;
+    this.y = y;
 
-class C4() extends C3 {
-    def foo() : C3 {
-         return C3();  /* Conforms to C3.foo() */
+    def EQUALS(other : Obj) : Boolean {
+        typecase other {
+            pt: Point { 
+                return this.x == pt.x and this.y == pt.y; 
+                pt : Obj = Obj();
+            }
+            thing: Obj { return false; }
+        }
+        return true;
     }
 }
-
-x = C4();
-bool = x == x;
-
-
 
 /* ################################################
 	// Old tests

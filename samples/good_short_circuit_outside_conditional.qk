@@ -1,0 +1,24 @@
+class C1() {
+    def ShouldNotPrint() : Boolean {
+        """THIS SHOULD NOT PRINT\n""".PRINT();
+        return true;
+    }
+
+    def ShouldPrint() : Boolean {
+        """Good\n""".PRINT();
+        return true;
+    }
+
+    def GetBoolean(in : Boolean) {
+        in.PRINT();
+        """\n""".PRINT();
+    }
+}
+
+x = C1();
+x.GetBoolean(5==4 and x.ShouldNotPrint());
+x.GetBoolean("Hello"=="Hello" and x.ShouldPrint());
+x.GetBoolean("Hello"=="World" and x.ShouldNotPrint());
+x.GetBoolean("Hello"=="Hello" or x.ShouldNotPrint());
+
+x.GetBoolean("Hello"=="World" or x.ShouldPrint());

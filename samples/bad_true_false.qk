@@ -1,2 +1,5 @@
+/**
+ * true is a keyword so it cannot be a variable name
+ */
 true = false;
 

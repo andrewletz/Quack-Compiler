@@ -1,0 +1,5 @@
+// simple classes tree
+class A() { }
+class B() { }
+class C() extends B { }
+class D() extends A { }  

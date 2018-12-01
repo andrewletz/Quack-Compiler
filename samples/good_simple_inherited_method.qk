@@ -1,0 +1,8 @@
+class A() {
+    def STR() : String {
+        return "This is an A";
+    }
+}
+
+y : Obj = A();
+y.PRINT();

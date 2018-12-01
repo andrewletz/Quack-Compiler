@@ -1,0 +1,81 @@
+class ShortCircuitChecker() {
+
+    def true_should_print() : Boolean {
+        """True Printed\n""".PRINT();
+        return true;
+    }
+
+    def false_should_print() : Boolean {
+        """False Printed\n""".PRINT();
+        return false;
+    }
+
+    def true_no_print() : Boolean {
+        """True should not print\n""".PRINT();
+        return true;
+    }
+
+    def false_no_print() : Boolean {
+        """False should not print\n""".PRINT();
+        return false;
+    }
+
+    def return_false() : Boolean {
+        return false;
+    }
+
+    def return_true() : Boolean {
+        return true;
+    }
+}
+
+x = ShortCircuitChecker();
+if true or x.true_no_print() {
+    """SUCCESS_1\n""".PRINT();
+} else {
+    """ERROR_1\n""".PRINT();
+}
+
+if true and x.true_should_print() {
+    """SUCCESS_2\n""".PRINT();
+} else {
+    """ERROR_2\n""".PRINT();
+}
+
+if false and x.true_no_print() {
+    """ERROR_3\n""".PRINT();
+} else {
+    """SUCCESS_3\n""".PRINT();
+}
+
+if false or x.true_should_print() {
+    """SUCCESS_4\n""".PRINT();
+} else {
+    """ERROR_4\n""".PRINT();
+}
+
+if false or x.false_should_print() {
+    """ERROR_5\n""".PRINT();
+} else {
+    """SUCCESS_5\n""".PRINT();
+}
+
+
+if false == x.return_false() {
+    """False Singleton Success\n""".PRINT();
+} else {
+    """False Singleton Error\n""".PRINT();
+}
+
+if true == x.return_true() {
+    """True Singleton Success\n""".PRINT();
+} else {
+    """True Singleton Error\n""".PRINT();
+}
+
+
+if true == x.return_false() {
+    """Singleton not equal error\n""".PRINT();
+} else {
+    """Singleton not equal success\n""".PRINT();
+}

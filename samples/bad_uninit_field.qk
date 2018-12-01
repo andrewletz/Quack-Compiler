@@ -1,0 +1,10 @@
+/**
+ * Field "y" is used by never initialized.
+ */
+class C1(x : Int) {
+    this.x = x;
+
+    def dummy() {
+        this.y;
+    }
+}

@@ -1,0 +1,11 @@
+/**
+ * Simple test case.  There is not a guaranteed return on all paths.  If it tries to return
+ * "none", at the end, it results in a type error.
+ */
+class C1() {
+    def dummy(x : Int) : String {
+        while (x > 4) {
+            return "dude";
+        }
+    }
+}

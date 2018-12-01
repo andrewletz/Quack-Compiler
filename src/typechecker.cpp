@@ -764,7 +764,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 		AST::Node *lhs = stmt->rawChildren[0]; // left hand side can be any type of node
 		std::string lhsType = typeInferStmt(method, lhs, changed, ret_flag);
 		std::string methodName = stmt->rawChildren[1]->name; // center node is always the ident corresponding to method name
-		
+
 		Qclass *qclass;
 		Qclass *qclass_temp;
 		Qmethod *calledMethod;
@@ -826,7 +826,6 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			bool foundMethod = false;
 			qclass = this->classes[lhsType];
 			qclass_temp = qclass;
-			
 			find: // keep jumping to this label if we haven't seen the method yet
 				//OUT << "current class we're iterating over is " << qclass_temp->name << END;
 				for (Qmethod *m : qclass_temp->methods) {
@@ -840,7 +839,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 
 			if (!foundMethod) { // if we haven't seen the method yet, iterate through the supers
 				if (qclass_temp->name != "Obj") { // we're at the top of the tree, stop looking
-					qclass_temp = this->classes[qclass->super];
+					qclass_temp = this->classes[qclass_temp->super];
 					goto find;
 				}
 			}
@@ -1050,6 +1049,15 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 					// if it has an explicit type
 					AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 					if (explicit_type != NULL) {
+						if (!doesClassExist(explicit_type->name)) {
+							RED << stageString(TYPEINFERENCE) << "attempt to assign explicit type with unknown class \""  
+								<< explicit_type->name << "\" in method " << method->name << "() in class \"" 
+								<< method->clazz->name << "\"" << END;
+							report::trackError(TYPEINFERENCE);
+							ret_flag = false;
+							stmt->skip = true;
+							return method->clazz->instanceVarType[instanceVar];
+						}
 						if (isSubclassOrEqual(method->clazz->instanceVarType[instanceVar], explicit_type->name)) {
 							method->clazz->instanceVarType[instanceVar] = explicit_type->name;
 						} else {
@@ -1103,6 +1111,15 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			// if it has an explicit type
 			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 			if (explicit_type != NULL) {
+				if (!doesClassExist(explicit_type->name)) {
+					RED << stageString(TYPEINFERENCE) << "attempt to assign explicit type with unknown class \""  
+						<< explicit_type->name << "\" in method " << method->name << "() in class \"" 
+						<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+					return method->type[left->name];
+				}
 				// OUT << "Var Name: " << left->name << " Curr Type: " << method->type[left->name] << " Explicit Type: " << explicit_type->name << END;
 				if (isSubclassOrEqual(method->type[left->name], explicit_type->name)) {
 					method->type[left->name] = explicit_type->name;

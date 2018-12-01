@@ -17,61 +17,31 @@ class A(x: Int) {
 	this.instancevar = "10";
 }
 ################################################ */ 
-class B(){}
-
-class C(x: Int) {
-     this.weight = x;
-     def cMethod() : Int { return 10; }
+class C1()  extends Obj {
+   def foo() : Obj {
+       return Obj();
+   }
 }
 
-class Foo() {
-	 this.weight = 1;
-     def findmax(x: Int) : C { return C(x); }
+class C2() extends C1 {
+   def foo() : C1 {
+        return C1();   /* Conforms to C1.foo() */
+   }
+}
+class C3() extends C2 {
+   def foo() : C2 {
+        return C2();   /* Conforms to C2.foo() */
+   }
 }
 
-
-class Tons(a: Int, b: Int, c: Int, d: Int) {}
-
-class Ples(s: String) {
-    this.s = s;     // field with same name as argument
-}
-
-class Zmeo() {
-    foo = Foo();
-    this.children = 10;
-    
-
-    //foo.findmax(1, 2, 3, this.children, "hello", B());
-    foo.findmax(this.children).weight = 42; 
-    this.weight = foo.findmax(this.children).weight;
-    
-    x = this.createNewC(1).cMethod();
-    // use of logical operators
-    one = 1;
-    two = 2;
-    three = 3;
-    greeting = "hello";
-    not_true = false;
-    c = "before_while";
-    this.glarpy = this.createNewC(one);
-    bool : Boolean = one == two and two == one;
-    /*while (one == 1 and two == 2 and not not_true or greeting == "heylo" and three == 3) {
-        c = "after_while";
-        not_true = true;
-        three = 4;      // should no longer be in the loop
-    }
-    */
-    c.PRINT(); // should print "after_while"
-
-    def identity(t: Zmeo) : Zmeo { return t; }
-
-    def createNewC(x: Int) : C { return C(100); }
-
-    def thisTester() {
-        this_again = this.identity(this); 
-        this_again_again = this; 
+class C4() extends C3 {
+    def foo() : C3 {
+         return C3();  /* Conforms to C3.foo() */
     }
 }
+
+x = C4();
+bool = x == x;
 
 
 

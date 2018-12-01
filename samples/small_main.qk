@@ -12,35 +12,40 @@ class B(x: Boolean) {}
 
 class Zoo(x: Int) {}
 
-class Foo(a: Int, b: Int, c: Int, d: Int) {}
 
 class A(x: Int) {
 	this.instancevar = "10";
 }
 ################################################ */ 
+class B(){}
+
 class C(x: Int) {
      this.weight = x;
      def cMethod() : Int { return 10; }
 }
 
 class Foo() {
+	 this.weight = 1;
      def findmax(x: Int) : C { return C(x); }
 }
+
+
+class Tons(a: Int, b: Int, c: Int, d: Int) {}
 
 class Ples(s: String) {
     this.s = s;     // field with same name as argument
 }
 
-
-
 class Zmeo() {
     foo = Foo();
+    this.children = 10;
+    
 
+    //foo.findmax(1, 2, 3, this.children, "hello", B());
     foo.findmax(this.children).weight = 42; 
     this.weight = foo.findmax(this.children).weight;
     
-    x = this.createNewC().cMethod();
-    
+    x = this.createNewC(1).cMethod();
     // use of logical operators
     one = 1;
     two = 2;
@@ -48,16 +53,19 @@ class Zmeo() {
     greeting = "hello";
     not_true = false;
     c = "before_while";
-    while (one == 1 and two == 2 and not not_true or greeting == "heylo" and three == 3) {
+    this.glarpy = this.createNewC(one);
+    bool : Boolean = one == two and two == one;
+    /*while (one == 1 and two == 2 and not not_true or greeting == "heylo" and three == 3) {
         c = "after_while";
         not_true = true;
         three = 4;      // should no longer be in the loop
     }
+    */
     c.PRINT(); // should print "after_while"
 
     def identity(t: Zmeo) : Zmeo { return t; }
 
-    def createNewC() : C { return C(100); }
+    def createNewC(x: Int) : C { return C(100); }
 
     def thisTester() {
         this_again = this.identity(this); 
@@ -69,6 +77,10 @@ class Zmeo() {
 
 /* ################################################
 	// Old tests
+
+	//tons = Tons("a", 1, 2, 3);
+
+    //thisZmeo = this.identity(Zmeo());
 
 	class I() {
 		this.he = 10;

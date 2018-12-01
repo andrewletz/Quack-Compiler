@@ -341,9 +341,35 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 	bool ret_flag = true;
 	Type nodeType = stmt->type;
 
+	
+
+	if (nodeType == CALL) {
+		AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
+		if (actual_args_container != NULL) {
+			std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
+			if (!actual_args.empty()) {
+				for (AST::Node *arg : actual_args) {
+					AST::Node *real_arg = arg->getBySubtype(METHOD_ARG); // the actual arg node is inside of the "METHOD_ARG" node
+					if (real_arg->type == LOAD) {
+						if (real_arg->get(IDENT) != NULL) {
+							if (real_arg->get(IDENT)->name == "this") {
+								if (isConstructor) {
+									RED << stageString(INITBEFOREUSE) << "attempt to use \"this\" before full initialization in constructor of \"" 
+										<< method->clazz->name << "\"" << END;
+										report::trackError(INITBEFOREUSE);
+									ret_flag = false;
+									return ret_flag;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	// control flow has the most complicated case, have to check all syntactic paths
 	// init check while loop
-	if (nodeType == WHILE) {
+	else if (nodeType == WHILE) {
 		// check that the cond is init first (no type checking yet, it can be anything)
 		AST::Node *cond = stmt->get(COND);
 		if (cond != NULL) {
@@ -551,7 +577,7 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 			} else {
 				// if its a boolean, we dont need to check if its init
 				std::string ident = stmt->get(IDENT)->name;
-				if (ident != "false" && ident != "true") {
+				if (ident != "false" && ident != "true" && ident != "none") {
 					if (!isVarInit(method, ident) && (std::find(var_init.begin(), var_init.end(), ident) == var_init.end()) )  {
 						RED << stageString(INITBEFOREUSE) << "uninitialized variable \""
 							<< stmt->get(IDENT)->name << "\" used in " << method->name << "() in class \""
@@ -666,10 +692,8 @@ bool Typechecker::initializeBeforeUseCheck() {
 std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &changed, bool &ret_flag) {
 	Type nodeType = stmt->type;
 
-	if (nodeType == CALL) {
-		
-	}
-	else if (nodeType == RETURN) {
+
+	if (nodeType == RETURN) {
 		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
 		std::string curr_type = method->type["return"];
 		if (stmt->skip) return curr_type;
@@ -735,6 +759,190 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			typeInferStmt(method, while_stmt, changed, ret_flag);
 		}
 	}
+	else if (nodeType == CALL) { // a call always has 3 children
+		// if (stmt->skip) return lhsType; // we dont want to error check again
+		AST::Node *lhs = stmt->rawChildren[0]; // left hand side can be any type of node
+		std::string lhsType = typeInferStmt(method, lhs, changed, ret_flag);
+		std::string methodName = stmt->rawChildren[1]->name; // center node is always the ident corresponding to method name
+		
+		Qclass *qclass;
+		Qclass *qclass_temp;
+		Qmethod *calledMethod;
+		if (doesClassExist(lhsType)) {
+			if (methodName == "NOT") {
+				if (lhsType != "Boolean") {
+					RED << stageString(TYPEINFERENCE) << "invalid use of \"not\" operator on non-boolean object \""
+						<< lhsType << "\" in method \"" << method->name << "\" in class \""
+						<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+					return lhsType;
+				} else {
+					return "Boolean";
+				}
+			}
+			if (methodName == "AND" || methodName == "OR") {
+				if (lhsType != "Boolean") {
+					RED << stageString(TYPEINFERENCE) << "invalid use of \"" << methodName << "\" operator on non-boolean object \""
+						<< lhsType << "\" in method \"" << method->name << "\" in class \""
+						<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+					return lhsType;
+				} else {
+					AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
+					if (actual_args_container != NULL) {
+						std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
+						if (actual_args.size() == 1) {
+							AST::Node *real_arg = actual_args.front()->getBySubtype(METHOD_ARG);
+							std::string argType = typeInferStmt(method, real_arg, changed, ret_flag);
+							if (argType != "Boolean") {
+								RED << stageString(TYPEINFERENCE) << "invalid use of \"" << methodName << "\" operator on non-boolean object \""
+									<< argType << "\" in method \"" << method->name << "\" in class \""
+									<< method->clazz->name << "\"" << END;
+								report::trackError(TYPEINFERENCE);
+								ret_flag = false;
+								stmt->skip = true;
+								return lhsType;
+							} else {
+								return "Boolean";
+							}
+						} else {
+							RED << stageString(TYPEINFERENCE) << "too many operands given to \"" << methodName << "\" operator \""
+								<< lhsType << "\" in method \"" << method->name << "\" in class \""
+								<< method->clazz->name << "\" " << END;
+							report::trackError(TYPEINFERENCE);
+							ret_flag = false;
+							stmt->skip = true;
+							return lhsType;
+						}
+					}
+				}
+			}
+
+
+			bool foundMethod = false;
+			qclass = this->classes[lhsType];
+			qclass_temp = qclass;
+			
+			find: // keep jumping to this label if we haven't seen the method yet
+				//OUT << "current class we're iterating over is " << qclass_temp->name << END;
+				for (Qmethod *m : qclass_temp->methods) {
+					//OUT << "	mname is " << m->name << END;
+					if (m->name == methodName) {
+						foundMethod = true;
+						calledMethod = m;
+						break;
+					}
+				}
+
+			if (!foundMethod) { // if we haven't seen the method yet, iterate through the supers
+				if (qclass_temp->name != "Obj") { // we're at the top of the tree, stop looking
+					qclass_temp = this->classes[qclass->super];
+					goto find;
+				}
+			}
+
+			//OUT << END;
+
+			if (!foundMethod) {
+				RED << stageString(TYPEINFERENCE) << "method " << methodName << "() not found in class \""
+					<< lhsType << "\" in method \"" << method->name << "\" in class \""
+					<< method->clazz->name << "\"" << END;
+				report::trackError(TYPEINFERENCE);
+				ret_flag = false;
+				stmt->skip = true;
+				return lhsType;
+			}
+
+		} else {
+			RED << stageString(TYPEINFERENCE) << "invalid method call on unknown class \""
+				<< lhsType << "\" used in method \"" << method->name << "\" in class \""
+				<< method->clazz->name << "\"" << END;
+			report::trackError(TYPEINFERENCE);
+			ret_flag = false;
+			stmt->skip = true;
+			return lhsType;
+		}
+
+		std::string returnType = calledMethod->type["return"];
+		// if we're here, we know the method exists. now we compare args
+		int numArgsMethod = calledMethod->args.size();
+		// make sure all our args line up
+		AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
+		if (actual_args_container != NULL) {
+			std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
+			if (!actual_args.empty()) {
+				std::vector<std::string> argTypes;
+				for (AST::Node *arg : actual_args) {
+					AST::Node *real_arg = arg->getBySubtype(METHOD_ARG); // the actual arg node is inside of the "METHOD_ARG" node
+					std::string argType = typeInferStmt(method, real_arg, changed, ret_flag);
+					argTypes.push_back(argType);
+				}
+				
+				int numArgsCallToMethod = argTypes.size();
+				for (int i = 0; i < numArgsMethod; i++) {
+					std::string methodArg = calledMethod->args[i]; // get arg name from class we are constructing
+					std::string methodArgType = calledMethod->argtype[methodArg]; // get the type of that arg
+					if (i >= numArgsCallToMethod) { // if we are missing args in our call to the constructor
+						RED << stageString(TYPEINFERENCE) << "call to method "
+							<< methodName << "() of class \"" << lhsType
+							<< "\" in method " << method->name <<
+							"() in \"" << method->clazz->name << "\" is missing argument \""
+							<< methodArg << "\"" << END;
+						report::trackError(TYPEINFERENCE);
+						ret_flag = false;
+						stmt->skip = true;
+					} else {
+						std::string callToMethodType = argTypes[i]; // type of arg i in our call to the constructor
+						if (!isSubclassOrEqual(callToMethodType, methodArgType)) { // type check that arg
+							RED << stageString(TYPEINFERENCE) << "argument " << i+1 << " of call to method "
+								<< methodName << "() of class \"" << lhsType << "\" in method " << method->name << "() is of incorrect type \"" 
+								<< callToMethodType << "\"" << " (must be subclass or equal to \"" << methodArgType << "\")"
+								<< END;
+							report::trackError(TYPEINFERENCE);
+							ret_flag = false;
+							stmt->skip = true;
+						}
+					}
+				}
+
+				// check we don't have too many args in our call to the method
+				if (numArgsCallToMethod > numArgsMethod) {
+					int difference = numArgsCallToMethod - numArgsMethod;
+					for (int i = numArgsMethod; i < numArgsCallToMethod; i++) {
+						RED << stageString(TYPEINFERENCE) << "invalid argument " << i+1 << " in call to method " 
+							<< methodName << "() of class \"" << lhsType << "\" in method " << method->name <<
+							"() in class \"" << method->clazz->name << "\" (too many args)" << END; 
+						report::trackError(TYPEINFERENCE);
+						ret_flag = false;
+						stmt->skip = true;
+					}
+				}
+
+			} else { // we have a method call with 0 args
+				if (numArgsMethod == 0) { // if the class also has 0 args, great, just return that class name
+					return returnType; 
+				} else { // if it does have args however, print all the ones we're missing in our method call
+					for (int i = 0; i < numArgsMethod; i++) {
+						std::string methodArg = calledMethod->args[i]; // get arg name from method we are calling
+						std::string methodArgType = calledMethod->argtype[methodArg]; // get the type of that arg
+						RED << stageString(TYPEINFERENCE) << "call to method " << methodName
+							<< "() of class \"" << lhsType << "\" in method " << method->name <<
+							"() in \"" << method->clazz->name << "\" is missing argument \""
+							<< methodArg << "\"" << END;
+						report::trackError(TYPEINFERENCE);
+						ret_flag = false;
+						stmt->skip = true;
+					}
+				}
+			}
+		}
+		return returnType;
+		
+	}
 	else if (nodeType == CONSTRUCTOR) {
 		AST::Node *class_name_node = stmt->get(IDENT);
 		if (class_name_node != NULL) {
@@ -772,7 +980,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 							} else {
 								std::string callToConstructorType = argTypes[i]; // type of arg i in our call to the constructor
 								if (!isSubclassOrEqual(callToConstructorType, constructorArgType)) { // type check that arg
-									RED << stageString(TYPEINFERENCE) << "argument " << i << " of call to constructor "
+									RED << stageString(TYPEINFERENCE) << "argument " << i+1 << " of call to constructor "
 										<< class_name << "() in method " << method->name << "() is of incorrect type \"" 
 										<< callToConstructorType << "\"" << " (must be subclass or equal to \"" << constructorArgType << "\")"
 										<< END;
@@ -842,7 +1050,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 					// if it has an explicit type
 					AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 					if (explicit_type != NULL) {
-						if (isSubclassOrEqual(explicit_type->name, method->clazz->instanceVarType[instanceVar])) {
+						if (isSubclassOrEqual(method->clazz->instanceVarType[instanceVar], explicit_type->name)) {
 							method->clazz->instanceVarType[instanceVar] = explicit_type->name;
 						} else {
 							RED << stageString(TYPEINFERENCE) << "instance variable \""
@@ -860,10 +1068,11 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 
 					//OUT << "Inferring type for: " << instanceVar << END;
 					std::string curr_type = method->clazz->instanceVarType[instanceVar];
-					//OUT << "	curr_type: " << curr_type<< END;
+					//OUT << "	curr_type: " << curr_type << END;
 					std::string assigned_type = typeInferStmt(method, r_expr, changed, ret_flag);
+					//OUT << "	assigned_type: " << assigned_type << END << END;
 					if (isInstanceVarExplicit(method, instanceVar)) {
-						if (!isSubclassOrEqual(assigned_type, curr_type)) {
+						if (!isSubclassOrEqual(curr_type, assigned_type)) {
 							RED << stageString(TYPEINFERENCE) << "instance variable \""
 								<< instanceVar << "\" in class \""
 								<< method->clazz->name << "\" is assigned invalid type \"" << assigned_type << "\"" << END;
@@ -895,7 +1104,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			AST::Node *explicit_type = stmt->get(IDENT, TYPE_IDENT);
 			if (explicit_type != NULL) {
 				// OUT << "Var Name: " << left->name << " Curr Type: " << method->type[left->name] << " Explicit Type: " << explicit_type->name << END;
-				if (isSubclassOrEqual(explicit_type->name, method->type[left->name])) {
+				if (isSubclassOrEqual(method->type[left->name], explicit_type->name)) {
 					method->type[left->name] = explicit_type->name;
 				} else {
 					RED << stageString(TYPEINFERENCE) << "variable \""
@@ -958,7 +1167,6 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 				return lhsClass->instanceVarType[rhsName]; // get the type of that instance var from the other class
 			}
 		}
-		
 
 	} else if (nodeType == LOAD) {
 		if (stmt->get(IDENT) != NULL) { 
@@ -968,6 +1176,8 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			} else if (ident == "true" || ident == "false") { 
 				//OUT << "Returning Boolean..." << END;
 				return "Boolean";
+			} else if (ident == "none") {
+				return "Nothing";
 			} else {
 				return method->type[ident];
 			}
@@ -1157,11 +1367,11 @@ bool Typechecker::doesClassExist(std::string classname) {
 }
 
 bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
-	if (class2 == "") return true; // for explicit type check when the assigned var is in a conditional branch
+	if (class1 == "" || class1 == "$UNKNOWN") return true; // for explicit type check when the assigned var is in a conditional branch
 									// and doesn't even have a type of "$UNKNOWN" yet
-	if (class1 == "$UNKNOWN" || class2 == "$UNKNOWN") return true;
+	if (class2 == "$UNKNOWN") return false;
 	if (class1 == class2) return true;
-	if (class1 == "Obj") return false;
+	if (class2 == "Obj") return true;
 	if (classes[class1]->super == "Obj" && class2 == "Obj") return true;
 
 	std::string tempSuper = class1;

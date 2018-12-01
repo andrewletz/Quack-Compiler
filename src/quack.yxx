@@ -33,9 +33,21 @@
         retVal->insert(method);
         AST::Node *actuals = new AST::Node(ACTUAL_ARGS);
         AST::Node *method_arg = new AST::Node(METHOD_ARG);
+        dollarThree->subType = METHOD_ARG;
         method_arg->insert(dollarThree);
         actuals->insert(method_arg);
         retVal->insert(actuals);
+        return retVal;
+    }
+
+    AST::Node *getNotCallNode(Type callType, std::string callStr, 
+                            AST::Node *dollarOne) {
+        AST::Node *retVal = new AST::Node(CALL); 
+        retVal->subType = callType; 
+        retVal->insert(dollarOne);
+        AST::Node *method = new AST::Node(IDENT, callStr); 
+        method->subType = METHOD; 
+        retVal->insert(method);
         return retVal;
     }
 }
@@ -243,18 +255,18 @@ r_expr
         | l_expr { $$ = new AST::Node(LOAD); $$->insert($1); $$->subType = L_EXPR; }
         | '-' r_expr %prec UMINUS { AST::Node *zero = new AST::Node(INTCONST, 0);
                                     $$ = getCallNode(MINUS, "MINUS", zero, $2); }
-        | r_expr '*' r_expr { $$ = getCallNode(MULT, "MULT", $1, $3); }
-        | r_expr '/' r_expr { $$ = getCallNode(DIV, "DIV", $1, $3); }
+        | r_expr '*' r_expr { $$ = getCallNode(MULT, "TIMES", $1, $3); }
+        | r_expr '/' r_expr { $$ = getCallNode(DIV, "DIVIDE", $1, $3); }
         | r_expr '+' r_expr { $$ = getCallNode(PLUS, "PLUS", $1, $3); }
         | r_expr '-' r_expr { $$ = getCallNode(MINUS, "MINUS", $1, $3); }
-        | r_expr EQUALS r_expr { $$ = getCallNode(EQ, "EQ", $1, $3); }
+        | r_expr EQUALS r_expr { $$ = getCallNode(EQ, "EQUALS", $1, $3); }
         | r_expr ATMOST r_expr { $$ = getCallNode(ATMOST, "ATMOST", $1, $3); }
         | r_expr '<' r_expr { $$ = getCallNode(LESSER, "LESSER", $1, $3); }
         | r_expr ATLEAST r_expr { $$ = getCallNode(ATLEAST, "ATLEAST", $1, $3); }
         | r_expr '>' r_expr { $$ = getCallNode(GREATER, "GREATER", $1, $3); }
         | r_expr AND r_expr { $$ = getCallNode(AND, "AND", $1, $3); }
         | r_expr OR r_expr { $$ = getCallNode(OR, "OR", $1, $3); }
-        | NOT r_expr { $$ = new AST::Node(NOT); $$->insert($2); } 
+        | NOT r_expr { $$ = getNotCallNode(NOT, "NOT", $2); } 
         | '(' r_expr ')' { $$ = $2; }
         | r_expr '.' ident '(' actual_args ')' { $$ = new AST::Node(CALL); $$->insert($1); $3->subType = METHOD;
                                                  $$->insert($3); $$->insert($5); }

@@ -1,14 +1,35 @@
 ## Quack-Compiler
 Generates assembly-like C code from a given Quack program.
 
+Created by Andrew Letz and [Nate Letz](https://github.com/touchette).
+
 | Component  | Status |
 | ---------- | ------ |
 | Lexer | Complete |
 | Parser | Complete |
 | AST | Complete |
 | Initialization before use | Complete |
-| Type-checker & type inference | Nearing completion |
-| Code generator | In progress |
+| Type-checker & type inference | Complete |
+| Code generator | Nearing Completion |
+
+<hr>
+
+### Quack language decisions
+At a few points in developing the compiler, a decision needed to be made regarding what is allowed in the language. This is a list of the decisions I made (almost all of them in the type checking phase).
+* Method and class arguments are treated as explicit declarations
+* You may not have a field with the same name as a class or method
+* You may not have a method with the same name as a class
+* You may not include an explicit "return" statement in a constructor
+* You cannot pass "this" as an argument in a constructor (as the object may not be completely initialized yet)
+* You cannot assign a variable to "this" in a class
+* You may not use the keyword "this" inside of the main program statements
+* You cannot use the dot operator (field access) on a builtin. eg, "z".foo or 2.bar
+* Dots of form this.this are prohibited
+
+#### Notes about using this compiler
+* If the method in which an error occurs has the same name of the class it is in, that means it occurred in the constructor. eg, "invalid type assigned to variable x in method Classname() in class Classname()"
+* If an error occurs in either the method or class $MAIN(), that means the error occurred in the main statements area.
+* Some errors may be reported more than once in type checking/inference.
 
 <hr>
 
@@ -44,12 +65,24 @@ to get rid of the build directory and the qcc executable.
 #### generateast.sh script
 Once you have have the compiled *qcc* binary, you can type
 ```
-./generateast.sh [filename]
+./generateast.sh [qcc executable] [filename]
 ```
 to automatically generate the AST image for that file. Output file will be a .png with the same name as the .qk file.
 
-\****note***: you must have json_to_dot.py in the same directory as the script and qcc. 
+\****note***: you must have json_to_dot.py in the same directory as the script.
 
 \****another note***: you must have graphviz installed on your machine to use this script (gives access to the "dot" command).
 
+#### quack_compiler_testbench.sh
+This script was created by another student, Zayd Hammoudeh.
+
+More information can be found on the repository managed by him and the professor Michal Young:
+
+https://github.com/UO-cis561/quack-tests-static
+
 <hr>
+
+#### Credits
+Professor Michal Young for several helpful repos that can be found here:
+
+https://github.com/UO-cis561

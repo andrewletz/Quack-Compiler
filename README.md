@@ -1,5 +1,5 @@
 ## Quack-Compiler
-Generates assembly-like C code from a given Quack program.
+A fully functioning Quack compiler that generates assembly-like C code from a given Quack program.
 
 Created by Andrew Letz and [Nate Letz](https://github.com/touchette).
 
@@ -10,7 +10,7 @@ Created by Andrew Letz and [Nate Letz](https://github.com/touchette).
 | AST | Complete |
 | Initialization before use | Complete |
 | Type-checker & type inference | Complete |
-| Code generator | Nearing Completion |
+| Code generator | Complete |
 
 <hr>
 
@@ -24,6 +24,7 @@ At a few points in developing the compiler, a decision needed to be made regardi
 * You cannot assign a variable to "this" in a class
 * You may not use the keyword "this" inside of the main program statements
 * You cannot use the dot operator (field access) on a builtin. eg, "z".foo or 2.bar
+* Typecase variables that are introduced must not share a name with any existing variable in that scope
 * Dots of form this.this are prohibited
 
 #### Notes about using this compiler
@@ -39,6 +40,8 @@ Type
 ./build.sh
 ```
 to get the *qcc* executable. 
+
+**note*: you may have to run the command chmod +x build.sh in order to run the script
 
 Usage
 ```

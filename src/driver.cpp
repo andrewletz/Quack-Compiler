@@ -4,6 +4,7 @@
 #include "Messages.h"
 #include "typechecker.h"
 #include "stubs.h"
+#include "codegen.h"
 #include <fstream>
 
 class Driver {
@@ -120,8 +121,21 @@ int main(int argc, char *argv[]) {
         if (programValid) report::gnote("complete.", TYPECHECKER);
         // if programValid is false it should have bailed in the type checker
 
-        exit(0);
 
+        report::ynote("starting...", CODEGENERATION);
+        CodeGenerator codeGenerator(&typeChecker, std::string("QuackOutput.c"));
+        bool codeGenerated = codeGenerator.generate();
+
+        report::dynamicBail();
+        if (codeGenerated) {
+            report::gnote("generation of QuackOutput.c complete.", CODEGENERATION);
+            report::ynote("starting GCC invocation...", CODEGENERATION);
+            system("scripts/invoke_gcc.sh");
+            report::gnote("complete. Your outputted program is named QuackOutput!", CODEGENERATION);
+        }
+        // if codeGenerated is false it should have bailed in the code generator
+
+        exit(0);
     } else {
         // either the parse has failed, or no AST was built.
         report::rnote("compilation failed - abstract syntax tree could not be generated!", PARSER);

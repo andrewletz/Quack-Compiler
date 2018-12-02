@@ -1,2 +1,14 @@
+qcc="qcc"
+QuackOutput="QuackOutput"
+
+
 rm -rf build
-rm qcc
+
+if [ -f $qcc ] ; then
+    rm -rf $qcc
+fi
+
+if [ -f $QuackOutput ] ; then
+    rm -rf $QuackOutput
+    rm -rf QuackOutput.c
+fi

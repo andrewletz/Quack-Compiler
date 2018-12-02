@@ -42,6 +42,6 @@ include_directories(
 
 add_executable(qcc
 	quack.tab.cxx lex.yy.cpp lex.yy.h typechecker.h typechecker.cpp
-	ASTNode.cpp ASTNode.h driver.cpp stubs.h Messages.h Messages.cpp EvalContext.h)
+	ASTNode.cpp ASTNode.h driver.cpp stubs.h Messages.h Messages.cpp codegen.cpp codegen.h EvalContext.h)
 
 target_link_libraries(qcc ${REFLEX_LIB})

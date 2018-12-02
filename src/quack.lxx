@@ -118,7 +118,7 @@ not      { return parser::token::NOT; }
 <string>\\0             { string_buf.append("\0"); }
 <string>\\b             { string_buf.append("\b"); }
 <string>\\t             { string_buf.append("\t"); }
-<string>\\n             { string_buf.append("\n"); }
+<string>\\n             { string_buf.append("\\n"); }
 <string>\\r             { string_buf.append("\r"); }
 <string>\\f             { string_buf.append("\f"); }
 <string>\\\"            { string_buf.append("\""); }

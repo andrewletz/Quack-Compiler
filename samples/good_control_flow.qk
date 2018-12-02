@@ -1,0 +1,61 @@
+// Showcases some control flow, class creation, comparisons, short circuit evaluation
+
+class Control() {
+	this.notTrue = false and true;
+	this.isTrue = true and true or true;
+
+	def shouldGiveTrue() : Boolean {
+		returnValue = true;
+		if (this.notTrue) {
+			returnValue = false;
+		} elif (this.isTrue) {
+			"We made it!\n".PRINT();
+		}
+		return returnValue;
+	}
+
+	def boolIdentity(b: Boolean) : Boolean {
+		return b;
+	}
+
+	def shouldntPrint() : Boolean {
+        "Shouldnt be here\n".PRINT();
+        return true;
+    }
+
+    def shouldPrint() : Boolean {
+        "This is correct\n".PRINT();
+        return true;
+    }
+
+}
+
+a = 10;
+b = 20;
+
+if (a < b) { // comparison
+	c = Control();
+	returned = c.shouldGiveTrue();
+	returned.PRINT();
+} else {
+	"Uh oh".PRINT();
+}
+
+"""\n""".PRINT();
+z = 1;
+while (z < 5) {
+	z.PRINT();
+	"""\n""".PRINT();
+	if (z == 4) {
+		"Time to leave the loop\n".PRINT();
+	}
+	z = z + 1;
+}
+
+booool = Control().boolIdentity(true); // call method directly on constructor
+booool.PRINT();
+"""\n""".PRINT();
+
+control = Control();
+testBool = (1 == 2) and (control.shouldntPrint());	// short circuit eval
+testBool2 = true and control.shouldPrint();

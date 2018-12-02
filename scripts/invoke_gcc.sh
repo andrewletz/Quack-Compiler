@@ -1,0 +1,1 @@
+gcc QuackOutput.c src/Builtins.c -Isrc -w -o QuackOutput

@@ -1,0 +1,49 @@
+/**
+ * Runs different type case calls taking different type.
+ * Makes sure the right type case matches and precedence is followed.
+ */
+class Point(x : Int, y:Int) {
+    this.x = x;
+    this.y = y;
+
+    def type_case(other : Obj) : Obj {
+        typecase other {
+            pt: Point {
+                """Point received.\n""".PRINT();
+                pt.PRINT();
+                return this.x == pt.x and this.y == pt.y;
+            }
+            y : Nothing {
+                """Nothing received.\n""".PRINT();
+                y.PRINT();
+                """\n""".PRINT();
+                return false;
+            }
+            z : Int {
+                """Int received.\n""".PRINT();
+                z.PRINT();
+                """\n""".PRINT();
+            }
+            thing: Obj {
+                """Object received.\n""".PRINT();
+                return false;
+            }
+        }
+    }
+
+    def STR() : String {
+        return "(" + this.x.STR() + ", " + this.y.STR() + ")" + """\n""";
+    }
+}
+
+pt = Point(7,8);
+pt.type_case(pt);
+
+pt.type_case(5);
+
+pt.type_case(none);
+
+pt.type_case(Obj());
+
+pt.type_case(Point(65,33));
+

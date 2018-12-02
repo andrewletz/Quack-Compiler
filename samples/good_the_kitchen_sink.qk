@@ -1,0 +1,140 @@
+class A() { }
+
+class B(x: Int) { }
+
+class C(x: Int) {
+     this.weight = x;
+     def cMethod() : Int { return 10; }
+}
+
+class Foo() {
+     def findmax(x: Int) : C { return C(x); }
+}
+
+class Ples(s: String) {
+    this.s = s;     // field with same name as argument
+}
+
+class Tester( inte: Int, str: String, bool: Boolean, none: Nothing) /* extends Obj */ {
+        // ### Error area - uncomment these if you want to see some errors ###
+
+        /*
+        true = false;
+        false = true; // assigning to boolean value - type error
+        */
+
+        /*
+        if (inte == 10) { 
+            this.t = "hello"; // not initialized on all paths - init before use
+        }
+        */
+
+        /*
+        while (inte == 10) {
+            this.y = "hello"; // not initialized on all paths - init before use 
+        }
+        */
+
+        /*
+        if (inte == 10) {
+            this.living = true;
+        } else {
+            this.dead = true; // not initialized on all paths - init before use
+        }
+        */
+
+        /*
+        if (inte) { } 
+        if (str) { }
+        if (none) { } 
+        while (int) { }
+        while (str) { }
+        while (none) { } // not bool conditions - type inference
+        */
+
+        /*
+        A();     // constructor on its own - init before use
+        b = B(none); // invalid input to constructor 
+        */
+
+        /*
+        if (bool) {
+            init_here = 1;
+        }
+        init_here.PRINT(); // init before use
+        */
+
+        // ####################################################################
+        // ### Good area - things here should work ###
+
+        explicit : Int = 10;
+        not_explicit = 10;      // ways of making a variable
+
+        this.children = 10;
+        this.children = 20;     // multiple declarations of same field
+
+        if (bool) {
+            this.all_paths = true;
+        } else {
+            this.all_paths = false; // initializing field on all paths inside control flow
+        }
+
+        foo : Foo = Foo();
+        foo = Foo();            // valid redeclaration
+
+        foo.findmax(this.children).weight = 42;     // complicated method + field access
+        this.weight = foo.findmax(this.children).weight; // set our own field with same name as other object's field
+        
+        x = this.createNewC().cMethod();          // indirect function call on returned object
+        
+        this.ples = Ples("String_Lit");         // field set to another object w/ constructor
+
+        // dense nested if statement
+        other_bool = true;
+        if (bool) {
+            always_init = "I can be used anywhere";
+            if (other_bool) {
+                always_init_sub = "I can be used in this scope";
+                if (bool) {
+                    not_always_init = "I can't be used very many places";
+                } elif (other_bool) {
+                    if (bool) {
+                        not_always_init = "I can't be used very many places";
+                    } else {
+                        not_always_init = "I can't be used very many places";
+                    }
+                }
+            } else {
+                always_init_sub = "I can be used in this scope";
+            }
+        } else {
+            always_init = "I can be used anywhere";
+        }
+        always_init = "See?\n";
+        always_init.PRINT();
+
+        // use of logical operators
+        one = 1;
+        two = 2;
+        three = 3;
+        greeting = "hello";
+        not_true = false;
+        c = "before_while\n";
+        while (one == 1 and two == 2 and greeting == "hello" and three == 3 or false) {
+            c = "after_while\n";
+            not_true = true;
+            three = 4;      // should no longer be in the loop
+        }
+        c.PRINT(); // should print "after_while"
+
+        def identity(t: Tester) : Tester { return t; }
+
+        def createNewC() : C { return C(100); }
+
+        def thisTester() {
+            this_again = this.identity(this); 
+            this_again_again = this; 
+        }
+}
+
+a = Tester(3, "a", true, none);

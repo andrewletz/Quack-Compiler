@@ -1,0 +1,65 @@
+/**
+ * How should one perform type inference 
+ * for variable x in this program? 
+ *
+ * Iterate to a fixed point (abstract interpretation)? 
+ * Somehow short-circuit the walk up the type system? 
+ * Impose some restriction that prevents this problem? 
+ */
+
+class C1()  extends Obj {
+   def foo() : Obj {
+       return Obj();
+   }
+}
+
+class C2() extends C1 {
+   def foo() : C1 {
+        return C1();   /* Conforms to C1.foo() */
+   }
+}
+class C3() extends C2 {
+   def foo() : C2 {
+        return C2();   /* Conforms to C2.foo() */
+   }
+}
+
+class C4() extends C3 {
+    def foo() : C3 {
+         return C3();  /* Conforms to C3.foo() */
+    }
+}
+/* Obviously you can extend this pattern indefintely.  
+ * Now type x below ... what should happen? 
+ */ 
+
+x = C4();           
+while ( x == x ) {
+   x = x.foo();      /* Type system should reject this */
+}
+/* 
+     Discussion: 
+     The type system should reject this program because, 
+     with the most precise typing imaginable, x slowly 
+     "walks up" the type hierarchy until it becomes an 
+     Obj, which does not have a foo method. 
+
+   - One approach is to reject the program because 
+       x = x.foo() produces a value that is not a subtype of 
+       C4, i.e., to immediately reject any movement up the 
+       type hierarchy.  This is probably simplest. 
+   - Another approach is to treat it as an abstract interpretation 
+       problem, using the control structure with types as abstract 
+       values and the type hierarchy as the lattice of abstract 
+       values.  Then the number of iterations required could in the 
+       worst case be the height of the class hierarchy, using the 
+       usual abstract interpretation rule for deriving a 
+       least common ancestor from a collecting semantics. 
+
+   Tentative decision:  Let's make it abstract interpretation. 
+
+*/ 
+
+
+
+                  

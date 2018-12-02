@@ -1,0 +1,18 @@
+class C1 () {
+    def STR() : String {
+        return "This is a C1.\n";
+    }
+}
+
+class C2() extends C1 {
+    def STR() : String {
+        return "This is a C2.\n";
+    }
+}
+
+my_obj : Obj = C1();
+my_obj.PRINT();
+
+my_obj = C2();
+my_obj.PRINT();
+

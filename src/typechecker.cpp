@@ -1505,6 +1505,7 @@ bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
 	if (class1 == "" || class1 == "$UNKNOWN") return true; // for explicit type check when the assigned var is in a conditional branch
 									// and doesn't even have a type of "$UNKNOWN" yet
 	if (class2 == "$UNKNOWN") return false;
+	//if (class2 == "") return true;
 	if (class1 == class2) return true;
 	if (class2 == "Obj") return true;
 	if (classes[class1]->super == "Obj" && class2 == "Obj") return true;

@@ -345,7 +345,7 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 
 	if (nodeType == TYPECASE) {
 		// check that the cond is init first (no type checking yet, it can be anything)
-		AST::Node *var = stmt->get(IDENT);
+		AST::Node *var = stmt->rawChildren[0];
 		if (var != NULL) {
 			if (!initCheckStmt(method, var, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
 		}

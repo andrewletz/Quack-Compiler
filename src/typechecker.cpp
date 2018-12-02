@@ -771,6 +771,19 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 		Qclass *qclass_temp;
 		Qmethod *calledMethod;
 		if (doesClassExist(lhsType)) {
+			if (methodName == "NEGATE") {
+				if (lhsType != "Int") {
+					RED << stageString(TYPEINFERENCE) << "invalid use of \"negate\" operator on non-integer object \""
+						<< lhsType << "\" in method \"" << method->name << "\" in class \""
+						<< method->clazz->name << "\"" << END;
+					report::trackError(TYPEINFERENCE);
+					ret_flag = false;
+					stmt->skip = true;
+					return lhsType;
+				} else {
+					return "Int";
+				}
+			}
 			if (methodName == "NOT") {
 				if (lhsType != "Boolean") {
 					RED << stageString(TYPEINFERENCE) << "invalid use of \"not\" operator on non-boolean object \""

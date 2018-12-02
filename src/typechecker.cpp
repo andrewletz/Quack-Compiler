@@ -741,7 +741,29 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 	Type nodeType = stmt->type;
 
 	if (nodeType == TYPECASE) {
-		return "";
+		AST::Node *type_alts_container = stmt->get(TYPE_ALTERNATIVES);
+		std::vector<AST::Node *> type_alts = type_alts_container->getAll(TYPE_ALTERNATIVE);
+
+		for (AST::Node *type_alt : type_alts) {
+			AST::Node *ident = type_alt->getBySubtype(VAR_IDENT);
+			AST::Node *ident_type = type_alt->getBySubtype(TYPE_IDENT);
+			// if the newly introduced variable is already in init, throw an error
+			if (!doesClassExist(ident_type->name)) {
+				RED << stageString(INITBEFOREUSE) << "typecase introduces variable \"" 
+					<< ident->name << "\" with unknown type \"" << ident_type->name
+					<< "\" in method " << method->name << "() in class \""
+					<< method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+				ret_flag = false;
+				stmt->skip = true;
+			} else { // else iterate through all the statements
+				method->type[ident->name] = ident_type->name;
+				AST::Node *type_stmts = type_alt->get(BLOCK, STATEMENTS);
+				for (AST::Node *type_stmt : type_stmts->rawChildren) {
+					typeInferStmt(method, type_stmt, changed, ret_flag);
+				}
+			}
+		}
 	}
 	else if (nodeType == RETURN) {
 		AST::Node *r_expr = stmt->rawChildren[0];

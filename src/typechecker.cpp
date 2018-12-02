@@ -343,9 +343,55 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 	bool ret_flag = true;
 	Type nodeType = stmt->type;
 
-	
+	if (nodeType == TYPECASE) {
+		// check that the cond is init first (no type checking yet, it can be anything)
+		AST::Node *var = stmt->get(IDENT);
+		if (var != NULL) {
+			if (!initCheckStmt(method, var, var_init, field_init, isConstructor, isMainStatements)) ret_flag = false;
+		}
 
-	if (nodeType == CALL) {
+		AST::Node *type_alts_container = stmt->get(TYPE_ALTERNATIVES);
+		std::vector<AST::Node *> type_alts = type_alts_container->getAll(TYPE_ALTERNATIVE);
+
+		std::vector<std::string> var_init_copy1 = var_init;
+		std::vector<std::string> field_init_copy1 = field_init;
+
+		for (AST::Node *type_alt : type_alts) {
+			AST::Node *ident = type_alt->getBySubtype(VAR_IDENT);
+			// if the newly introduced variable is already in init, throw an error
+			if (isVarInit(method, ident->name)) {
+				RED << stageString(INITBEFOREUSE) << "typecase cannot re-introduce variable \"" 
+					<< ident->name << "\" in method " << method->name << "() in class \""
+					<< method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+				ret_flag = false;
+			} else { // else iterate through all the statements
+				var_init_copy1.push_back(ident->name); // we need to push the newly introduced var onto the temporary vector
+				AST::Node *type_stmts = type_alt->get(BLOCK, STATEMENTS);
+				for (AST::Node *type_stmt : type_stmts->rawChildren) {
+					if (!initCheckStmt(method, type_stmt, var_init_copy1, field_init_copy1, isConstructor, isMainStatements)) ret_flag = false;
+				}
+			}
+		}
+
+		if (isConstructor) {
+			std::vector<std::string> uninitializedFields;
+			uninitializedFields = difference(field_init, field_init_copy1);
+			for (std::string f : uninitializedFields) {
+				RED << stageString(INITBEFOREUSE) << "instance variable \"" << f 
+					<< "\" not initialized on all syntactic paths in \"" << method->clazz->name << "\"" << END;
+					report::trackError(INITBEFOREUSE);
+					ret_flag = false;
+				return ret_flag;
+			}
+		}
+
+		// update final return vectors
+		var_init = intersection(var_init, var_init_copy1);
+		field_init = intersection(field_init, field_init_copy1);
+		return ret_flag;
+	} 
+	else if (nodeType == CALL) {
 		AST::Node *actual_args_container = stmt->get(ACTUAL_ARGS);
 		if (actual_args_container != NULL) {
 			std::vector<AST::Node *> actual_args = actual_args_container->getAll(METHOD_ARG);
@@ -556,7 +602,7 @@ bool Typechecker::initCheckStmt(Qmethod *method, AST::Node *stmt,
 					std::string instanceVar = stmt->get(IDENT)->name;
 					if (!isInstanceVar(method, instanceVar) && (std::find(field_init.begin(), field_init.end(), instanceVar) == field_init.end()) ) {
 						RED << stageString(INITBEFOREUSE) << "uninitialized instance variable \"this."
-							<< instanceVar << "\" used in method \"" << method->name << "\" in class \""
+							<< instanceVar << "\" used in method " << method->name << "() in class \""
 							<< method->clazz->name << "\"" << END;
 						report::trackError(INITBEFOREUSE);
 						ret_flag = false;
@@ -694,9 +740,11 @@ bool Typechecker::initializeBeforeUseCheck() {
 std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &changed, bool &ret_flag) {
 	Type nodeType = stmt->type;
 
-
-	if (nodeType == RETURN) {
-		AST::Node *r_expr = stmt->getBySubtype(R_EXPR);
+	if (nodeType == TYPECASE) {
+		return "";
+	}
+	else if (nodeType == RETURN) {
+		AST::Node *r_expr = stmt->rawChildren[0];
 		std::string curr_type = method->type["return"];
 		if (stmt->skip) return curr_type;
 		std::string new_type = typeInferStmt(method, r_expr, changed, ret_flag);
@@ -872,7 +920,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			}
 
 		} else {
-			RED << stageString(TYPEINFERENCE) << "invalid method call on unknown class \""
+			RED << stageString(TYPEINFERENCE) << "invalid method " << methodName <<  "() called on unknown class \""
 				<< lhsType << "\" used in method \"" << method->name << "\" in class \""
 				<< method->clazz->name << "\"" << END;
 			report::trackError(TYPEINFERENCE);
@@ -1170,6 +1218,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 			}
 
 			std::string new_type = leastCommonAncestor(curr_type, assigned_type);
+			//OUT << "new_type: " << new_type << END;
 			if (new_type != curr_type) {
 				method->type[left->name] = new_type;
 				changed = true;
@@ -1225,6 +1274,7 @@ std::string Typechecker::typeInferStmt(Qmethod *method, AST::Node *stmt, bool &c
 		return "String";
 
 	} else if (nodeType == IDENT) {
+		if (stmt->name == "Nothing") return "Nothing";
 		if (stmt->name == "true" || stmt->name == "false") return "Boolean";
 	}
 
@@ -1457,7 +1507,7 @@ bool Typechecker::isSubclassOrEqual(std::string class1, std::string class2) {
 // assign it to the type of the r_expr directly instead of computing the LCA.
 std::string Typechecker::leastCommonAncestor(std::string class1, std::string class2) {
 	if (class1 == class2) return class1;
-	if (class1 == "$UNKNOWN") return class2;
+	if (class1 == "$UNKNOWN" || class1 == "") return class2;
 	if (!doesClassExist(class1) || !doesClassExist(class2)) return "$UNKNOWN";
 
 	std::vector<std::string> class1Supers;

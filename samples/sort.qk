@@ -1,0 +1,128 @@
+/*
+    Linked List Bubble Sort
+    Quacked by Alonzo Altamirano - 11/2018
+*/
+
+class Printer() { 
+    def println(obj: Obj) {
+        obj.PRINT();
+        this.feed();
+    }
+    def feed() {
+        "\n".PRINT();
+    }
+}
+
+class Node(car : Int, cdr : Obj) {
+    this.car = car;
+    this.cdr = cdr;
+    
+    def STR() : String {
+        typecase this.cdr {
+            ll_n : Node { return this.car.STR() + ", " + this.cdr.STR(); }
+            obj  : Obj     { return this.car.STR(); }
+        }
+        return this.car.STR() + "," + this.cdr.STR();
+    }
+    
+    def setCar(i: Int) {
+        this.car = i;
+    }
+
+    def head() : Int {
+        return this.car;
+    }
+    
+    def tail() : Node {
+        typecase this.cdr {
+            ll_n : Node { return ll_n; }
+            obj  : Obj     { return this; }
+        }
+        return this;
+    }
+
+    def len() : Int {
+        l = 1;
+        temp = this;
+        while not temp.tail() == temp {
+            l = l + 1;
+            temp = temp.tail();
+        }
+        return l;
+    }
+    
+    def bubbleSort() {
+        node = this;
+        
+        //Don't sort list of one item
+        if (this.len() == 1) {
+            return;
+        }
+
+        i = this.len();
+
+        while i > 0 {
+
+            while not node.len() == 1 {
+                decision = false;
+                typecase node.cdr {
+                    ll_n_1 : Node { 
+                        if node.car > ll_n_1.car {
+                            decision = true;
+                        } 
+                    }
+                }
+                if decision {
+                    typecase node.cdr {
+                        ll_n_2 : Node {
+                            this.swap(node, ll_n_2);
+                        }
+                    }
+                }
+                typecase node.cdr {
+                    ll_n_3 : Node {
+                        node = ll_n_3;
+                    }
+                }
+            }
+            node = this;
+            i = i - 1;
+        }
+        return;
+    }   
+
+    def swap(a : Node, b :Node) {
+        temp = a.car;
+        a.setCar(b.car);
+        b.setCar(temp);
+    }
+}
+
+
+//MAIN
+link = Node(6342, Node(847, Node(9829, Node(8802, Node(1011, Node(3184, 
+Node(3500, Node(7133, Node(942, Node(2875, Node(2955, Node(5565, Node(2610, 
+Node(5469, Node(4975, Node(209, Node(2229, Node(75, Node(2863, Node(6832, 
+Node(8012, Node(8817, Node(6452, Node(9327, Node(3724, Node(7101, Node(11, 
+Node(1179, Node(8066, Node(1616, Node(7580, Node(835, Node(3827, Node(5657, 
+Node(8696, Node(6843, Node(2987, Node(9889, Node(2865, Node(3872, Node(6706,
+Node(6717, Node(3860, Node(2575, Node(6510, Node(3114, Node(5580, Node(8835,
+Node(126, Node(7784, Node(6888, Node(4040, Node(5501, Node(7210, Node(5168, 
+Node(5746, Node(2861, Node(2196, Node(5481, Node(9329, Node(9181, Node(4139,
+Node(589, Node(6107, Node(4572, Node(8371, Node(3595, Node(4448, Node(6740, 
+Node(8223, Node(7431, Node(6382, Node(9652, Node(7585, Node(3086, Node(5664,
+Node(229, Node(9548, Node(66, Node(9070, Node(5445, Node(4844, Node(817, 
+Node(2612, Node(4166, Node(2960, Node(2964, Node(333, Node(6584, Node(801, 
+Node(6968, Node(2571, Node(2628, Node(8922, Node(7808, Node(3538, 
+Node(2998, Node(7088, Node(8573, Node(5535,Obj())))))))))))))))))))))))))))
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+
+p = Printer();
+p.feed();
+p.println(link);
+p.feed();
+p.println("Sorting...");
+link.bubbleSort();
+p.feed();
+p.println(link);
+p.feed();

@@ -1,0 +1,435 @@
+/*
+Tree Pretty-Printer C source: http://web.archive.org/web/20090617110918/http://www.openasthra.com/c-tidbits/printing-binary-trees-in-ascii/
+Translated to Quack by Taylor Santos - 11/2018
+*/
+
+class List(val: Int, index: Int) {
+    this.val = val;
+    this.index = index;
+    this.next = none;
+    def at(index: Int): Int {
+        if this.index == index {
+            return this.val;
+        } elif this.index < index {
+            typecase this.next {
+                next: List {
+                    return next.at(index);
+                }
+            }
+            return 0;
+        } else {
+            return 0;
+        }
+    }
+    def set(index: Int, val: Int) {
+        if this.index == index {
+            this.val = val;
+        } elif this.index < index {
+            typecase this.next {
+                next: List {
+                    next.set(index, val);
+                }
+                noNext: Nothing {
+                    newNext = List(0, this.index + 1);
+                    newNext.set(index, val);
+                    this.next = newNext;
+                }
+            }
+        }
+    }
+    def STR(): String {
+        typecase this.next {
+            next: List {
+                return this.val.STR() + ", " + next.STR();
+            }
+        }
+        return this.val.STR();
+    }
+    def PRINT() {
+        "[".PRINT();
+        this.STR().PRINT();
+        "]".PRINT();
+    }
+}
+
+class SharedInt(val: Int) {
+    this.val = val;
+    def set(val: Int) {
+        this.val = val;
+    }
+}
+
+class MinMax() {
+    def MIN(lhs: Int, rhs: Int): Int {
+        if lhs <= rhs {
+            return lhs;
+        } else {
+            return rhs;
+        }
+    }
+    def MAX(lhs: Int, rhs: Int): Int {
+        if lhs >= rhs {
+            return lhs;
+        } else {
+            return rhs;
+        }
+    }
+}
+
+class TreeNode(val: Int, lProfile: List, rProfile: List, printNext: SharedInt) {
+    this.val = val;
+    this.left = none;
+    this.right = none;
+    this.lProfile = lProfile;
+    this.rProfile = rProfile;
+    this.printNext = printNext;
+    def add(val: Int) {
+        if this.val == val {
+            return;
+        } elif this.val > val {
+            typecase this.left {
+                lNode: TreeNode {
+                    lNode.add(val);
+                }
+                noLNode: Nothing {
+                    this.left = TreeNode(val, this.lProfile, this.rProfile, this.printNext);
+                }
+            }
+        } else {
+            typecase this.right {
+                rNode: TreeNode {
+                    rNode.add(val);
+                }
+                noRNode: Nothing {
+                    this.right = TreeNode(val, this.lProfile, this.rProfile, this.printNext);
+                }
+            }
+        }
+    }
+    def find(val: Int): Boolean {
+        if this.val == val {
+            return true;
+        } elif this.val > val {
+            if this.left == none {
+                return false;
+            } else {
+                typecase this.left{
+                    lnode: TreeNode {
+                        return lnode.find(val);
+                    }
+                }
+                return false;
+            }
+        } else {
+            if this.right == none {
+                return false;
+            } else {
+                typecase this.right{
+                    rnode: TreeNode {
+                        return rnode.find(val);
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    def PRINT() {
+        pRoot = this.buildASCIITree();
+        pRoot.computeEdgeLengths();
+        i = 0;
+        while i < pRoot.height {
+            this.lProfile.set(i, 1000000);
+            i = i + 1;
+        }
+        pRoot.computeLProfile(0, 0);
+        xMin = 0;
+        min = MinMax();
+        i = 0;
+        while i < pRoot.height {
+            xMin = min.MIN(xMin, this.lProfile.at(i));
+            i = i + 1;
+        }
+        i = 0;
+        while i < pRoot.height {
+            pRoot.printNext.set(0);
+            pRoot.printLevel(-xMin, i);
+            "\n".PRINT();
+            i = i + 1;
+        }
+    }
+    def buildASCIITreeRecursive(): ASCIINode {
+        node = ASCIINode(this.lProfile, this.rProfile, this.printNext);
+        typecase this.left {
+            lNode: TreeNode {
+                node.setLeft(lNode.buildASCIITreeRecursive());
+            }
+        }
+        typecase this.right {
+            rNode: TreeNode {
+                node.setRight(rNode.buildASCIITreeRecursive());
+            }
+        }
+        typecase node.left {
+            lASCIINode: ASCIINode {
+                lASCIINode.setParentDir(-1);
+            }
+        }
+        typecase node.right {
+            rASCIINode: ASCIINode {
+                rASCIINode.setParentDir(1);
+            }
+        }
+        tmpVal = this.val;
+        valDigits = 2;
+        if tmpVal == 0 {
+            valDigits = valDigits + 1;
+        }
+        while tmpVal > 0 {
+            valDigits = valDigits + 1;
+            tmpVal = tmpVal / 10;
+        }
+        node.setLabel("[" + this.val.STR() + "]");
+        node.setLabelN(valDigits);
+        return node;
+    }
+    def buildASCIITree(): ASCIINode {
+        node = this.buildASCIITreeRecursive();
+        node.setParentDir(0);
+        return node;
+    }
+}
+
+class ASCIINode(lProfile: List, rProfile: List, printNext: SharedInt) {
+    this.left = none;
+    this.right = none;
+    this.edgeLength = 0;
+    this.height = 0;
+    this.parentDir = 0;
+    this.label = "";
+    this.labelN = 0;
+    this.printNext = printNext;
+    this.lProfile = lProfile;
+    this.rProfile = rProfile;
+
+    def setParentDir(val: Int) {
+        this.parentDir = val;
+    }
+    def setLeft(left: ASCIINode) {
+        this.left = left;
+    }
+    def setRight(right: ASCIINode) {
+        this.right = right;
+    }
+    def setLabel(label: String) {
+        this.label = label;
+    }
+    def setLabelN(labelN: Int) {
+        this.labelN = labelN;
+    }
+    def printLevel(x: Int, level: Int) {
+        isLeft = 0;
+        if this.parentDir == -1 {
+            isLeft = 1;
+        }
+        if level == 0 {
+            i = 0;
+            while i < (x - this.printNext.val - ((this.labelN - isLeft)/2)) {
+                " ".PRINT();
+                i = i + 1;
+            }
+            this.label.PRINT();
+            this.printNext.set(this.printNext.val + i + this.labelN);
+        } elif this.edgeLength >= level {
+            typecase this.left {
+                lNode: ASCIINode {
+                    i = 0;
+                    while i < (x - this.printNext.val - level) {
+                        " ".PRINT();
+                        i = i + 1;
+                    }
+                    "╱".PRINT(); //Unicode angled line bottom-left top-right
+                    this.printNext.set(this.printNext.val + i + 1);
+                }
+            }
+            typecase this.right {
+                rNode: ASCIINode {
+                    i = 0;
+                    while i < (x - this.printNext.val + level) {
+                        " ".PRINT();
+                        i = i + 1;
+                    }
+                    "╲".PRINT(); //Unicode angled line top-left bottom-right
+                    this.printNext.set(this.printNext.val + i + 1);
+                }
+            }
+        } else {
+            typecase this.left {
+                lNode2: ASCIINode {
+                    lNode2.printLevel(x - this.edgeLength - 1, level - this.edgeLength - 1);
+                }
+            }
+            typecase this.right {
+                rNode2: ASCIINode {
+                    rNode2.printLevel(x + this.edgeLength + 1, level - this.edgeLength - 1);
+                }
+            }
+        }
+    }
+    def computeEdgeLengths() {
+        typecase this.left {
+            lNode: ASCIINode {
+                lNode.computeEdgeLengths();
+            }
+        }
+        typecase this.right {
+            rNode: ASCIINode {
+                rNode.computeEdgeLengths();
+            }
+        }
+        hMin = 0;
+        if this.right == none and this.left == none {
+            this.edgeLength = 0;
+        } else {
+            typecase this.left {
+                lNode2: ASCIINode {
+                    i = 0;
+                    while i < lNode2.height {
+                        this.rProfile.set(i, -1000000);
+                        i = i + 1;
+                    }
+                    lNode2.computeRProfile(0, 0);
+                    hMin = lNode2.height;
+                }
+                noNode: Nothing {
+                    hMin = 0;
+                }
+            }
+            typecase this.right {
+                rNode2: ASCIINode {
+                    i = 0;
+                    while i < rNode2.height {
+                        this.lProfile.set(i, 1000000);
+                        i = i + 1;
+                    }
+                    rNode2.computeLProfile(0, 0);
+                    min = MinMax();
+                    hMin = min.MIN(rNode2.height, hMin);
+                }
+                noNode2: Nothing {
+                    hMin = 0;
+                }
+            }
+            delta = 4;
+            i = 0;
+            max = MinMax();
+/* GAP */    gap = 1;
+            while i < hMin {
+                delta = max.MAX(delta, gap + 1 + this.rProfile.at(i) - this.lProfile.at(i));
+                i = i + 1;
+            }
+            //If the node has two children of height 1, then we allow the
+            //two leaves to be within 1, instead of 2
+            lNodeHeight1 = false;
+            typecase this.left {
+                lNode3: ASCIINode {
+                    if lNode3.height == 1 {
+                        lNodeHeight1 = true;
+                    }
+                }
+            }
+            rNodeHeight1 = false;
+            typecase this.right {
+                rNode3: ASCIINode {
+                    if rNode3.height == 1 {
+                        rNodeHeight1 = true;
+                    }
+                }
+            }
+
+            if (lNodeHeight1 or rNodeHeight1) and delta > 4 {
+                delta = delta - 1;
+            }
+            this.edgeLength = ((delta + 1)/2) - 1;
+        }
+        h = 1;
+        max = MinMax();
+        typecase this.left {
+            lNode4: ASCIINode {
+                h = max.MAX(lNode4.height + this.edgeLength + 1, h);
+            }
+        }
+        typecase this.right {
+            rNode4: ASCIINode {
+                h = max.MAX(rNode4.height + this.edgeLength + 1, h);
+            }
+        }
+        this.height = h;
+    }
+    def computeLProfile(x: Int, y: Int) {
+        isLeft = 0;
+        if this.parentDir == -1 {
+            isLeft = 1;
+        }
+        min = MinMax();
+        this.lProfile.set(y, min.MIN(this.lProfile.at(y), x - ((this.labelN - isLeft)/2)));
+        typecase this.left {
+            lNode: ASCIINode {
+                i = 1;
+                while i <= this.edgeLength {
+                    this.lProfile.set(y + i, min.MIN(this.lProfile.at(y + i), x - i));
+                    i = i + 1;
+                }
+                lNode.computeLProfile(x - this.edgeLength - 1, y + this.edgeLength + 1);
+            }
+        }
+        typecase this.right {
+            rNode: ASCIINode {
+                rNode.computeLProfile(x + this.edgeLength + 1, y + this.edgeLength + 1);
+            }
+        }
+    }
+    def computeRProfile(x: Int, y: Int) {
+        notLeft = 0;
+        if not this.parentDir == -1 {
+            notLeft = 1;
+        }
+        max = MinMax();
+        this.rProfile.set(y, max.MAX(this.rProfile.at(y), x + ((this.labelN - notLeft)/2)));
+        typecase this.right {
+            rNode: ASCIINode {
+                i = 1;
+                while i <= this.edgeLength {
+                    this.rProfile.set(y + i, max.MAX(this.rProfile.at(y + i), x + i));
+                    i = i + 1;
+                }
+                rNode.computeRProfile(x + this.edgeLength + 1, y + this.edgeLength + 1);
+            }
+        }
+        typecase this.left {
+            lNode: ASCIINode {
+                lNode.computeRProfile(x - this.edgeLength - 1, y + this.edgeLength + 1);
+            }
+        }
+    }
+}
+lProfile = List(0, 0);
+rProfile = List(0, 0);
+printNext = SharedInt(0);
+root = TreeNode(61, lProfile, rProfile, printNext);
+root.add( 13); root.add( 14); root.add(  7); root.add( 73); root.add( 66); root.add( 31); root.add( 84); 
+root.add( 25); root.add( 93); root.add( 91); root.add( 90); root.add( 35); root.add( 10); root.add( 62); root.add( 82); 
+root.add(108); root.add(  0); root.add( 29); root.add(  9); root.add( 81); root.add( 15); root.add( 69); root.add( 28); 
+root.add( 22); root.add( 77); root.add( 60); root.add( 26); root.add( 87); root.add( 45); root.add(110); root.add( 11); 
+root.add( 63); root.add(103); root.add( 27); root.add(102); root.add( 18); root.add( 49); root.add( 32); root.add(115); 
+root.add(125); root.add(107); root.add( 36); root.add( 41); root.add( 74); root.add( 34); root.add( 70); root.add( 39); 
+root.add( 78); root.add( 19); root.add(116); root.add(100); root.add( 44); root.add( 53); root.add(  5); root.add(111); 
+root.add(114); root.add( 88); root.add(117); root.add( 46); root.add(124); root.add(105); root.add(  1); root.add( 79); 
+root.add( 98); root.add( 20); root.add( 83); root.add( 56); root.add( 33); root.add( 89); root.add(  4); root.add( 58); 
+root.add( 40); root.add( 30); root.add(101); root.add( 92); root.add( 16); root.add(  2); root.add( 65); root.add( 42); 
+root.add( 96); root.add( 68); root.add( 48); root.add( 99); root.add( 86); root.add( 67); root.add( 59); root.add( 38); 
+root.add( 76); root.add( 17); root.add( 94); root.add( 72); root.add(106); root.add( 71); root.add(  3); root.add( 80); 
+root.add( 43); root.add(122); root.add(112); root.add( 64); root.add( 24); root.add( 75); root.add( 37); root.add( 55); 
+root.add(  8); root.add(123); root.add(113); root.add( 21); root.add( 23); root.add( 54); root.add(120); root.add( 97); 
+root.add(104); root.add(126); root.add( 57); root.add(  6); root.add( 51); root.add(109); root.add( 50); root.add(127); 
+root.add( 52); root.add( 12); root.add( 85); root.add( 47); root.add(118); root.add( 95); root.add(119); root.add(121); 
+root.PRINT();

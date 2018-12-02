@@ -244,7 +244,8 @@ type_alts
 
 type_alt 
         : ident ':' ident stmt_block { $$ = new AST::Node(TYPE_ALTERNATIVE); 
-                                       $$->insert($1); $$->insert($3); $$->insert($4); }
+                                       $1->subType = VAR_IDENT; $$->insert($1); 
+                                       $3->subType = TYPE_IDENT; $$->insert($3); $$->insert($4); }
         ;
 
 // -~-~-~-~-~-~-~-~-~-~-~-~ r_expr and l_expr -~-~-~-~-~-~-~-~-~-~-~-~

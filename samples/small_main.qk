@@ -17,41 +17,11 @@ class A(x: Int) {
 	this.instancevar = "10";
 }
 ################################################ */ 
-class Test() {
-	def type_case(other : Obj) : Obj {
-	        typecase other {
-	            y : Nothing {
-	                """Nothing received.\n""".PRINT();
-	                y.PRINT();
-	                """\n""".PRINT();
-	                return;
-	            }
-	            z : Int {
-	                """Int received.\n""".PRINT();
-	                z.PRINT();
-	                """\n""".PRINT();
-	                return;
-	            }
-	        }
-	        """No match found\n""".PRINT();
-	        return none;
-	    }
-}
-
-class Point(x : Int, y:Int) {
-    this.x = x;
-    this.y = y;
-
-    def EQUALS(other : Obj) : Boolean {
-        typecase other {
-            pt: Point { 
-                return this.x == pt.x and this.y == pt.y; 
-                pt : Obj = Obj();
-            }
-            thing: Obj { return false; }
-        }
-        return true;
-    }
+if (true) {
+    z = 5;
+    z.PRINT();
+} else {
+	
 }
 
 /* ################################################

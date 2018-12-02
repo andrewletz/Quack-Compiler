@@ -65,6 +65,19 @@ to get rid of the build directory and the qcc executable.
 
 <hr>
 
+### Demo programs
+
+* good_simple_inherited_method_printing.qk -> shows off dynamic dispatch on executing an inherited method
+* good_Pt.qk -> shows off dynamic dispatch on executing Obj's built-in PRINT with Pt's overriden STR
+* good_simple_if_and_short_circuit.qk -> shows both if statements and short circuit evaluation
+* good_typecase.qk -> shows off typecase working properly, works on all types of objects (obj, nothing, int, user-defined class)
+* good_control_flow.qk -> shows off all types of control flow as well as printing based on execution path taken
+* good_the_kitchen_sink -> shows off most things in the language, uncomment things to see some errors
+* good_typewalk.qk -> shows off crawling up the class hierarchy to infer the right type for a method (abstract semantics)
+* bad_typewalk.qk -> same principle as good_typewalk.qk, but with a small error at the top of the class hierarchy
+
+<hr>
+
 #### generateast.sh script
 Once you have have the compiled *qcc* binary, you can type
 ```

@@ -1,7 +1,7 @@
 ## Quack-Compiler
 A fully functioning Quack compiler that generates assembly-like C code from a given Quack program.
 
-Created by Andrew Letz and [Nate Letz](https://github.com/touchette).
+Created by [Andrew Letz](https://aletz.io/) and [Nate Letz](https://touchette.github.io/).
 
 | Component  | Status |
 | ---------- | ------ |
